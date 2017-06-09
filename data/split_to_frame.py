@@ -10,15 +10,13 @@ import scipy.misc
 from tqdm import tqdm
 
 def main(args):
-    """
-    """
-
+    #Directory for resulting frames
     if not os.path.exists(args.frames_path):
         os.makedirs(args.frames_path)
     #Gather videos
     train_set = [p + '/' + video for p, n, f in os.walk(args.dataset) for video in f if 'train' in p and args.format in video]
     test_set = [p + '/' + video for p, n, f in os.walk(args.dataset) for video in f if 'test' in p and args.format in video]
-    #Split frame by frame
+    #Split the trainset frame by frame
     print('Split train set...')
     if not os.path.exists(args.frames_path + '/trainset'):
         os.makedirs(args.frames_path + '/trainset')
@@ -26,6 +24,7 @@ def main(args):
         v = imageio.get_reader(video, 'ffmpeg')
         nb_frames = v.get_meta_data()['nframes']
         for f in range(nb_frames):
+            #Sometimes a RuntimeError occurs while fetching the last frame
             try:
                 f_data = v.get_data(f)
                 if args.resize != '':
@@ -35,6 +34,7 @@ def main(args):
                     scipy.misc.imsave('%s/trainset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f), f_data)
             except RuntimeError:
                 pass
+    #Split the testset frame by frame
     print('Split test set...')
     if not os.path.exists(args.frames_path + '/testset'):
         os.makedirs(args.frames_path + '/testset')
