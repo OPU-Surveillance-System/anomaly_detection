@@ -56,7 +56,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset spliter')
     parser.add_argument('--dataset', dest='dataset', default='MiniDrone', help='Path to the dataset to split')
     parser.add_argument('--format', dest='format', default='mp4', help='Videos format')
-    parser.add_argument('--frames', dest='frames_path', default='frames', help='Path to the directory used to store the resulting frames')
+    parser.add_argument('--frames', dest='frames_path', default='MiniDrone_frames', help='Path to the directory used to store the resulting frames')
     parser.add_argument('--resize', dest='resize', default='', help='Specify the size at which the frames should be resized (format: heigt,width)')
     args = parser.parse_args()
     main(args)
