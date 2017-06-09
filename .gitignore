@@ -3,4 +3,4 @@ include/
 lib/
 share/
 pip-selfcheck.json
-data/MiniDrone
+data/MiniDrone*
