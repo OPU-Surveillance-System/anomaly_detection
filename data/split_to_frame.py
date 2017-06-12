@@ -29,9 +29,9 @@ def main(args):
                 f_data = v.get_data(f)
                 if args.resize != '':
                     resize = [int(dim) for dim in args.resize.split(',')]
-                    scipy.misc.imsave('%s/trainset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f), scipy.misc.imresize(f_data, (resize[0], resize[1])))
+                    scipy.misc.imsave('%s/trainset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f + 1), scipy.misc.imresize(f_data, (resize[0], resize[1])))
                 else:
-                    scipy.misc.imsave('%s/trainset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f), f_data)
+                    scipy.misc.imsave('%s/trainset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f + 1), f_data)
             except RuntimeError:
                 pass
     #Split the testset frame by frame
@@ -46,9 +46,9 @@ def main(args):
                 f_data = v.get_data(f)
                 if args.resize != '':
                     resize = [int(dim) for dim in args.resize.split(',')]
-                    scipy.misc.imsave('%s/testset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f), scipy.misc.imresize(f_data, (resize[0], resize[1])))
+                    scipy.misc.imsave('%s/testset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f + 1), scipy.misc.imresize(f_data, (resize[0], resize[1])))
                 else:
-                    scipy.misc.imsave('%s/testset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f), f_data)
+                    scipy.misc.imsave('%s/testset/%s_%d.png'%(args.frames_path, ntpath.basename(video)[:-4], f + 1), f_data)
             except RuntimeError:
                 pass
 
