@@ -73,7 +73,7 @@ def main(args):
                     label = sum([anomalies[elt] for elt in data[frame]])
                     if label > 1:
                         label = 1
-                    if len(data[frame]) is 0:
+                    elif len(data[frame]) is 0:
                         data[frame] = ['nothing']
                     f.write('%s/%sset/%s_%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
 
