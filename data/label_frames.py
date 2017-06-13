@@ -69,17 +69,6 @@ def main(args):
                     if len(data[frame]) == 0:
                         data[frame] = ['nothing']
                     f.write('%s/%sset/%s_%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
-        with open('%sset_labels'%(setname), 'r') as f:
-            content = f.read().split('\n')[:-1]
-        print(len(content))
-        content = [c.split("\t")[0].split("/")[2] for c in content]
-        train_set = []
-        for p, n, f in os.walk(args.dataset + "_frames/%sset"%(setname)):
-            for files in f:
-                train_set.append(files[:-4])
-        for t in train_set:
-            if t not in content:
-                print(t)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset labeler')
