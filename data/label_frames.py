@@ -1,4 +1,5 @@
 """
+Label a set of frames given an associated set of descriptor (xml/GtViper...).
 """
 
 import argparse
@@ -41,17 +42,22 @@ def main(args):
     #Gather labels
     subsets = args.subset.split(',')
     sets = [[p + '/' + label for p, n, f in os.walk(args.dataset) for label in f if s in p and args.format in label] for s in subsets]
-    #Label trainset
+    #Label sets
     for s in range(len(subsets)):
         setname = subsets[s]
-        print('Labeling %s set...'%(setname))
+        print('Labeling %sset...'%(setname))
         for l in tqdm(sets[s]):
             data_name = l.split('/')[2][:-5]
+            #Get descriptor root
             data_description = etree.parse(l).getroot()[1][0]
+            #Get objects (person, car, ...)
             objects = [o for o in data_description if 'object' in o.tag and o.attrib['name'] not in misc]
+            #Get objects' actions
             actions = [[act for attr in o for act in attr if attr.attrib['name'] == 'Action'] for o in objects]
+            #Get number of frames
             numframes = int(data_description[0][1][0].attrib['value'])
             data = {i:[] for i in range(1, numframes + 1)}
+            #For each frames indicates the action of all objects
             for obj in actions:
                 for act in obj:
                     val = act.attrib['value']
@@ -61,6 +67,7 @@ def main(args):
                             data[frame] += [val]
                         except KeyError:
                             data[frame] = [val]
+            #Associate a label (0 or 1) to each frame
             with open('%sset_labels'%(setname), 'a') as f:
                 for frame in sorted(data.keys()):
                     label = sum([anomalies[elt] for elt in data[frame]])
