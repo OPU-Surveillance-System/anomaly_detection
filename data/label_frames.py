@@ -53,7 +53,7 @@ def main(args):
             #Get objects (person, car, ...)
             objects = [o for o in data_description if 'object' in o.tag and o.attrib['name'] not in misc]
             #Get objects' actions
-            actions = [[act for attr in o for act in attr if attr.attrib['name'] == 'Action'] for o in objects]
+            actions = [[act for attr in o for act in attr if attr.attrib['name'] is 'Action'] for o in objects]
             #Get number of frames
             numframes = int(data_description[0][1][0].attrib['value'])
             data = {i:[] for i in range(1, numframes + 1)}
@@ -73,7 +73,7 @@ def main(args):
                     label = sum([anomalies[elt] for elt in data[frame]])
                     if label > 1:
                         label = 1
-                    if len(data[frame]) == 0:
+                    if len(data[frame]) is 0:
                         data[frame] = ['nothing']
                     f.write('%s/%sset/%s_%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
 
