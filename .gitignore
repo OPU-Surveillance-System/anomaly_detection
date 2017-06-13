@@ -4,3 +4,5 @@ lib/
 share/
 pip-selfcheck.json
 data/MiniDrone*
+data/testset_labels
+data/trainset_labels
