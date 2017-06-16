@@ -22,7 +22,6 @@ class Model:
         assert threshold >= 0, 'The threshold should be strictly positive or null'
         self.inputs = x
         self.labels = y
-        self.trainable = trainable
         self.learning_rate = learning_rate
         self.process()
         self.predictions = tf.sigmoid(self.logits, name='predictions')
