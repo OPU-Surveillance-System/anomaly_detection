@@ -18,6 +18,8 @@ class Model:
             threshold: Threshold for output activations (Float)
         """
 
+        assert learning_rate > 0, 'The learning rate should be strictly positive'
+        assert threshold >= 0, 'The threshold should be strictly positive or null'
         self.inputs = x
         self.labels = y
         self.trainable = trainable
