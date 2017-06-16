@@ -24,11 +24,11 @@ class Model:
         self.labels = y
         self.trainable = trainable
         self.learning_rate = learning_rate
-        self.logits = self.infer()
+        self.process()
         self.predictions = tf.sigmoid(self.logits, name='predictions')
         self.threshold = tf.constant(threshold, dtype=tf.float32, name='detection_threshold')
 
-    def infer(self):
+    def process(self):
         """
         Define the model's computation graph.
         Return: The operation that computes logits.
@@ -36,7 +36,7 @@ class Model:
         Should be redefined in a child class.
         """
 
-        return 0
+        self.logits = 0
 
     def detect(self):
         """
