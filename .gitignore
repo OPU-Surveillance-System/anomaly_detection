@@ -3,6 +3,7 @@ include/
 lib/
 share/
 pip-selfcheck.json
+__pycache__
 data/MiniDrone*
 data/testset_labels
 data/trainset_labels
