@@ -27,7 +27,7 @@ class Model:
         self.learning_rate = learning_rate
         #self.process()
         self.logits = 0
-        self.predictions = tf.sigmoid(tf.cast(self.logits, tf.float32), name='predictions')
+        self.predictions = tf.reshape(tf.sigmoid(tf.cast(self.logits, tf.float32), name='predictions'), shape=[-1], name='fix_shape_predictions')
         self.threshold = tf.constant(threshold, dtype=tf.float32, name='detection_threshold')
 
     def process(self):
@@ -115,7 +115,7 @@ class Model:
                 prediction_to_float = tf.cast(self.detect(), dtype=tf.float32, name='detection_to_float')
                 correct_prediction = tf.equal(prediction_to_float, self.labels, name='count_correct_prediction')
                 correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
-                true_count = tf.sum(correct_prediction_to_float, name='sum_correct_predictions')
+                true_count = tf.reduce_sum(correct_prediction_to_float, name='sum_correct_predictions')
             with tf.name_scope('auc'):
                 auc = self.auc()
 
