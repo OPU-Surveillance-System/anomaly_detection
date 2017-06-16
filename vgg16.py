@@ -8,29 +8,28 @@ import numpy as np
 
 import model
 
-class VGG16(Model):
+class VGG16(model.Model):
     """
     VGG16 class' definition.
     """
 
-    def __init__(self, x, y, learning_rate, threshold = 0.5, trainable, weights_file=None, sess=None):
+    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
             x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
             y: Groundtruth labels (Float placeholder of labels #[Batch size])
             learning_rate: Learning rate for training (Float)
-            threshold: Threshold for output activations (Float)
             trainable: Define if the VGG model should be fully retrained or not
+            threshold: Threshold for output activations (Float)
             weights_file: Path to model's weights file
             sess: A Tensorflow session
         """
 
-        #Model construction
-        model.Model.__init__(self, x, y, learning_rate, threshold)
+        super().__init__(x, y, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        self.infer()
+        self.process()
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
@@ -94,7 +93,7 @@ class VGG16(Model):
 
         # conv3_1 [batch size, 56, 56, 128] -> [batch size, 56, 56, 256]
         with tf.name_scope('conv3_1') as scope:
-            kernel = tf.Variable(tf.truncaself.logits = self.fc3lted_normal([3, 3, 128, 256], dtype=tf.float32, stddev=1e-1), trainable=self.trainable, name='weights')
+            kernel = tf.Variable(tf.truncated_normal([3, 3, 128, 256], dtype=tf.float32, stddev=1e-1), trainable=self.trainable, name='weights')
             conv = tf.nn.conv2d(self.pool2, kernel, [1, 1, 1, 1], padding='SAME')
             biases = tf.Variable(tf.constant(0.0, shape=[256], dtype=tf.float32), trainable=self.trainable, name='biases')
             out = tf.nn.bias_add(conv, biases)

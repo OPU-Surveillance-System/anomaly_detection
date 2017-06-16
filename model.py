@@ -3,6 +3,8 @@ Define a generic class that defines functions common to a large range of models
 that could be used in this research.
 """
 
+import tensorflow as tf
+
 class Model:
     """
     Model class' definition.
@@ -23,8 +25,9 @@ class Model:
         self.inputs = x
         self.labels = y
         self.learning_rate = learning_rate
-        self.process()
-        self.predictions = tf.sigmoid(self.logits, name='predictions')
+        #self.process()
+        self.logits = 0
+        self.predictions = tf.sigmoid(tf.cast(self.logits, tf.float32), name='predictions')
         self.threshold = tf.constant(threshold, dtype=tf.float32, name='detection_threshold')
 
     def process(self):
@@ -68,7 +71,7 @@ class Model:
 
         with tf.name_scope('accuracy'):
             prediction_to_float = tf.cast(self.detect(), dtype=tf.float32, name='detection_to_float')
-            correct_prediction = tf.equal(prediction_to_float, self.y, name='count_correct_prediction')
+            correct_prediction = tf.equal(prediction_to_float, self.labels, name='count_correct_prediction')
             correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
             accuracy = tf.reduce_mean(correct_prediction_to_float, name='accuracy')
 
@@ -81,7 +84,7 @@ class Model:
         """
 
         with tf.name_scope('auc'):
-            auc = tf.metrics.auc(y, self.predictions, num_thresholds=500, curve='ROC', name='auc')
+            auc = tf.metrics.auc(self.labels, self.predictions, num_thresholds=500, curve='ROC', name='auc')
 
         return auc
 
@@ -110,7 +113,7 @@ class Model:
                 sum_xent = tf.reduce_sum(cross_entropy, name='sum_xent')
             with tf.name_scope('accuracy'):
                 prediction_to_float = tf.cast(self.detect(), dtype=tf.float32, name='detection_to_float')
-                correct_prediction = tf.equal(prediction_to_float, self.y, name='count_correct_prediction')
+                correct_prediction = tf.equal(prediction_to_float, self.labels, name='count_correct_prediction')
                 correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
                 true_count = tf.sum(correct_prediction_to_float, name='sum_correct_predictions')
             with tf.name_scope('auc'):
