@@ -61,7 +61,8 @@ def main(args):
             validation_filenames = [args.val_records]
             sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
             try:
-                sess.run(next_element)
+                sess.run([loss, accuracy, auc])
+                #TODO: SUMMARY
             except tf.errors.OutOfRangeError:
                 break
     return 0
@@ -72,9 +73,10 @@ if __name__ == '__main__':
     parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
     parser.add_argument('--weights', dest='vgg_weights', type=str, default=False, help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
-    parser.add_argument('--dsummary', dest='dataset_summary', type=str, default='', help='Path to the dataset summary')
-    parser.add_argument('--trsummary', dest='dataset_summary', type=str, default='', help='Path to the train set summary')
-    parser.add_argument('--vsummary', dest='dataset_summary', type=str, default='', help='Path to the val set summary')
-    parser.add_argument('--tesummary', dest='dataset_summary', type=str, default='', help='Path to the test set summary')
+    parser.add_argument('--trecord', dest='train_records', type=str, default='', help='Path to trainset tfrecords')
+    parser.add_argument('--vrecord', dest='val_records', type=str, default='', help='Path to valset tfrecords')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=100, help='Number of training epochs')
+    parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
+    parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     args = parser.parse_args()
     main(args)
