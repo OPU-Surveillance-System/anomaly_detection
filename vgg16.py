@@ -17,6 +17,7 @@ class VGG16(model.Model):
         """
         VGG16's constructor.
         Inputs:
+            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
             learning_rate: Learning rate for training (Float)
             trainable: Define if the VGG model should be fully retrained or not
             threshold: Threshold for output activations (Float)
@@ -24,10 +25,10 @@ class VGG16(model.Model):
             sess: A Tensorflow session
         """
 
-        super().__init__(x, learning_rate, threshold)
+        super().__init__(learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        self.process()
+        self.process(x)
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
@@ -36,7 +37,7 @@ class VGG16(model.Model):
                     print(i, k, np.shape(weights[k]))
                     sess.run(self.parameters[i].assign(weights[k]))
 
-    def process(self):
+    def process(self, x):
         """
         Define the VGG16's computation graph.
         Inputs:
@@ -49,7 +50,7 @@ class VGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            images = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            images = tf.map_fn(lambda img: tf.image.per_image_standardization(img), x)
 
         # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
         with tf.name_scope('conv1_1') as scope:
