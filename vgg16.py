@@ -13,12 +13,10 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
+    def __init__(self, x, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
             learning_rate: Learning rate for training (Float)
             trainable: Define if the VGG model should be fully retrained or not
             threshold: Threshold for output activations (Float)
@@ -26,7 +24,7 @@ class VGG16(model.Model):
             sess: A Tensorflow session
         """
 
-        super().__init__(x, y, learning_rate, threshold)
+        super().__init__(x, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
         self.process()
@@ -41,6 +39,10 @@ class VGG16(model.Model):
     def process(self):
         """
         Define the VGG16's computation graph.
+        Inputs:
+            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
+        Return:
+            The operation that computes logits.
         """
 
         self.parameters = []
@@ -205,4 +207,6 @@ class VGG16(model.Model):
             fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
             self.fc3l = tf.nn.bias_add(tf.matmul(self.fc2, fc3w), fc3b)
             self.parameters += [fc3w, fc3b]
-            self.logits = self.fc3l
+            logits = self.fc3l
+
+        return logits
