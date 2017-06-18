@@ -2,10 +2,18 @@
 Save data and labels into tfrecords files.
 """
 
+import argparse
+import os
 import numpy as np
 import tensorflow as tf
 from scipy import misc
 from tqdm import tqdm
+
+def _int64_feature(value):
+  return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+def _bytes_feature(value):
+  return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 def main(args):
     subsets = args.subset.split(',')
@@ -21,21 +29,22 @@ def main(args):
         rows = frames.shape[1]
         cols = frames.shape[2]
         for i in range(frames.shape[0]):
-            image_raw = images[i].tostring()
-            label_raw = labels[i].tostring()
+            print(frames[i].dtype)
+            print(frames[i].shape)
+            image_raw = frames[i].tostring()
             data = tf.train.Example(features=tf.train.Features(feature={
                 'height': _int64_feature(rows),
                 'width': _int64_feature(cols),
-                'label_raw': _bytes_feature(label_raw),
-                'image_raw': _bytes_feature(image_raw)}))
+                'label': _int64_feature(labels[i]),
+                'image': _bytes_feature(image_raw)}))
             writer.write(data.SerializeToString())
         writer.close()
     return 0
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset spliter')
-    parser.add_argument('--dataset', dest='dataset', default='MiniDrone', help='Path to the dataset to split')
-    parser.add_argument('--format', dest='format', default='mp4', help='Videos format')
+    parser.add_argument('--dataset', dest='dataset', default='MiniDrone_frames', help='Path to the dataset to split')
+    parser.add_argument('--format', dest='format', default='.png', help='Frames format')
     parser.add_argument('--subset', dest='subset', default='train,test', help='Subsets for the dataset to be divided in')
     args = parser.parse_args()
     main(args)
