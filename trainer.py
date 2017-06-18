@@ -1,4 +1,5 @@
 """
+Train a given model according to a given dataset.
 """
 
 import os
@@ -9,20 +10,27 @@ import argparse
 import vgg16
 
 def _parse_function(example_proto):
+    """
+    Parse a given tfrecord's entry into an image and a label.
+    Inputs:
+        example_proto: A tfrecord's entry.
+    Returns:
+        image_tofloat: A tensor representing the image.
+        preproc_label: A tensor representing the label.
+    """
     features = {'height': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'width': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'label': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'image': tf.FixedLenFeature((), tf.string, default_value="")}
     parsed_features = tf.parse_single_example(example_proto, features)
-    image_decoded = tf.cast(tf.image.decode_image(parsed_features["image"], channels=3), tf.float32)
-    image_resized = tf.reshape(image_decoded, [224, 224, 3])
+    image = tf.decode_raw(parsed_features['image'], tf.uint8)
+    image.set_shape([224 * 224 * 3])
+    image_resized = tf.reshape(image, shape=[224, 224, 3])
+    image_tofloat = tf.cast(image_resized, tf.float32)
     preproc_label = tf.reshape(tf.cast(parsed_features["label"], tf.float32), shape=[-1])
-    return image_resized, preproc_label
+    return image_tofloat, preproc_label
 
 def main(args):
-    """
-    """
-
     #Create dataset
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
