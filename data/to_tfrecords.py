@@ -23,7 +23,7 @@ def main(args):
         for i in range(frames.shape[0]):
             image_raw = images[i].tostring()
             label_raw = labels[i].tostring()
-            element = tf.train.Example(features=tf.train.Features(feature={
+            data = tf.train.Example(features=tf.train.Features(feature={
                 'height': _int64_feature(rows),
                 'width': _int64_feature(cols),
                 'label_raw': _bytes_feature(label_raw),
