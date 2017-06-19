@@ -88,15 +88,16 @@ def main(args):
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
-                if step % args.summary_step is 0:
-                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
-                    train_str = sess.run(t_summaries, feed_dict=feed_dict)
-                    train_writer.add_summary(train_str, batch_count)
-                    train_writer.flush()
-                step += 1
-                batch_count += 1
+                # _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
+                # if step % args.summary_step is 0:
+                #     print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
+                #     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
+                #     train_str = sess.run(t_summaries, feed_dict=feed_dict)
+                #     train_writer.add_summary(train_str, batch_count)
+                #     train_writer.flush()
+                # step += 1
+                # batch_count += 1
+                print(next_element.shape)
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break

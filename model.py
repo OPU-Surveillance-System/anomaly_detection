@@ -66,7 +66,6 @@ class Model:
         """
 
         with tf.name_scope('loss'):
-            print(x)
             logits = self.process(x)
             cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
             #loss = tf.reduce_mean(cross_entropy, name='loss')
