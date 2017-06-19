@@ -50,6 +50,7 @@ def main(args):
     accuracy = model.accuracy(next_element[0], next_element[1])
     auc = model.auc(next_element[0], next_element[1])
     train = model.train(next_element[0], next_element[1])
+    print(loss, accuracy, auc)
     #Create summaries
     #TODO
     #Create saver
