@@ -71,8 +71,8 @@ def main(args):
         v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
         v_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
         v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary, v_auc_summary])
-    train_writer = tf.summary.FileWriter(os.path.join(args.out, 'logs/train'), sess.graph)
-    validation_writer = tf.summary.FileWriter(os.path.join(args.out, 'logs/validation'), sess.graph)
+    train_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/train'), sess.graph)
+    validation_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/validation'), sess.graph)
     #Create saver
     saver = tf.train.Saver()
     #Init variables
