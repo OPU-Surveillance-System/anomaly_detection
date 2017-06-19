@@ -60,17 +60,17 @@ def main(args):
 
     for epoch in range(args.epochs):
         #Training
-        step = 0
+        step = args.batch_size
         while True:
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
                 _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc[1]))
+                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc[1]))
                     #TODO: SUMMARY
                     pass
-                step += 1
+                step += args.batch_size
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break
