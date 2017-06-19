@@ -139,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('--trecord', dest='train_records', type=str, default='data/train.tfrecords', help='Path to trainset tfrecords')
     parser.add_argument('--vrecord', dest='val_records', type=str, default='data/test.tfrecords', help='Path to valset tfrecords')
     parser.add_argument('--epochs', dest='epochs', type=int, default=100, help='Number of training epochs')
-    parser.add_argument('--sumstep', dest='summary_step', type=int, default=5, help='Number of summary steps')
+    parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
