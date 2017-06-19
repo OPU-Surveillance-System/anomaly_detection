@@ -83,21 +83,20 @@ def main(args):
     batch_count = 0
     for epoch in range(args.epochs):
         #Training
+        training_filenames = [args.train_records]
+        sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
-            training_filenames = [args.train_records]
-            sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                # _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
-                # if step % args.summary_step is 0:
-                #     print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
-                #     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
-                #     train_str = sess.run(t_summaries, feed_dict=feed_dict)
-                #     train_writer.add_summary(train_str, batch_count)
-                #     train_writer.flush()
-                # step += 1
-                # batch_count += 1
-                print(next_element.shape)
+                _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
+                if step % args.summary_step is 0:
+                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
+                    train_str = sess.run(t_summaries, feed_dict=feed_dict)
+                    train_writer.add_summary(train_str, batch_count)
+                    train_writer.flush()
+                step += 1
+                batch_count += 1
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break
@@ -106,13 +105,13 @@ def main(args):
             save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
             print('Model saved in file: %s'%(save_path))
         #Validation
+        validation_filenames = [args.val_records]
+        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
         v_loss = 0
         v_accuracy = 0
         v_auc = 0
         count = 0
         while True:
-            validation_filenames = [args.val_records]
-            sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
                 v_loss += tmp_loss
