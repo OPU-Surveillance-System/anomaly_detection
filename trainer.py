@@ -58,9 +58,9 @@ def main(args):
     auc = model.auc(next_element[0], next_element[1])
     train = model.train(next_element[0], next_element[1])
     #Create summaries
-    pl_loss = tf.placeholder(tf.float32, shape=[None])
-    pl_accuracy = tf.placeholder(tf.float32, shape=[None])
-    pl_auc = tf.placeholder(tf.float32, shape=[None])
+    pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
+    pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
+    pl_auc = tf.placeholder(tf.float32, name='auc_placeholder')
     with tf.variable_scope("train_set"):
         t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         t_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
