@@ -37,7 +37,7 @@ def main(args):
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     dataset = dataset.map(_parse_function)
-    dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.shuffle(buffer_size=9497)
     dataset = dataset.batch(args.batch_size)
     #Create iterator
     iterator = dataset.make_initializable_iterator()
@@ -60,19 +60,18 @@ def main(args):
     sess.run(tf.local_variables_initializer())
 
     for epoch in range(args.epochs):
-        print('epoch %d'%(epoch))
         #Training
         step = 0
         while True:
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
+                _, tr_loss, tr_accuracy, tr_auc, tr_upop = sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f'%(epoch, step, tr_loss, tr_accuracy))
+                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_upop))
                     #TODO: SUMMARY
                     pass
-                step += args.batch_size
+                step += 1
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break
@@ -101,7 +100,7 @@ if __name__ == '__main__':
     parser.add_argument('--trecord', dest='train_records', type=str, default='data/train.tfrecords', help='Path to trainset tfrecords')
     parser.add_argument('--vrecord', dest='val_records', type=str, default='data/test.tfrecords', help='Path to valset tfrecords')
     parser.add_argument('--epochs', dest='epochs', type=int, default=100, help='Number of training epochs')
-    parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
+    parser.add_argument('--sumstep', dest='summary_step', type=int, default=5, help='Number of summary steps')
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     args = parser.parse_args()
