@@ -69,7 +69,7 @@ def main(args):
             try:
                 _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc))
+                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f'%(epoch, step, tr_loss, tr_accuracy))
                     #TODO: SUMMARY
                     pass
                 step += 1
