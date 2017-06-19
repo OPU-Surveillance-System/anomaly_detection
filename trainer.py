@@ -66,9 +66,9 @@ def main(args):
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                _, tr_loss, tr_accuracy, tr_auc, tr_upop = sess.run([train, loss, accuracy, auc])
+                _, tr_loss, tr_accuracy, tr_auc= sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_upop))
+                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy[0]))
                     #TODO: SUMMARY
                     pass
                 step += 1

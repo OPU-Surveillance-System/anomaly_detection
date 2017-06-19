@@ -103,9 +103,9 @@ class Model:
 
         with tf.name_scope('auc'):
             inference = self.infer(x)
-            auc = tf.metrics.auc(y, inference, num_thresholds=500, curve='ROC', name='auc')
+            auc, update_op = tf.metrics.auc(y, inference, num_thresholds=500, curve='ROC', name='auc')
 
-        return auc
+        return auc, update_op
 
     def train(self, x, y):
         """
