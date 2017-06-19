@@ -29,8 +29,6 @@ def main(args):
         rows = frames.shape[1]
         cols = frames.shape[2]
         for i in range(frames.shape[0]):
-            print(frames[i].dtype)
-            print(frames[i].shape)
             image_raw = frames[i].tostring()
             data = tf.train.Example(features=tf.train.Features(feature={
                 'height': _int64_feature(rows),

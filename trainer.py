@@ -18,6 +18,7 @@ def _parse_function(example_proto):
         image_tofloat: A tensor representing the image.
         preproc_label: A tensor representing the label.
     """
+    
     features = {'height': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'width': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'label': tf.FixedLenFeature((), tf.int64, default_value=0),
@@ -28,6 +29,7 @@ def _parse_function(example_proto):
     image_resized = tf.reshape(image, shape=[224, 224, 3])
     image_tofloat = tf.cast(image_resized, tf.float32)
     preproc_label = tf.reshape(tf.cast(parsed_features["label"], tf.float32), shape=[-1])
+
     return image_tofloat, preproc_label
 
 def main(args):
