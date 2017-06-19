@@ -50,7 +50,6 @@ def main(args):
     accuracy = model.accuracy(next_element[0], next_element[1])
     auc = model.auc(next_element[0], next_element[1])
     train = model.train(next_element[0], next_element[1])
-    print(loss, accuracy, auc)
     #Create summaries
     #TODO
     #Create saver
@@ -68,7 +67,7 @@ def main(args):
             try:
                 _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc[0]))
+                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc[1]))
                     #TODO: SUMMARY
                     pass
                 step += 1
