@@ -72,7 +72,7 @@ def main(args):
                     print('epoch %d, step %d, loss: %.4f, accuracy: %.4f'%(epoch, step, tr_loss, tr_accuracy))
                     #TODO: SUMMARY
                     pass
-                step += 1
+                step += args.batch_size
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break
