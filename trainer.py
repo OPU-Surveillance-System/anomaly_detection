@@ -18,7 +18,7 @@ def _parse_function(example_proto):
         image_tofloat: A tensor representing the image.
         preproc_label: A tensor representing the label.
     """
-    
+
     features = {'height': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'width': tf.FixedLenFeature((), tf.int64, default_value=0),
                 'label': tf.FixedLenFeature((), tf.int64, default_value=0),
@@ -66,8 +66,9 @@ def main(args):
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                sess.run([train, loss, accuracy, auc])
+                _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
                 if step % args.summary_step is 0:
+                    print('epoch %d, step %d, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc))
                     #TODO: SUMMARY
                     pass
                 step += 1
