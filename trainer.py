@@ -91,9 +91,7 @@ def main(args):
                 _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
                 if step % args.summary_step is 0:
                     print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
-                    feed_dict[pl_loss] = t_loss
-                    feed_dict[pl_accuracy] = t_accuracy
-                    feed_dict[pl_auc] = t_auc
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
@@ -126,9 +124,7 @@ def main(args):
         v_accuracy /= count
         v_auc /= count
         print('epoch %d validation, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, v_loss, v_accuracy, v_auc))
-        feed_dict[pl_loss] = v_loss
-        feed_dict[pl_accuracy] = v_accuracy
-        feed_dict[pl_auc] = v_auc
+        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
         validation_writer.flush()
