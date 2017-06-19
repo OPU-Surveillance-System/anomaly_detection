@@ -68,9 +68,9 @@ class Model:
         with tf.name_scope('loss'):
             logits = self.process(x)
             cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
-            loss = tf.reduce_mean(cross_entropy, name='loss')
+            #loss = tf.reduce_mean(cross_entropy, name='loss')
 
-        return loss
+        return cross_entropy
 
     def accuracy(self, x, y):
         """
@@ -87,9 +87,9 @@ class Model:
             prediction_to_float = tf.cast(inference, dtype=tf.float32, name='inference_to_float')
             correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
             correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
-            accuracy = tf.reduce_mean(correct_prediction_to_float, name='accuracy')
+            #accuracy = tf.reduce_mean(correct_prediction_to_float, name='accuracy')
 
-        return accuracy
+        return correct_prediction_to_float
 
     def auc(self, x, y):
         """
@@ -119,7 +119,7 @@ class Model:
 
         with tf.name_scope('training'):
             learning_rate = self.learning_rate
-            loss = self.loss(x, y)
+            loss = tf.reduce_mean( self.loss(x, y), name='loss')
             train = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
         return train

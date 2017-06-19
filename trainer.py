@@ -33,6 +33,13 @@ def _parse_function(example_proto):
     return image_tofloat, preproc_label
 
 def main(args):
+    #Create output directories
+    if not os.path.exists(args.exp_out):
+        os.makedirs(args.exp_out)
+    if not os.path.exists(args.exp_out + '/logs'):
+        os.makedirs(args.exp_out + '/logs')
+    if not os.path.exists(args.exp_out + '/serial'):
+        os.makedirs(args.exp_out + '/serial')
     #Create dataset
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
@@ -51,43 +58,80 @@ def main(args):
     auc = model.auc(next_element[0], next_element[1])
     train = model.train(next_element[0], next_element[1])
     #Create summaries
-    #TODO
+    pl_loss = tf.placeholder(tf.float32, shape=[None])
+    pl_accuracy = tf.placeholder(tf.float32, shape=[None])
+    pl_auc = tf.placeholder(tf.float32, shape=[None])
+    with tf.variable_scope("train_set"):
+        t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
+        t_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
+        t_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
+        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary, t_auc_summary])
+    with tf.variable_scope("validation_set"):
+        v_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
+        v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
+        v_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
+        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary, v_auc_summary])
+    train_writer = tf.summary.FileWriter(os.path.join(args.out, 'logs/train'), sess.graph)
+    validation_writer = tf.summary.FileWriter(os.path.join(args.out, 'logs/validation'), sess.graph)
     #Create saver
-    #TODO
+    saver = tf.train.Saver()
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
 
+    #Training loop
+    batch_count = 0
     for epoch in range(args.epochs):
         #Training
-        step = args.batch_size
+        step = 0
         while True:
             training_filenames = [args.train_records]
             sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
             try:
-                _, tr_loss, tr_accuracy, tr_auc = sess.run([train, loss, accuracy, auc])
+                _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
                 if step % args.summary_step is 0:
-                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, tr_loss, tr_accuracy, tr_auc[1]))
-                    #TODO: SUMMARY
-                    pass
-                step += args.batch_size
+                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
+                    feed_dict[pl_loss] = t_loss
+                    feed_dict[pl_accuracy] = t_accuracy
+                    feed_dict[pl_auc] = t_auc
+                    train_str = sess.run(t_summaries, feed_dict=feed_dict)
+                    train_writer.add_summary(train_str, batch_count)
+                    train_writer.flush()
+                step += 1
+                batch_count += 1
             except tf.errors.OutOfRangeError:
                 print('Epoch %d complete'%(epoch))
                 break
         #Save model
         if epoch % args.save_epoch is 0:
-            #TODO: SAVE MODEL
-            print('Model saved')
-            pass
+            save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
+            print('Model saved in file: %s'%(save_path))
         #Validation
+        v_loss = 0
+        v_accuracy = 0
+        v_auc = 0
+        count = 0
         while True:
             validation_filenames = [args.val_records]
             sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
             try:
-                sess.run([loss, accuracy, auc])
-                #TODO: SUMMARY
+                tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
+                v_loss += tmp_loss
+                v_accuracy += tmp_accuracy
+                v_auc += tmp_auc[1]
+                count += 1
             except tf.errors.OutOfRangeError:
                 break
+        v_loss /= count
+        v_accuracy /= count
+        v_auc /= count
+        print('epoch %d validation, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, v_loss, v_accuracy, v_auc))
+        feed_dict[pl_loss] = v_loss
+        feed_dict[pl_accuracy] = v_accuracy
+        feed_dict[pl_auc] = v_auc
+        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
+        validation_writer.add_summary(validation_str, epoch)
+        validation_writer.flush()
     return 0
 
 if __name__ == '__main__':
@@ -102,5 +146,6 @@ if __name__ == '__main__':
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=5, help='Number of summary steps')
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
+    parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
     args = parser.parse_args()
     main(args)
