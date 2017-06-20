@@ -44,7 +44,7 @@ def main(args):
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     dataset = dataset.map(_parse_function)
-    dataset = dataset.shuffle(buffer_size=3000)
+    dataset = dataset.shuffle(buffer_size=9497)
     dataset = dataset.batch(args.batch_size)
     #Create iterator
     iterator = dataset.make_initializable_iterator()
@@ -114,8 +114,8 @@ def main(args):
         while True:
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
-                v_loss += tmp_loss
-                v_accuracy += tmp_accuracy
+                v_loss += sum(tmp_loss)
+                v_accuracy += sum(tmp_accuracy)
                 v_auc += tmp_auc[1]
                 count += 1
             except tf.errors.OutOfRangeError:
