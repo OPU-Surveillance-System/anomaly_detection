@@ -116,11 +116,11 @@ def main(args):
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
                 v_loss += sum(tmp_loss)
-                print(v_loss)
+                print('tmp_loss', tmp_loss, ', v_loss', v_loss)
                 v_accuracy += sum(tmp_accuracy)
-                print(v_accuracy)
+                print('tmp_accuracy', tmp_accuracy, ', v_accuracy', v_accuracy)
                 v_auc += tmp_auc[1]
-                print(v_auc)
+                print('tmp_auc', tmp_auc[1], ', v_auc', v_auc)
                 count += 1
             except tf.errors.OutOfRangeError:
                 break
