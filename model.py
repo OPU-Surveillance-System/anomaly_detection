@@ -119,7 +119,7 @@ class Model:
 
         with tf.name_scope('training'):
             learning_rate = self.learning_rate
-            loss = tf.reduce_mean( self.loss(x, y), name='loss')
+            loss = tf.reduce_mean(self.loss(x, y), name='loss')
             train = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
         return train

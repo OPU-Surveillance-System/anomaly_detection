@@ -44,19 +44,20 @@ def main(args):
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     dataset = dataset.map(_parse_function)
-    dataset = dataset.shuffle(buffer_size=9497)
+    dataset = dataset.repeat(args.epoch)
+    dataset = dataset.shuffle(buffer_size=100)
     dataset = dataset.batch(args.batch_size)
     #Create iterator
     iterator = dataset.make_initializable_iterator()
-    next_element = iterator.get_next()
+    image, label = iterator.get_next()
     #Instantiate session
     sess = tf.InteractiveSession()
     #Instantiate model and define operations
-    model = vgg16.VGG16(next_element[0], args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    loss = model.loss(next_element[0], next_element[1])
-    accuracy = model.accuracy(next_element[0], next_element[1])
-    auc = model.auc(next_element[0], next_element[1])
-    train = model.train(next_element[0], next_element[1])
+    model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    loss = model.loss(image, label)
+    accuracy = model.accuracy(image, label)
+    auc = model.auc(image, label)
+    train = model.train(image, label)
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
@@ -115,8 +116,11 @@ def main(args):
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
                 v_loss += sum(tmp_loss)
+                print(v_loss)
                 v_accuracy += sum(tmp_accuracy)
+                print(v_accuracy)
                 v_auc += tmp_auc[1]
+                print(v_auc)
                 count += 1
             except tf.errors.OutOfRangeError:
                 break
