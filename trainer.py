@@ -121,11 +121,11 @@ def main(args):
                 print('tmp_accuracy', tmp_accuracy, ', v_accuracy', v_accuracy)
                 v_auc += tmp_auc[1]
                 print('tmp_auc', tmp_auc[1], ', v_auc', v_auc)
-                count += 1
+                count += len(tmp_loss)
             except tf.errors.OutOfRangeError:
                 break
-        v_loss /= count
-        v_accuracy /= count
+        v_loss[0] /= count
+        v_accuracy[0] /= count
         v_auc /= count
         print('epoch %d validation, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, v_loss, v_accuracy, v_auc))
         feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
