@@ -116,22 +116,22 @@ def main(args):
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
                 v_loss += sum(tmp_loss)
-                print('tmp_loss', tmp_loss, ', v_loss', v_loss)
+                #print('tmp_loss', tmp_loss, ', v_loss', v_loss)
                 v_accuracy += sum(tmp_accuracy)
-                print('tmp_accuracy', tmp_accuracy, ', v_accuracy', v_accuracy)
+                #print('tmp_accuracy', tmp_accuracy, ', v_accuracy', v_accuracy)
                 v_auc += tmp_auc[1]
-                print('tmp_auc', tmp_auc[1], ', v_auc', v_auc)
+                #print('tmp_auc', tmp_auc[1], ', v_auc', v_auc)
                 count += len(tmp_loss)
             except tf.errors.OutOfRangeError:
                 break
         v_loss[0] /= count
         v_accuracy[0] /= count
         v_auc /= count
-        print('epoch %d validation, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, v_loss, v_accuracy, v_auc))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
-        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
-        validation_writer.add_summary(validation_str, epoch)
-        validation_writer.flush()
+        print('epoch %d validation, loss: %.4f, %d validation images, accuracy: %.4f, auc: %.4f'%(epoch, count, v_loss, v_accuracy, v_auc))
+        # feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
+        # validation_str = sess.run(v_summaries, feed_dict=feed_dict)
+        # validation_writer.add_summary(validation_str, epoch)
+        # validation_writer.flush()
     return 0
 
 if __name__ == '__main__':
