@@ -90,7 +90,6 @@ def main(args):
         while True:
             try:
                 _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
-                print(tf.shape(t_loss))
                 if step % args.summary_step is 0:
                     print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
