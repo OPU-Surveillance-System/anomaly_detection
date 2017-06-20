@@ -128,10 +128,13 @@ def main(args):
         v_accuracy[0] /= count
         v_auc /= count
         print('epoch %d validation, loss: %.4f, %d validation images, accuracy: %.4f, auc: %.4f'%(epoch, count, v_loss, v_accuracy, v_auc))
-        # feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
-        # validation_str = sess.run(v_summaries, feed_dict=feed_dict)
-        # validation_writer.add_summary(validation_str, epoch)
-        # validation_writer.flush()
+        #feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
+        feed_dict[pl_loss] = v_loss
+        feed_dict[pl_accuracy] = v_accuracy
+        feed_dict[pl_auc] = v_auc
+        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
+        validation_writer.add_summary(validation_str, epoch)
+        validation_writer.flush()
     return 0
 
 if __name__ == '__main__':
