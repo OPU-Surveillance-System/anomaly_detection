@@ -44,7 +44,7 @@ def main(args):
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     dataset = dataset.map(_parse_function)
-    dataset = dataset.repeat(args.epoch)
+    #dataset = dataset.repeat(args.epoch)
     dataset = dataset.shuffle(buffer_size=100)
     dataset = dataset.batch(args.batch_size)
     #Create iterator
