@@ -116,7 +116,6 @@ def main(args):
         while True:
             try:
                 tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
-                print(tf.shape(tmp_loss), tf.shape(tmp_accuracy), tf.shape(tmp_auc))
                 v_loss += sum(tmp_loss)
                 #print('tmp_loss', tmp_loss, ', v_loss', v_loss)
                 v_accuracy += sum(tmp_accuracy)
@@ -130,8 +129,7 @@ def main(args):
         v_accuracy[0] /= count
         v_auc /= count
         print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, count, v_loss, v_accuracy, v_auc))
-        print(tf.shape(v_loss), tf.shape(v_accuracy), tf.shape(v_auc))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: v_auc}
+        feed_dict = {pl_loss: v_loss[0], pl_accuracy: v_accuracy[0], pl_auc: v_auc}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
         validation_writer.flush()
