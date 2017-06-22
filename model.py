@@ -44,7 +44,7 @@ class Model:
         Inputs:
             x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
         Return:
-            inference: A boolean tensor of predictions #[Batch size].
+            inference: A boolean tensor of predictions #[Batch size]
         """
 
         with tf.name_scope('infer'):
@@ -54,38 +54,34 @@ class Model:
 
         return inference
 
-    def loss(self, x, y):
+    def cross_entropy(self, y):
         """
-        Compute the loss between the logits computed by the model and the groundtruth labels.
+        Compute the cross entropy between the logits computed by the model and the groundtruth labels.
         Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
             y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
-            loss: Scalar representing the loss #[1].
+            cross_entropy: Scalar representing the cross_entropy #[1]
         """
 
-        with tf.name_scope('loss'):
+        with tf.name_scope('cross_entropy'):
             cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=y, name='x_entropy')
-            #loss = tf.reduce_mean(cross_entropy, name='loss')
 
         return cross_entropy
 
-    def accuracy(self, x, y):
+    def count_correct_prediction(self, prediction, y):
         """
-        Compute the accuracy of the model's logits according to the groundtruth labels.
+        Compute the number of correct prediction of the model's logits according to the groundtruth labels.
         Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
+            prediction: Model's prediction (Float placeholder of images #[Batch size])
             y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
-            accuracy: Scalar representing the accuracy of the model #[1].
+            accuracy: Scalar representing the accuracy of the model #[1]
         """
 
         with tf.name_scope('accuracy'):
-            inference = self.infer(x)
-            prediction_to_float = tf.cast(inference, dtype=tf.float32, name='inference_to_float')
+            prediction_to_float = tf.cast(prediction, dtype=tf.float32, name='inference_to_float')
             correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
             correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
-            #accuracy = tf.reduce_mean(correct_prediction_to_float, name='accuracy')
 
         return correct_prediction_to_float
 
@@ -96,7 +92,7 @@ class Model:
             x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
             y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
-            auc: Scalar representing the AUC of the model #[1].
+            auc: Scalar representing the AUC of the model #[1]
         """
 
         with tf.name_scope('auc'):
@@ -105,19 +101,17 @@ class Model:
 
         return auc, update_op
 
-    def train(self, x, y):
+    def train(self, cross_entropy):
         """
         Define the model's training operation.
         Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
+            cross_entropy: cross entropy operation over a batch #[1]
         Return:
-            train: The training operation.
+            train: The training operation
         """
 
         with tf.name_scope('training'):
-            learning_rate = self.learning_rate
-            loss = tf.reduce_mean(self.loss(x, y), name='loss')
-            train = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+            loss = tf.reduce_mean(cross_entropy, name='loss')
+            train = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
 
         return train
