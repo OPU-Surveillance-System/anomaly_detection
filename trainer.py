@@ -111,7 +111,7 @@ def main(args):
         count = 0
         while True:
             try:
-                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, count_correct_prediction])
+                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction])
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
