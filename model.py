@@ -48,8 +48,7 @@ class Model:
         """
 
         with tf.name_scope('infer'):
-            logits = self.process(x)
-            activations = tf.sigmoid(tf.cast(logits, tf.float32), name='activations')
+            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
             reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
             inference = tf.greater_equal(activations, self.threshold, name='inference')
 
@@ -66,8 +65,7 @@ class Model:
         """
 
         with tf.name_scope('loss'):
-            logits = self.process(x)
-            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
+            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=y, name='x_entropy')
             #loss = tf.reduce_mean(cross_entropy, name='loss')
 
         return cross_entropy
