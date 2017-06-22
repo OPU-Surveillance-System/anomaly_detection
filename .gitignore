@@ -7,3 +7,6 @@ __pycache__
 data/MiniDrone*
 data/testset_labels
 data/trainset_labels
+*vgg16_weights.npz
+*.tfrecords
+exp/
