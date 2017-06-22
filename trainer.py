@@ -6,6 +6,7 @@ import os
 import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
+import matplotlib.pyplot as plt
 
 import vgg16
 
@@ -54,24 +55,21 @@ def main(args):
     sess = tf.InteractiveSession()
     #Instantiate model and define operations
     model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    loss = model.loss(image, label)
-    accuracy = model.accuracy(image, label)
-    auc = model.auc(image, label)
-    train = model.train(image, label)
+    cross_entropy = model.cross_entropy(label)
+    prediction = model.infer(image)
+    correct_prediction = model.count_correct_prediction(prediction, label)
+    train = model.train(cross_entropy)
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
-    pl_auc = tf.placeholder(tf.float32, name='auc_placeholder')
     with tf.variable_scope("train_set"):
         t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         t_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        t_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
-        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary, t_auc_summary])
+        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary])
     with tf.variable_scope("validation_set"):
         v_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        v_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
-        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary, v_auc_summary])
+        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary])
     train_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/train'), sess.graph)
     validation_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/validation'), sess.graph)
     #Create saver
@@ -89,10 +87,10 @@ def main(args):
         step = 0
         while True:
             try:
-                _, t_loss, t_accuracy, t_auc = sess.run([train, tf.reduce_mean(loss), tf.reduce_mean(accuracy), auc])
+                _, t_loss, t_accuracy = sess.run([train, tf.reduce_mean(cross_entropy), tf.reduce_mean(correct_prediction)])
                 if step % args.summary_step is 0:
-                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, step, t_loss, t_accuracy, t_auc[1]))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_auc: t_auc[1]}
+                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f'%(epoch, step, t_loss, t_accuracy))
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
@@ -110,22 +108,19 @@ def main(args):
         sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
         v_loss = 0
         v_accuracy = 0
-        v_auc = 0
         count = 0
         while True:
             try:
-                tmp_loss, tmp_accuracy, tmp_auc = sess.run([loss, accuracy, auc])
-                v_loss += sum(tmp_loss)
-                v_accuracy += sum(tmp_accuracy)
-                v_auc += tmp_auc[1]
-                count += len(tmp_loss)
+                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, count_correct_prediction])
+                v_loss += sum(tmp_xentropy)
+                v_accuracy += sum(tmp_correct_prediction)
+                count += len(tmp_xentropy)
             except tf.errors.OutOfRangeError:
                 break
         v_loss[0] /= count
         v_accuracy[0] /= count
-        v_auc /= count
-        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f, auc: %.4f'%(epoch, count, v_loss, v_accuracy, v_auc))
-        feed_dict = {pl_loss: v_loss[0], pl_accuracy: v_accuracy[0], pl_auc: v_auc}
+        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
+        feed_dict = {pl_loss: v_loss[0], pl_accuracy: v_accuracy[0]}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
         validation_writer.flush()
@@ -133,7 +128,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
-    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.001, help='Learning rate')
+    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.0001, help='Learning rate')
     parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
     parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
