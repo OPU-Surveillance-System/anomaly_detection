@@ -88,8 +88,8 @@ def main(args):
         while True:
             try:
                 _, t_loss, t_accuracy = sess.run([train, tf.reduce_mean(cross_entropy), tf.reduce_mean(correct_prediction)])
-                if step % args.summary_step is 0:
-                    print('epoch %d, %d examples processed, loss: %.4f, accuracy: %.4f'%(epoch, step, t_loss, t_accuracy))
+                if step % args.summary_step == 0:
+                    print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
@@ -128,7 +128,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
-    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.0001, help='Learning rate')
+    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
     parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
     parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
