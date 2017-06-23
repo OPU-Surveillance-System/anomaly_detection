@@ -216,7 +216,7 @@ class VGG16():
 
         return logits
 
-    def infer(self, x):
+    def infer(self, logits, x):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
         Inputs:
@@ -226,13 +226,13 @@ class VGG16():
         """
 
         with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
+            activations = tf.sigmoid(tf.cast(logits, tf.float32), name='activations')
             reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
             inference = tf.greater_equal(activations, self.threshold, name='inference')
 
         return inference
 
-    def cross_entropy(self, y):
+    def cross_entropy(self, logits, y):
         """
         Compute the cross entropy between the logits computed by the model and the groundtruth labels.
         Inputs:
@@ -242,7 +242,7 @@ class VGG16():
         """
 
         with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=y, name='x_entropy')
+            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
 
         return cross_entropy
 
@@ -263,7 +263,7 @@ class VGG16():
 
         return correct_prediction_to_float
 
-    def auc(self, x, y):
+    def auc(self, inference, y):
         """
         Compute the Area Under the ROC Curve (AUC) of the model.
         Inputs:
@@ -274,7 +274,6 @@ class VGG16():
         """
 
         with tf.name_scope('auc'):
-            inference = self.infer(x)
             auc, update_op = tf.metrics.auc(y, inference, num_thresholds=200, curve='ROC', name='auc')
 
         return auc, update_op

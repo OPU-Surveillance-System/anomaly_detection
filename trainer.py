@@ -33,8 +33,9 @@ def main(args):
     image = tf.placeholder(tf.float32, [None, 224, 224, 3])
     label = tf.placeholder(tf.float32, [None])
     model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    cross_entropy = model.cross_entropy(label)
-    prediction = model.infer(image)
+    logits = model.process(image)
+    cross_entropy = model.cross_entropy(logits, label)
+    prediction = model.infer(logits, image)
     correct_prediction = model.count_correct_prediction(prediction, label)
     train = model.train(cross_entropy)
     #Create summaries
