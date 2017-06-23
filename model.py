@@ -101,7 +101,7 @@ class Model:
 
         return auc, update_op
 
-    def train(self, cross_entropy):
+    def train(self, loss):
         """
         Define the model's training operation.
         Inputs:
@@ -111,7 +111,7 @@ class Model:
         """
 
         with tf.name_scope('training'):
-            loss = tf.reduce_mean(cross_entropy, name='loss')
+            # loss = tf.reduce_mean(cross_entropy, name='loss')
             train = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
 
         return train

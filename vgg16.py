@@ -8,7 +8,7 @@ import numpy as np
 
 import model
 
-class VGG16():
+class VGG16(model.Model):
     """
     VGG16 class' definition.
     """
@@ -25,10 +25,7 @@ class VGG16():
             sess: A Tensorflow session
         """
 
-        assert learning_rate > 0, 'The learning rate should be strictly positive'
-        assert threshold >= 0, 'The threshold should be strictly positive or null'
-        self.learning_rate = learning_rate
-        self.threshold = tf.constant(threshold, dtype=tf.float32, name='detection_threshold')
+        super().__init__(learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
         self.logits = self.process(x)
@@ -215,80 +212,3 @@ class VGG16():
                 logits = tf.reshape(self.fc3l, [-1])
 
         return logits
-
-    def infer(self, logits, x):
-        """
-        Classify the given inputs as normal/abnormal according to resulting logits.
-        Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-        Return:
-            inference: A boolean tensor of predictions #[Batch size]
-        """
-
-        with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(logits, tf.float32), name='activations')
-            reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
-            inference = tf.greater_equal(activations, self.threshold, name='inference')
-
-        return inference
-
-    def cross_entropy(self, logits, y):
-        """
-        Compute the cross entropy between the logits computed by the model and the groundtruth labels.
-        Inputs:
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
-        Return:
-            cross_entropy: Scalar representing the cross_entropy #[1]
-        """
-
-        with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
-
-        return cross_entropy
-
-    def count_correct_prediction(self, prediction, y):
-        """
-        Compute the number of correct prediction of the model's logits according to the groundtruth labels.
-        Inputs:
-            prediction: Model's prediction (Float placeholder of images #[Batch size])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
-        Return:
-            accuracy: Scalar representing the accuracy of the model #[1]
-        """
-
-        with tf.name_scope('accuracy'):
-            prediction_to_float = tf.cast(prediction, dtype=tf.float32, name='inference_to_float')
-            correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
-            correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
-
-        return correct_prediction_to_float
-
-    def auc(self, inference, y):
-        """
-        Compute the Area Under the ROC Curve (AUC) of the model.
-        Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
-        Return:
-            auc: Scalar representing the AUC of the model #[1]
-        """
-
-        with tf.name_scope('auc'):
-            auc, update_op = tf.metrics.auc(y, inference, num_thresholds=200, curve='ROC', name='auc')
-
-        return auc, update_op
-
-    def train(self, cross_entropy):
-        """
-        Define the model's training operation.
-        Inputs:
-            cross_entropy: cross entropy operation over a batch #[1]
-        Return:
-            train: The training operation
-        """
-
-        with tf.name_scope('training'):
-            loss = tf.reduce_mean(cross_entropy, name='loss')
-            train = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
-
-        return train
