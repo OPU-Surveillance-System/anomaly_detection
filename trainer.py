@@ -34,8 +34,10 @@ def main(args):
     label = tf.placeholder(tf.float32, [None])
     model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.cross_entropy(label)
+    loss_batch = model.loss_batch(label)
     prediction = model.infer(image)
     correct_prediction = model.count_correct_prediction(prediction, label)
+    accuracy_batch = model.accuracy_batch(image, label)
     loss = tf.reduce_mean(cross_entropy)
     train = model.train(loss)
     #Create summaries
@@ -71,7 +73,7 @@ def main(args):
             x_batch = np.array([misc.imread(os.path.join('data', i[0])) for i in train_set[idx_start:idx_end]])
             y_batch = np.array([float(l[1]) for l in train_set[idx_start:idx_end]])
             feed_dict = {image: x_batch, label: y_batch}
-            _, t_loss, t_accuracy, count_1 = sess.run([train, tf.reduce_mean(cross_entropy), tf.reduce_mean(correct_prediction), tf.reduce_sum(tf.cast(prediction, tf.float32))], feed_dict=feed_dict)
+            _, t_loss, t_accuracy, count_1 = sess.run([train, loss_batch, tf.reduce_mean(correct_prediction), tf.reduce_sum(tf.cast(prediction, tf.float32))], feed_dict=feed_dict)
             if step % args.summary_step == 0:
                 print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f (%d alarms)'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy, count_1))
                 feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}

@@ -68,7 +68,17 @@ class Model:
 
         return cross_entropy
 
-    def count_correct_prediction(self, prediction, y):
+    def loss_batch(self, y):
+        """
+        TODO
+        """
+
+        with tf.name_scope('loss_batch'):
+            loss_batch = tf.reduce_mean(self.cross_entropy(y), name='loss_batch')
+
+        return loss_batch
+
+    def count_correct_prediction(self, x, y):
         """
         Compute the number of correct prediction of the model's logits according to the groundtruth labels.
         Inputs:
@@ -78,12 +88,22 @@ class Model:
             accuracy: Scalar representing the accuracy of the model #[1]
         """
 
-        with tf.name_scope('accuracy'):
-            prediction_to_float = tf.cast(prediction, dtype=tf.float32, name='inference_to_float')
+        with tf.name_scope('count_correct_prediction'):
+            prediction_to_float = tf.cast(self.infer(x), dtype=tf.float32, name='inference_to_float')
             correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
             correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
 
         return correct_prediction_to_float
+
+    def accuracy_batch(self, x, y):
+        """
+        TODO
+        """
+
+        with tf.name_scope('accuracy_batch'):
+            accuracy_batch = tf.reduce_mean(self.count_correct_prediction(x, y), name='accuracy_batch')
+
+        return accuracy_batch 
 
     def auc(self, x, y):
         """
