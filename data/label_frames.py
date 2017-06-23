@@ -82,6 +82,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', dest='dataset', default='MiniDrone', help='Path ground truth labels')
     parser.add_argument('--format', dest='format', default='xgtf', help='Labels format')
     parser.add_argument('--frames', dest='frames_path', default='MiniDrone_frames', help='Path to the frames to label')
-    parser.add_argument('--subset', dest='subset', default='train,test', help='Subsets in which the dataset is divided in (format: subset1,subset2,...,subsetn)')
+    parser.add_argument('--subset', dest='subset', default='train,val,test', help='Subsets in which the dataset is divided in (format: subset1,subset2,...,subsetn)')
     args = parser.parse_args()
     main(args)

@@ -209,6 +209,6 @@ class VGG16(model.Model):
                 fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
                 self.fc3l = tf.nn.bias_add(tf.matmul(self.fc2, fc3w), fc3b)
                 self.parameters += [fc3w, fc3b]
-                logits = self.fc3l
+                logits = tf.reshape(self.fc3l, [-1])
 
         return logits
