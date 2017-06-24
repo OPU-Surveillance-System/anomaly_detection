@@ -43,6 +43,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset spliter')
     parser.add_argument('--dataset', dest='dataset', default='MiniDrone_frames', help='Path to the dataset to split')
     parser.add_argument('--format', dest='format', default='.png', help='Frames format')
-    parser.add_argument('--subset', dest='subset', default='train,test', help='Subsets for the dataset to be divided in')
+    parser.add_argument('--subset', dest='subset', default='train,val,test', help='Subsets for the dataset to be divided in')
     args = parser.parse_args()
     main(args)
