@@ -23,9 +23,9 @@ class Model:
         assert learning_rate > 0, 'The learning rate should be strictly positive'
         assert threshold >= 0, 'The threshold should be strictly positive or null'
         self.learning_rate = learning_rate
-        self.threshold = tf.constant(threshold, dtype=tf.float32, name='detection_threshold')
+        self.threshold = threshold
 
-    def process(self, x):
+    def get_logits(self, x):
         """
         Define the model's computation graph.
         Return:
@@ -34,51 +34,52 @@ class Model:
         Should be redefined in a child class.
         """
 
-        logits = 0
+        self.logits = 0
 
-        return logits
+        return self.logits
 
-    def infer(self, x):
+    def infer(self, logits):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
         Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
+            logits: TODO
         Return:
             inference: A boolean tensor of predictions #[Batch size]
         """
 
         with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
+            activations = tf.sigmoid(tf.cast(logits, tf.float32), name='activations')
             reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
             inference = tf.greater_equal(activations, self.threshold, name='inference')
 
         return inference
 
-    def cross_entropy(self, y):
+    def cross_entropy(self, logits, y):
         """
         Compute the cross entropy between the logits computed by the model and the groundtruth labels.
         Inputs:
+            logits: TODO
             y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
             cross_entropy: Scalar representing the cross_entropy #[1]
         """
 
         with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=y, name='x_entropy')
+            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
 
         return cross_entropy
 
-    def loss_batch(self, y):
+    def loss_batch(self, cross_entropy):
         """
         TODO
         """
 
         with tf.name_scope('loss_batch'):
-            loss_batch = tf.reduce_mean(self.cross_entropy(y), name='loss_batch')
+            loss_batch = tf.reduce_mean(cross_entropy, name='loss_batch')
 
         return loss_batch
 
-    def count_correct_prediction(self, x, y):
+    def count_correct_prediction(self, prediction, y):
         """
         Compute the number of correct prediction of the model's logits according to the groundtruth labels.
         Inputs:
@@ -89,21 +90,21 @@ class Model:
         """
 
         with tf.name_scope('count_correct_prediction'):
-            prediction_to_float = tf.cast(self.infer(x), dtype=tf.float32, name='inference_to_float')
+            prediction_to_float = tf.cast(prediction, dtype=tf.float32, name='inference_to_float')
             correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
             correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
 
         return correct_prediction_to_float
 
-    def accuracy_batch(self, x, y):
+    def accuracy_batch(self, correct_prediction):
         """
         TODO
         """
 
         with tf.name_scope('accuracy_batch'):
-            accuracy_batch = tf.reduce_mean(self.count_correct_prediction(x, y), name='accuracy_batch')
+            accuracy_batch = tf.reduce_mean(correct_prediction, name='accuracy_batch')
 
-        return accuracy_batch 
+        return accuracy_batch
 
     def auc(self, x, y):
         """

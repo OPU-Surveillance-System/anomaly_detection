@@ -37,7 +37,7 @@ class VGG16(model.Model):
                     print(i, k, np.shape(weights[k]))
                     sess.run(self.parameters[i].assign(weights[k]))
 
-    def process(self, x):
+    def get_logits(self, x):
         """
         Define the VGG16's computation graph.
         Inputs:

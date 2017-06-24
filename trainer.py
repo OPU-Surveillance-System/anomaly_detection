@@ -33,13 +33,13 @@ def main(args):
     image = tf.placeholder(tf.float32, [None, 224, 224, 3])
     label = tf.placeholder(tf.float32, [None])
     model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    cross_entropy = model.cross_entropy(label)
-    loss_batch = model.loss_batch(label)
-    prediction = model.infer(image)
+    logits = model.get_logits(image)
+    cross_entropy = model.cross_entropy(logits, label)
+    loss_batch = model.loss_batch(cross_entropy)
+    prediction = model.infer(logits)
     correct_prediction = model.count_correct_prediction(prediction, label)
-    accuracy_batch = model.accuracy_batch(image, label)
-    loss = tf.reduce_mean(cross_entropy)
-    train = model.train(loss)
+    accuracy_batch = model.accuracy_batch(correct_prediction)
+    train = model.train(loss_batch)
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
@@ -73,9 +73,9 @@ def main(args):
             x_batch = np.array([misc.imread(os.path.join('data', i[0])) for i in train_set[idx_start:idx_end]])
             y_batch = np.array([float(l[1]) for l in train_set[idx_start:idx_end]])
             feed_dict = {image: x_batch, label: y_batch}
-            _, t_loss, t_accuracy, count_1 = sess.run([train, loss_batch, tf.reduce_mean(correct_prediction), tf.reduce_sum(tf.cast(prediction, tf.float32))], feed_dict=feed_dict)
+            t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
             if step % args.summary_step == 0:
-                print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f (%d alarms)'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy, count_1))
+                print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
                 feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
                 train_str = sess.run(t_summaries, feed_dict=feed_dict)
                 train_writer.add_summary(train_str, batch_count)
@@ -87,31 +87,31 @@ def main(args):
             save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
             print('Model saved in file: %s'%(save_path))
         #Validation
-        v_loss = 0
-        v_accuracy = 0
-        v_alarm = 0
-        count = 0
-        shuffle(val_set)
-        max_step = int(100 / args.batch_size) #TODO replace 100 by args.number val sample
-        step = 0
-        for step in tqdm(range(max_step)):
-            idx_start = step * args.batch_size
-            idx_end = idx_start + args.batch_size
-            x_batch = np.array([misc.imread(os.path.join('data', i[0])) for i in val_set[idx_start:idx_end]])
-            y_batch = np.array([l[1] for l in val_set[idx_start:idx_end]])
-            feed_dict = {image: x_batch, label: y_batch}
-            tmp_xentropy, tmp_correct_prediction, tmp_alarm = sess.run([cross_entropy, correct_prediction, tf.reduce_sum(tf.cast(prediction, tf.float32))], feed_dict=feed_dict)
-            v_loss += sum(tmp_xentropy)
-            v_accuracy += sum(tmp_correct_prediction)
-            v_alarm += tmp_alarm
-            count += len(tmp_xentropy)
-        v_loss /= count
-        v_accuracy /= count
-        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f, alarms: %d'%(epoch, count, v_loss, v_accuracy, v_alarm))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
-        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
-        validation_writer.add_summary(validation_str, epoch)
-        validation_writer.flush()
+        # v_loss = 0
+        # v_accuracy = 0
+        # v_alarm = 0
+        # count = 0
+        # shuffle(val_set)
+        # max_step = int(100 / args.batch_size) #TODO replace 100 by args.number val sample
+        # step = 0
+        # for step in tqdm(range(max_step)):
+        #     idx_start = step * args.batch_size
+        #     idx_end = idx_start + args.batch_size
+        #     x_batch = np.array([misc.imread(os.path.join('data', i[0])) for i in val_set[idx_start:idx_end]])
+        #     y_batch = np.array([l[1] for l in val_set[idx_start:idx_end]])
+        #     feed_dict = {image: x_batch, label: y_batch}
+        #     tmp_xentropy, tmp_correct_prediction, tmp_alarm = sess.run([cross_entropy, correct_prediction, tf.reduce_sum(tf.cast(prediction, tf.float32))], feed_dict=feed_dict)
+        #     v_loss += sum(tmp_xentropy)
+        #     v_accuracy += sum(tmp_correct_prediction)
+        #     v_alarm += tmp_alarm
+        #     count += len(tmp_xentropy)
+        # v_loss /= count
+        # v_accuracy /= count
+        # print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f, alarms: %d'%(epoch, count, v_loss, v_accuracy, v_alarm))
+        # feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
+        # validation_str = sess.run(v_summaries, feed_dict=feed_dict)
+        # validation_writer.add_summary(validation_str, epoch)
+        # validation_writer.flush()
     return 0
 
 if __name__ == '__main__':
