@@ -45,7 +45,7 @@ def main(args):
     filenames = tf.placeholder(tf.string, shape=[None])
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     dataset = dataset.map(_parse_function)
-    dataset = dataset.shuffle(buffer_size=1000)
+    dataset = dataset.shuffle(buffer_size=5000)
     dataset = dataset.batch(args.batch_size)
     #Create iterator
     iterator = dataset.make_initializable_iterator()
@@ -117,10 +117,10 @@ def main(args):
                 count += len(tmp_xentropy)
             except tf.errors.OutOfRangeError:
                 break
-        v_loss[0] /= count
-        v_accuracy[0] /= count
+        v_loss /= count
+        v_accuracy /= count
         print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        feed_dict = {pl_loss: v_loss[0], pl_accuracy: v_accuracy[0]}
+        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
         validation_writer.flush()

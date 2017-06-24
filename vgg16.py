@@ -5,7 +5,6 @@ Based on: http://www.cs.toronto.edu/~frossard/post/vgg16/
 
 import tensorflow as tf
 import numpy as np
-from tqdm import tqdm
 
 import model
 
@@ -34,10 +33,12 @@ class VGG16(model.Model):
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
-            for i, k in tqdm(enumerate(keys)):
+            print('Loading pretrained VGG16 weights...')
+            for i, k in enumerate(keys):
                 if i < 30:
                     #print(i, k, np.shape(weights[k]))
                     sess.run(self.parameters[i].assign(weights[k]))
+            print('Pretrained VGG16 weights loaded.')
 
     def get_logits(self):
         """
