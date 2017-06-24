@@ -29,7 +29,7 @@ def _parse_function(example_proto):
     image.set_shape([224 * 224 * 3])
     image_resized = tf.reshape(image, shape=[224, 224, 3])
     image_tofloat = tf.cast(image_resized, tf.float32)
-    preproc_label = tf.cast(parsed_features["label"], tf.float32), shape=[-1]
+    preproc_label = tf.cast(parsed_features["label"], tf.float32)
 
     return image_tofloat, preproc_label
 
