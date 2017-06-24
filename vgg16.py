@@ -18,11 +18,12 @@ class VGG16(model.Model):
         VGG16's constructor.
         Inputs:
             x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
+            y: Groundtruth labels (Float placeholder of scalars #[Batch size])
             learning_rate: Learning rate for training (Float)
-            trainable: Define if the VGG model should be fully retrained or not
+            trainable: Define if the VGG model should be fully retrained or not (Boolean)
             threshold: Threshold for output activations (Float)
-            weights_file: Path to model's weights file
-            sess: A Tensorflow session
+            weights_file: Path to model's weights file (String)
+            sess: A Tensorflow session (Tensorflow session)
         """
 
         super().__init__(x, y, learning_rate, threshold)
@@ -30,6 +31,7 @@ class VGG16(model.Model):
         self.trainable = trainable
         self.get_logits()
         self.infer()
+        #Pretrained weights load
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
@@ -43,10 +45,8 @@ class VGG16(model.Model):
     def get_logits(self):
         """
         Define the VGG16's computation graph.
-        Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
         Return:
-            The operation that computes logits.
+            logits: A tensor of floats corresponding to the computed logits (#[Batch size])
         """
 
         self.parameters = []

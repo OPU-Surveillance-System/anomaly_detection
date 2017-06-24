@@ -15,7 +15,7 @@ class Model:
         Model's constructor.
         Inputs:
             x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
+            y: Groundtruth labels (Float placeholder of scalars #[Batch size])
             learning_rate: Learning rate for training (Float)
             threshold: Threshold for output activations (Float)
         """
@@ -31,7 +31,7 @@ class Model:
         """
         Define the model's computation graph.
         Return:
-            logits: The operation that computes logits.
+            logits: A tensor of floats corresponding to the computed logits
 
         Should be redefined in a child class.
         """
@@ -43,10 +43,8 @@ class Model:
     def infer(self):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
-        Inputs:
-            logits: TODO
         Return:
-            inference: A boolean tensor of predictions #[Batch size]
+            inference: A boolean tensor of predictions (#[Batch size])
         """
 
         with tf.name_scope('infer'):
@@ -59,11 +57,8 @@ class Model:
     def get_cross_entropy(self):
         """
         Compute the cross entropy between the logits computed by the model and the groundtruth labels.
-        Inputs:
-            logits: TODO
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
-            cross_entropy: Scalar representing the cross_entropy #[1]
+            cross_entropy: Scalar representing the cross_entropy (#[1])
         """
 
         with tf.name_scope('cross_entropy'):
@@ -73,7 +68,9 @@ class Model:
 
     def get_loss_batch(self):
         """
-        TODO
+        Compute the loss according to the current batch of images and groundtruth labels.
+        Return:
+            loss_batch: A float scalar representing the model's loss according to the current batch of images (#[1])
         """
 
         with tf.name_scope('loss_batch'):
@@ -83,12 +80,9 @@ class Model:
 
     def count_correct_prediction(self):
         """
-        Compute the number of correct prediction of the model's logits according to the groundtruth labels.
-        Inputs:
-            prediction: Model's prediction (Float placeholder of images #[Batch size])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
+        Compute the number of correct prediction of the model's logits according to the current batch of images and groundtruth labels.
         Return:
-            accuracy: Scalar representing the accuracy of the model #[1]
+            correct_prediction_to_float: Scalar representing the number of model's correct prediction according to the current batch of images. (#[1])
         """
 
         with tf.name_scope('count_correct_prediction'):
@@ -100,22 +94,21 @@ class Model:
 
     def get_accuracy_batch(self):
         """
-        TODO
+        Compute the accuracy of the model according to the current batch of images and their groundtruth labels.
+        Return:
+            accuracy_batch: A float scalar representing the model's accuracy according to the current batch of images (#[1])
         """
 
         with tf.name_scope('accuracy_batch'):
-            accuracy_batch = tf.reduce_mean(self.correct_prediction_to_float, name='accuracy_batch')
+            self.accuracy_batch = tf.reduce_mean(self.correct_prediction_to_float, name='accuracy_batch')
 
-        return accuracy_batch
+        return self.accuracy_batch
 
     def auc(self):
         """
         Compute the Area Under the ROC Curve (AUC) of the model.
-        Inputs:
-            x: Model's inputs (Float placeholder of images #[Batch size, height, width, channels])
-            y: Groundtruth labels (Float placeholder of labels #[Batch size])
         Return:
-            auc: Scalar representing the AUC of the model #[1]
+            auc: Scalar representing the AUC of the model (#[1])
         """
 
         with tf.name_scope('auc'):
@@ -126,8 +119,6 @@ class Model:
     def train(self):
         """
         Define the model's training operation.
-        Inputs:
-            cross_entropy: cross entropy operation over a batch #[1]
         Return:
             train: The training operation
         """
