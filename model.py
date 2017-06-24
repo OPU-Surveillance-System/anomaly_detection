@@ -10,7 +10,7 @@ class Model:
     Model class' definition.
     """
 
-    def __init__(self, learning_rate, threshold = 0.5):
+    def __init__(self, x, y, learning_rate, threshold = 0.5):
         """
         Model's constructor.
         Inputs:
@@ -24,8 +24,10 @@ class Model:
         assert threshold >= 0, 'The threshold should be strictly positive or null'
         self.learning_rate = learning_rate
         self.threshold = threshold
+        self.inputs = x
+        self.groundtruth = y
 
-    def get_logits(self, x):
+    def get_logits(self):
         """
         Define the model's computation graph.
         Return:
@@ -38,7 +40,7 @@ class Model:
 
         return self.logits
 
-    def infer(self, x):
+    def infer(self):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
         Inputs:
@@ -48,13 +50,13 @@ class Model:
         """
 
         with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(self.get_logits(x), tf.float32), name='activations')
+            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
             reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
             self.inference = tf.greater_equal(activations, self.threshold, name='inference')
 
         return self.inference
 
-    def get_cross_entropy(self, x, y):
+    def get_cross_entropy(self):
         """
         Compute the cross entropy between the logits computed by the model and the groundtruth labels.
         Inputs:
@@ -65,21 +67,21 @@ class Model:
         """
 
         with tf.name_scope('cross_entropy'):
-            self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.get_logits(x), labels=y, name='x_entropy')
+            self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
 
         return self.cross_entropy
 
-    def get_loss_batch(self, x, y):
+    def get_loss_batch(self):
         """
         TODO
         """
 
         with tf.name_scope('loss_batch'):
-            self.loss_batch = tf.reduce_mean(self.get_cross_entropy(x, y), name='loss_batch')
+            self.loss_batch = tf.reduce_mean(self.cross_entropy, name='loss_batch')
 
         return self.loss_batch
 
-    def count_correct_prediction(self, x, y):
+    def count_correct_prediction(self):
         """
         Compute the number of correct prediction of the model's logits according to the groundtruth labels.
         Inputs:
@@ -90,23 +92,23 @@ class Model:
         """
 
         with tf.name_scope('count_correct_prediction'):
-            prediction_to_float = tf.cast(self.infer(x), dtype=tf.float32, name='inference_to_float')
-            correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
+            prediction_to_float = tf.cast(self.inference, dtype=tf.float32, name='inference_to_float')
+            correct_prediction = tf.equal(prediction_to_float, self.groundtruth, name='count_correct_prediction')
             self.correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
 
         return self.correct_prediction_to_float
 
-    def get_accuracy_batch(self, x, y):
+    def get_accuracy_batch(self):
         """
         TODO
         """
 
         with tf.name_scope('accuracy_batch'):
-            accuracy_batch = tf.reduce_mean(self.count_correct_prediction(x, y), name='accuracy_batch')
+            accuracy_batch = tf.reduce_mean(self.correct_prediction_to_float, name='accuracy_batch')
 
         return accuracy_batch
 
-    def auc(self, x, y):
+    def auc(self):
         """
         Compute the Area Under the ROC Curve (AUC) of the model.
         Inputs:
@@ -117,12 +119,11 @@ class Model:
         """
 
         with tf.name_scope('auc'):
-            inference = self.infer(x)
-            auc, update_op = tf.metrics.auc(y, inference, num_thresholds=200, curve='ROC', name='auc')
+            auc, update_op = tf.metrics.auc(self.groundtruth, self.inference, num_thresholds=200, curve='ROC', name='auc')
 
         return auc, update_op
 
-    def train(self, x, y):
+    def train(self):
         """
         Define the model's training operation.
         Inputs:
@@ -133,6 +134,6 @@ class Model:
 
         with tf.name_scope('training'):
             # loss = tf.reduce_mean(cross_entropy, name='loss')
-            train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.get_loss_batch(x, y))
+            train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
 
         return train

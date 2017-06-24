@@ -14,7 +14,7 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    def __init__(self, x, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
+    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
@@ -26,10 +26,10 @@ class VGG16(model.Model):
             sess: A Tensorflow session
         """
 
-        super().__init__(learning_rate, threshold)
+        super().__init__(x, y, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        self.logits = self.get_logits(x)
+        self.logits = self.get_logits()
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
@@ -38,7 +38,7 @@ class VGG16(model.Model):
                     #print(i, k, np.shape(weights[k]))
                     sess.run(self.parameters[i].assign(weights[k]))
 
-    def get_logits(self, x):
+    def get_logits(self):
         """
         Define the VGG16's computation graph.
         Inputs:
@@ -51,7 +51,7 @@ class VGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            images = tf.map_fn(lambda img: tf.image.per_image_standardization(img), x)
+            images = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
