@@ -5,6 +5,7 @@ Based on: http://www.cs.toronto.edu/~frossard/post/vgg16/
 
 import tensorflow as tf
 import numpy as np
+from tqdm import tqdm
 
 import model
 
@@ -28,13 +29,13 @@ class VGG16(model.Model):
         super().__init__(learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        self.logits = self.process(x)
+        self.logits = self.get_logits(x)
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
-            for i, k in enumerate(keys):
+            for i, k in tqdm(enumerate(keys)):
                 if i < 30:
-                    print(i, k, np.shape(weights[k]))
+                    #print(i, k, np.shape(weights[k]))
                     sess.run(self.parameters[i].assign(weights[k]))
 
     def get_logits(self, x):

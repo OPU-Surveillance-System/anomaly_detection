@@ -33,13 +33,12 @@ def main(args):
     image = tf.placeholder(tf.float32, [None, 224, 224, 3])
     label = tf.placeholder(tf.float32, [None])
     model = vgg16.VGG16(image, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    logits = model.get_logits(image)
-    cross_entropy = model.cross_entropy(logits, label)
-    loss_batch = model.loss_batch(cross_entropy)
-    prediction = model.infer(logits)
-    correct_prediction = model.count_correct_prediction(prediction, label)
-    accuracy_batch = model.accuracy_batch(correct_prediction)
-    train = model.train(loss_batch)
+    cross_entropy = model.cross_entropy(label)
+    infer = model.infer()
+    loss_batch = model.loss_batch()
+    correct_prediction = model.count_correct_prediction(label)
+    accuracy_batch = model.accuracy_batch()
+    train = model.train()
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
@@ -58,6 +57,7 @@ def main(args):
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
+    sess.graph.finalize()
 
     #Training loop
     batch_count = 0
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--vrecord', dest='valset', type=str, default='data/testset_list', help='Path to valset')
     parser.add_argument('--epochs', dest='epochs', type=int, default=100, help='Number of training epochs')
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
-    parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
+    parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=1, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
     args = parser.parse_args()

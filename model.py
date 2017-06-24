@@ -38,7 +38,7 @@ class Model:
 
         return self.logits
 
-    def infer(self, logits):
+    def infer(self):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
         Inputs:
@@ -48,13 +48,13 @@ class Model:
         """
 
         with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(logits, tf.float32), name='activations')
+            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
             reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
-            inference = tf.greater_equal(activations, self.threshold, name='inference')
+            self.inference = tf.greater_equal(activations, self.threshold, name='inference')
 
-        return inference
+        return self.inference
 
-    def cross_entropy(self, logits, y):
+    def cross_entropy(self, y):
         """
         Compute the cross entropy between the logits computed by the model and the groundtruth labels.
         Inputs:
@@ -65,21 +65,21 @@ class Model:
         """
 
         with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=y, name='x_entropy')
+            self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=y, name='x_entropy')
 
-        return cross_entropy
+        return self.cross_entropy
 
-    def loss_batch(self, cross_entropy):
+    def loss_batch(self):
         """
         TODO
         """
 
         with tf.name_scope('loss_batch'):
-            loss_batch = tf.reduce_mean(cross_entropy, name='loss_batch')
+            self.loss_batch = tf.reduce_mean(self.cross_entropy, name='loss_batch')
 
-        return loss_batch
+        return self.loss_batch
 
-    def count_correct_prediction(self, prediction, y):
+    def count_correct_prediction(self, y):
         """
         Compute the number of correct prediction of the model's logits according to the groundtruth labels.
         Inputs:
@@ -90,19 +90,19 @@ class Model:
         """
 
         with tf.name_scope('count_correct_prediction'):
-            prediction_to_float = tf.cast(prediction, dtype=tf.float32, name='inference_to_float')
+            prediction_to_float = tf.cast(self.inference, dtype=tf.float32, name='inference_to_float')
             correct_prediction = tf.equal(prediction_to_float, y, name='count_correct_prediction')
-            correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
+            self.correct_prediction_to_float = tf.cast(correct_prediction, dtype=tf.float32, name='correct_prediction_to_float')
 
-        return correct_prediction_to_float
+        return self.correct_prediction_to_float
 
-    def accuracy_batch(self, correct_prediction):
+    def accuracy_batch(self):
         """
         TODO
         """
 
         with tf.name_scope('accuracy_batch'):
-            accuracy_batch = tf.reduce_mean(correct_prediction, name='accuracy_batch')
+            accuracy_batch = tf.reduce_mean(self.correct_prediction_to_float, name='accuracy_batch')
 
         return accuracy_batch
 
@@ -122,7 +122,7 @@ class Model:
 
         return auc, update_op
 
-    def train(self, loss):
+    def train(self):
         """
         Define the model's training operation.
         Inputs:
@@ -133,6 +133,6 @@ class Model:
 
         with tf.name_scope('training'):
             # loss = tf.reduce_mean(cross_entropy, name='loss')
-            train = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
+            train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
 
         return train
