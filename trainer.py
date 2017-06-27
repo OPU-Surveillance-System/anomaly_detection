@@ -50,7 +50,7 @@ def main(args):
     iterator = dataset.make_initializable_iterator()
     image, label = iterator.get_next()
     #Instantiate session
-    sess = tf.InteractiveSession()
+    sess = tf.Session()
     #Instantiate model and define operations
     model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
