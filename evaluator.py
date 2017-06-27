@@ -5,6 +5,9 @@ import tensorflow as tf
 import scipy
 import argparse
 from sklearn.metrics import roc_curve, auc, confusion_matrix
+import matplotlib.pyplot as plt
+
+import vgg16
 
 def _parse_function(example_proto):
     """
@@ -39,28 +42,33 @@ def main(args):
     iterator = dataset.make_initializable_iterator()
     image, label = iterator.get_next()
     #Instantiate session
-    sess = tf.InteractiveSession()
+    sess = tf.Session()
     #Instantiate model and define operations
     model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold, weights_file=None, sess=None)
     logits = model.get_logits()
+    cross_entropy = model.get_cross_entropy()
+    loss_batch = model.get_loss_batch()
+    correct_prediction = model.count_correct_prediction()
+    accuracy_batch = model.get_accuracy_batch()
+    train = model.train()
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
     #Restore trained model
-    saver = tf.train.Saver()
-    saver.restore(sess, args.model_path)
-
+    #saver = tf.train.Saver()
+    #saver.restore(sess, args.model_path)
     #Evaluation loop
     testing_filenames = [args.test_records]
     sess.run(iterator.initializer, feed_dict={filenames: testing_filenames})
     step = 0
     model_responses = []
     groundtruths = []
+    print('Computing logits on the testset...')
     while True:
         try:
             detection, answer = sess.run([logits, label])
-            model_responses += detection
-            groundtruths += answer
+            model_responses += list(detection)
+            groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
@@ -81,7 +89,7 @@ def main(args):
     plt.ylabel('True Positive Rate')
     plt.title('ROC Curve')
     plt.legend(loc="lower right")
-    plt.savefig('roc.svg', format='svg')
+    plt.savefig(os.path.join(args.exp_out, 'roc.svg'), format='svg')
     return 0
 
 if __name__ == '__main__':
@@ -90,5 +98,6 @@ if __name__ == '__main__':
     parser.add_argument('--trecord', dest='test_records', type=str, default='data/test.tfrecords', help='Path to testset tfrecords')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
+    parser.add_argument('--model', dest='model_path', type=str, default='exp/serial/model.ckpt', help='Path to the trained model')
     args = parser.parse_args()
     main(args)
