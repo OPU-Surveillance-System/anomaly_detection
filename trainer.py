@@ -6,7 +6,6 @@ import os
 import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
-import matplotlib.pyplot as plt
 
 import vgg16
 
