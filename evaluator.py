@@ -46,18 +46,13 @@ def main(args):
     sess = tf.Session()
     #Instantiate model and define operations
     model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold, weights_file=None, sess=None)
-    logits = model.get_logits()
-    cross_entropy = model.get_cross_entropy()
-    loss_batch = model.get_loss_batch()
-    correct_prediction = model.count_correct_prediction()
-    accuracy_batch = model.get_accuracy_batch()
-    train = model.train()
+    inference = tf.cast(model.infer(), tf.float32)
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
     #Restore trained model
-    #saver = tf.train.Saver()
-    #saver.restore(sess, args.model_path)
+    saver = tf.train.Saver()
+    saver.restore(sess, args.model_path)
     #Evaluation loop
     testing_filenames = [args.test_records]
     sess.run(iterator.initializer, feed_dict={filenames: testing_filenames})
@@ -67,7 +62,7 @@ def main(args):
     print('Computing logits on the testset...')
     while True:
         try:
-            detection, answer = sess.run([logits, label])
+            detection, answer = sess.run([inference, label])
             model_responses += list(detection)
             groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
