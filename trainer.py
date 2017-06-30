@@ -52,7 +52,7 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    model, ni = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
     correct_prediction = model.count_correct_prediction()
@@ -86,8 +86,8 @@ def main(args):
         step = 0
         while True:
             try:
-                ce, logts, gts, t_loss, t_accuracy, _ = sess.run([cross_entropy, loss_batch, accuracy_batch, train])
-                print(ce, logts, gts)
+                norm, t_accuracy, _ = sess.run([ni, cross_entropy, loss_batch, accuracy_batch, train])
+                print(norm)
                 if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
