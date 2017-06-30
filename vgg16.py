@@ -53,13 +53,13 @@ class VGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            images = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
             with tf.name_scope('conv1_1') as scope:
                 kernel = tf.Variable(tf.truncated_normal([3, 3, 3, 64], dtype=tf.float32, stddev=1e-1), trainable=self.trainable, name='weights')
-                conv = tf.nn.conv2d(images, kernel, [1, 1, 1, 1], padding='SAME')
+                conv = tf.nn.conv2d(normalized_inputs, kernel, [1, 1, 1, 1], padding='SAME')
                 biases = tf.Variable(tf.constant(0.0, shape=[64], dtype=tf.float32), trainable=self.trainable, name='biases')
                 out = tf.nn.bias_add(conv, biases)
                 self.conv1_1 = tf.nn.relu(out, name=scope)
@@ -214,4 +214,4 @@ class VGG16(model.Model):
                 self.parameters += [fc3w, fc3b]
                 self.logits = tf.reshape(self.fc3l, [-1])
 
-        return self.logits
+        return self.logits, normalized_inputs
