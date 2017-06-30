@@ -64,7 +64,7 @@ class Model:
         with tf.name_scope('cross_entropy'):
             self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
 
-        return self.cross_entropy
+        return self.cross_entropy, self.logits, self.groundtruth
 
     def get_loss_batch(self):
         """

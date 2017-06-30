@@ -86,7 +86,8 @@ def main(args):
         step = 0
         while True:
             try:
-                t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train])
+                ce, logts, gts, t_loss, t_accuracy, _ = sess.run([cross_entropy, loss_batch, accuracy_batch, train])
+                print(ce, logts, gts)
                 if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
