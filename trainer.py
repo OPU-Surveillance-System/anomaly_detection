@@ -80,6 +80,27 @@ def main(args):
     #Training loop
     batch_count = 0
     for epoch in range(args.epochs):
+        #Validation
+        validation_filenames = [args.val_records]
+        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
+        v_loss = 0
+        v_accuracy = 0
+        count = 0
+        while True:
+            try:
+                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction])
+                v_loss += sum(tmp_xentropy)
+                v_accuracy += sum(tmp_correct_prediction)
+                count += len(tmp_xentropy)
+            except tf.errors.OutOfRangeError:
+                break
+        v_loss /= count
+        v_accuracy /= count
+        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
+        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
+        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
+        validation_writer.add_summary(validation_str, epoch)
+        validation_writer.flush()
         #Training
         training_filenames = [args.train_records]
         sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
@@ -103,27 +124,6 @@ def main(args):
         if epoch % args.save_epoch == 0:
             save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
             print('Model saved in file: %s'%(save_path))
-        #Validation
-        validation_filenames = [args.val_records]
-        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
-        v_loss = 0
-        v_accuracy = 0
-        count = 0
-        while True:
-            try:
-                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction])
-                v_loss += sum(tmp_xentropy)
-                v_accuracy += sum(tmp_correct_prediction)
-                count += len(tmp_xentropy)
-            except tf.errors.OutOfRangeError:
-                break
-        v_loss /= count
-        v_accuracy /= count
-        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
-        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
-        validation_writer.add_summary(validation_str, epoch)
-        validation_writer.flush()
     return 0
 
 if __name__ == '__main__':
