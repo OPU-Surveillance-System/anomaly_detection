@@ -83,13 +83,14 @@ def main(args):
     for epoch in range(args.epochs):
         #Validation
         validation_filenames = [args.val_records]
-        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames, is_training: False})
+        feed_dict = {is_training: False}
+        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
         v_loss = 0
         v_accuracy = 0
         count = 0
         while True:
             try:
-                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction])
+                tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction], feed_dict=feed_dict)
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
@@ -104,14 +105,15 @@ def main(args):
         validation_writer.flush()
         #Training
         training_filenames = [args.train_records]
-        sess.run(iterator.initializer, feed_dict={filenames: training_filenames, is_training: True})
+        feed_dict = {is_training: True}
+        sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
             try:
-                t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train])
+                t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
                 if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, is_training: True}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
