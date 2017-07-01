@@ -124,7 +124,8 @@ class Model:
         """
 
         with tf.name_scope('training'):
-            # loss = tf.reduce_mean(cross_entropy, name='loss')
-            train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
+            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+            with tf.control_dependencies(update_ops):
+                train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
 
         return train
