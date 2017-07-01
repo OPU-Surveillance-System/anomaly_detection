@@ -50,7 +50,6 @@ class Model:
 
             return self.reshaped_activations
 
-
     def infer(self):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
@@ -135,6 +134,11 @@ class Model:
         with tf.name_scope('training'):
             update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_ops):
-                train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
+                #train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
+                global_step = tf.Variable(0, trainable=False)
+                starter_learning_rate = self.learning_rate
+                learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step, 100000, 0.96, staircase=True)
+                # Passing global_step to minimize() will increment it at each step.
+                self.train = tf.train.GradientDescentOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
 
-        return train
+        return self.train

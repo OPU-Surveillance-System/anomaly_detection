@@ -90,7 +90,7 @@ def main(args):
             try:
                 t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
                 if step % args.summary_step == 0:
-                    print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
+                    print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.bs, t_loss, t_accuracy))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
