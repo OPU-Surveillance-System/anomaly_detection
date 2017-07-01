@@ -105,15 +105,15 @@ def main(args):
         validation_writer.flush()
         #Training
         training_filenames = [args.train_records]
-        feed_dict = {is_training: True}
         sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
+            feed_dict = {is_training: True}
             try:
                 t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
                 if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * 20, t_loss, t_accuracy))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, is_training: True}
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
