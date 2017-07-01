@@ -45,7 +45,7 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold, weights_file=None, sess=None)
+    model = vgg16.VGG16(image, label, 0.1, False, True, threshold=args.threshold, weights_file=None, sess=None)
     probs = model.get_probs()
     #Init variables
     sess.run(tf.global_variables_initializer())
