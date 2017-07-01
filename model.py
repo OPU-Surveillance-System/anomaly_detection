@@ -40,6 +40,17 @@ class Model:
 
         return self.logits
 
+    def get_probs(self):
+        """
+        """
+
+        with tf.name_scope('sigmoid'):
+            self.activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
+            self.reshaped_activations = tf.reshape(self.activations, shape=[-1], name='fix_shape_activations')
+
+            return self.reshaped_activations
+
+
     def infer(self):
         """
         Classify the given inputs as normal/abnormal according to resulting logits.
@@ -48,8 +59,6 @@ class Model:
         """
 
         with tf.name_scope('infer'):
-            activations = tf.sigmoid(tf.cast(self.logits, tf.float32), name='activations')
-            reshaped_activations = tf.reshape(activations, shape=[-1], name='fix_shape_activations')
             self.inference = tf.greater_equal(activations, self.threshold, name='inference')
 
         return self.inference

@@ -46,7 +46,7 @@ def main(args):
     sess = tf.Session()
     #Instantiate model and define operations
     model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold, weights_file=None, sess=None)
-    inference = tf.cast(model.infer(), tf.float32)
+    probs = model.get_probs()
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
@@ -62,7 +62,7 @@ def main(args):
     print('Computing logits on the testset...')
     while True:
         try:
-            detection, answer = sess.run([inference, label])
+            detection, answer = sess.run([probs, label])
             model_responses += list(detection)
             groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
