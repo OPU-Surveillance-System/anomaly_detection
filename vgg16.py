@@ -13,7 +13,8 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    def __init__(self, x, y, learning_rate, trainable, is_training, threshold = 0.5, weights_file=None, sess=None):
+    #def __init__(self, x, y, learning_rate, trainable, is_training, threshold = 0.5, weights_file=None, sess=None):
+    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
@@ -29,7 +30,7 @@ class VGG16(model.Model):
         super().__init__(x, y, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        self.is_training = is_training
+        #self.is_training = is_training
         self.get_logits()
         self.get_probs()
         self.infer()
@@ -212,8 +213,8 @@ class VGG16(model.Model):
             with tf.name_scope('fc3') as scope:
                 fc3w = tf.Variable(tf.truncated_normal([4096, 1], dtype=tf.float32, stddev=1e-1), trainable=True, name='weights')
                 fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
-                batch_norm = tf.contrib.layers.batch_norm(self.fc2, is_training=self.is_training, updates_collections=None)
-                self.fc3l = tf.nn.bias_add(tf.matmul(batch_norm, fc3w), fc3b)
+                #batch_norm = tf.contrib.layers.batch_norm(self.fc2, is_training=self.is_training, updates_collections=None)
+                self.fc3l = tf.nn.bias_add(tf.matmul(self.fc2, fc3w), fc3b)
                 self.parameters += [fc3w, fc3b]
                 self.logits = tf.reshape(self.fc3l, [-1])
 
