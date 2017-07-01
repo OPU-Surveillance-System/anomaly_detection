@@ -63,6 +63,7 @@ def main(args):
     while True:
         try:
             detection, answer = sess.run([probs, label])
+            print(detection)
             model_responses += list(detection)
             groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
