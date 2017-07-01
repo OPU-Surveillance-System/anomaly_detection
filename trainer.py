@@ -62,10 +62,12 @@ def main(args):
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
+    pl_lr = tf.placeholder(tf.float32, name='learning_rate_placeholder')
     with tf.variable_scope("train_set"):
         t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         t_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary])
+        t_lr_summary = tf.summary.scalar(tensor=pl_lr, name='learning_rate')
+        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary, t_lr_summary])
     with tf.variable_scope("validation_set"):
         v_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
@@ -88,10 +90,10 @@ def main(args):
         while True:
             feed_dict = {is_training: True}
             try:
-                t_loss, t_accuracy, _ = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
+                t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train], feed_dict=feed_dict)
                 if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy}
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
