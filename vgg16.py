@@ -56,7 +56,9 @@ class VGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            #normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            normalized_inputs = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+            images = self.inputs - mean
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
