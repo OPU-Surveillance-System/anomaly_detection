@@ -31,6 +31,7 @@ class VGG16(model.Model):
         self.trainable = trainable
         self.is_training = is_training
         self.get_logits()
+        self.get_probs()
         self.infer()
         #Pretrained weights load
         if weights_file is not None and sess is not None:
