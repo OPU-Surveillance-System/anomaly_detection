@@ -59,7 +59,7 @@ class Model:
         """
 
         with tf.name_scope('infer'):
-            self.inference = tf.greater_equal(activations, self.threshold, name='inference')
+            self.inference = tf.greater_equal(self.reshaped_activations, self.threshold, name='inference')
 
         return self.inference
 
