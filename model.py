@@ -141,4 +141,4 @@ class Model:
                 # Passing global_step to minimize() will increment it at each step.
                 self.train = tf.train.GradientDescentOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
 
-        return self.train
+        return self.train, learning_rate
