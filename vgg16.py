@@ -13,7 +13,7 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
+    def __init__(self, x, y, learning_rate, trainable, is_training, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
@@ -29,6 +29,7 @@ class VGG16(model.Model):
         super().__init__(x, y, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
+        self.is_training = is_training
         self.get_logits()
         self.infer()
         #Pretrained weights load

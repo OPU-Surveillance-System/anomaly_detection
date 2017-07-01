@@ -52,7 +52,8 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    is_training = tf.placeholder(tf.bool, name='pl_istraining')
+    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, is_training, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
     correct_prediction = model.count_correct_prediction()
@@ -82,7 +83,7 @@ def main(args):
     for epoch in range(args.epochs):
         #Validation
         validation_filenames = [args.val_records]
-        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
+        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames, is_training: False})
         v_loss = 0
         v_accuracy = 0
         count = 0
@@ -103,7 +104,7 @@ def main(args):
         validation_writer.flush()
         #Training
         training_filenames = [args.train_records]
-        sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
+        sess.run(iterator.initializer, feed_dict={filenames: training_filenames, is_training: True})
         step = 0
         while True:
             try:
