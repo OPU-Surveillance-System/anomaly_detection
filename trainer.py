@@ -93,7 +93,7 @@ def main(args):
             try:
                 #t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train, learning_rate], feed_dict=feed_dict)
                 t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train, learning_rate])
-                if step % args.summary_step == 0 and (step != 0 and epoch !=0):
+                if step % args.summary_step == 0 and epoch != 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
     parser.add_argument('--trecord', dest='train_records', type=str, default='data/train.tfrecords', help='Path to trainset tfrecords')
-    parser.add_argument('--vrecord', dest='val_records', type=str, default='data/test.tfrecords', help='Path to valset tfrecords')
+    parser.add_argument('--vrecord', dest='val_records', type=str, default='data/val.tfrecords', help='Path to valset tfrecords')
     parser.add_argument('--epochs', dest='epochs', type=int, default=200, help='Number of training epochs')
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
