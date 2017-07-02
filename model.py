@@ -140,6 +140,6 @@ class Model:
             learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step, 500, 0.96, staircase=True)
             # Passing global_step to minimize() will increment it at each step.
             #self.train = tf.train.GradientDescentOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
-            self.train = tf.train.AdamOptimizer(learning_rate).minimize(self.loss_batch)
+            self.train = tf.train.AdamOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
 
         return self.train, learning_rate
