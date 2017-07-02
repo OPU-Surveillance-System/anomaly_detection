@@ -92,9 +92,10 @@ def main(args):
             #feed_dict = {is_training: True}
             try:
                 #t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train, learning_rate], feed_dict=feed_dict)
-                t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train, learning_rate])
+                t_loss, t_accuracy, _, lr, logits = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits])
                 if step % args.summary_step == 0 and epoch != 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
+                    print(logits[0:10])
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
