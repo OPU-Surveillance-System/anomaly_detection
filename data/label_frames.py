@@ -17,9 +17,9 @@ def main(args):
         "talking": 0,
         "stealing": 1,
         "cycling": 0,
-        "loitering": 1,
+        "loitering": 0,
         "running": 0,
-        "driving": 1,
+        "driving": 0,
         "parking": 0,
         "parked": 0,
         "moving": 0,
@@ -27,7 +27,9 @@ def main(args):
         "falling": 1,
         "repairing": 1,
         "dropping_off": 1,
-        "throwing_away": 1
+        "throwing_away": 1,
+        "riding": 0,
+        "intimidating": 1
     }
 
     misc = {
@@ -73,7 +75,7 @@ def main(args):
                     label = sum([anomalies[elt] for elt in data[frame]])
                     if label > 1:
                         label = 1
-                    elif len(data[frame]) == 0:
+                    if len(data[frame]) == 0:
                         data[frame] = ['nothing']
                     f.write('%s/%sset/%s_%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
 
