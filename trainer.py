@@ -85,7 +85,7 @@ def main(args):
     batch_count = 0
     for epoch in range(args.epochs):
         #Training
-        training_filenames = [args.train_records]
+        training_filenames = args.train_records.split(',')
         sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
     parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
-    parser.add_argument('--trecord', dest='train_records', type=str, default='data/train.tfrecords', help='Path to trainset tfrecords')
+    parser.add_argument('--trecord', dest='train_records', type=str, default='data/train.tfrecords,data/fliptrain.tfrecords', help='Path to trainset tfrecords')
     parser.add_argument('--vrecord', dest='val_records', type=str, default='data/val.tfrecords', help='Path to valset tfrecords')
     parser.add_argument('--epochs', dest='epochs', type=int, default=200, help='Number of training epochs')
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
