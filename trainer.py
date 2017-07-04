@@ -52,9 +52,9 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    #is_training = tf.placeholder(tf.bool, name='pl_istraining')
-    #model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, is_training, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
-    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    is_training = tf.placeholder(tf.bool, name='pl_istraining')
+    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, is_training, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    #model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
     correct_prediction = model.count_correct_prediction()
@@ -89,10 +89,10 @@ def main(args):
         sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
-            #feed_dict = {is_training: True}
+            feed_dict = {is_training: True}
             try:
-                #t_loss, t_accuracy, _, lr = sess.run([loss_batch, accuracy_batch, train, learning_rate], feed_dict=feed_dict)
-                t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label])
+                t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label], feed_dict=feed_dict)
+                #t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label])
                 if step % args.summary_step == 0 and epoch != 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
                     print(logits[0:10], gt[0:10])
@@ -111,15 +111,15 @@ def main(args):
             print('Model saved in file: %s'%(save_path))
         #Validation
         validation_filenames = [args.val_records]
-        #feed_dict = {is_training: False}
+        feed_dict = {is_training: False}
         sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
         v_loss = 0
         v_accuracy = 0
         count = 0
         while True:
             try:
-                #tmp_xentropy, tmp_correct_prediction = sess.run([cross_entropy, correct_prediction], feed_dict=feed_dict)
-                tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label])
+                tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
+                #tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label])
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)

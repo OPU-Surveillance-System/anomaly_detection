@@ -13,8 +13,8 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    #def __init__(self, x, y, learning_rate, trainable, is_training, threshold = 0.5, weights_file=None, sess=None):
-    def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
+    def __init__(self, x, y, learning_rate, trainable, is_training, threshold = 0.5, weights_file=None, sess=None):
+    #def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
         Inputs:
@@ -30,7 +30,7 @@ class VGG16(model.Model):
         super().__init__(x, y, learning_rate, threshold)
         #VGG construction
         self.trainable = trainable
-        #self.is_training = is_training
+        self.is_training = is_training
         self.get_logits()
         self.get_probs()
         self.infer()
@@ -201,7 +201,7 @@ class VGG16(model.Model):
                 pool5_flat = tf.reshape(self.pool5, [-1, shape])
                 fc1l = tf.nn.bias_add(tf.matmul(pool5_flat, fc1w), fc1b)
                 self.fc1 = tf.nn.relu(fc1l)
-                dropedfc1 = tf.nn.dropout(self.fc1, 0.5)
+                dropedfc1 = tf.layers.dropout(self.fc1, rate=0.5, training=self.is_training)
                 self.parameters += [fc1w, fc1b]
 
             # fc2 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 4096]
@@ -210,7 +210,7 @@ class VGG16(model.Model):
                 fc2b = tf.Variable(tf.constant(1.0, shape=[4096], dtype=tf.float32), trainable=self.trainable, name='biases')
                 fc2l = tf.nn.bias_add(tf.matmul(dropedfc1, fc2w), fc2b)
                 self.fc2 = tf.nn.relu(fc2l)
-                dropedfc2 = tf.nn.dropout(self.fc2, 0.5)
+                dropedfc2 = tf.layers.dropout(self.fc2, rate=0.5, training=self.is_training)
                 self.parameters += [fc2w, fc2b]
 
             # fc3 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 1]
