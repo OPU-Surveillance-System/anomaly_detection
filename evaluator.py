@@ -63,12 +63,13 @@ def main(args):
     while True:
         try:
             detection, answer = sess.run([probs, label])
-            print(detection)
+            #print(detection)
             model_responses += list(detection)
             groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
+    print(sum(groundtruths))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
