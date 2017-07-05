@@ -14,6 +14,7 @@ def main(args):
                 to_remove.append(l)
         new = list(content)
         for r in to_remove:
+            print('removing %s...'%(r))
             new.remove(r)
         with open('%sset_labels'%(s), 'w') as f:
             for n in new:
@@ -26,6 +27,6 @@ if __name__ == '__main__':
     parser.add_argument('--format', dest='format', default='png', help='Videos format')
     parser.add_argument('--frames', dest='frames_path', default='MiniDrone_frames', help='Path to the directory used to store the resulting frames')
     parser.add_argument('--resize', dest='resize', default='224,224', help='Specify the size at which the frames should be resized (format: heigt,width)')
-    parser.add_argument('--subset', dest='subset', default='train,test', help='Subsets for the dataset to be divided in (format: subset1,subset2,...,subsetn)')
+    parser.add_argument('--subset', dest='subset', default='train,val,test', help='Subsets for the dataset to be divided in (format: subset1,subset2,...,subsetn)')
     args = parser.parse_args()
     main(args)

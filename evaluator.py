@@ -63,10 +63,9 @@ def main(args):
     while True:
         try:
             detection, answer = sess.run([probs, label])
-            #print(detection)
+            print(detection)
             model_responses += list(detection)
             groundtruths += list(answer)
-            print(len(groundtruths))
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
