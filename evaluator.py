@@ -70,8 +70,7 @@ def main(args):
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
-    print(sum(groundtruths))
-    print(len(groundtruths))
+    print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
