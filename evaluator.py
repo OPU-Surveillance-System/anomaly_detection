@@ -70,6 +70,7 @@ def main(args):
             print('Evaluation complete')
             break
     print(sum(groundtruths))
+    print(len(groundtruths))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
