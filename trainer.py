@@ -120,6 +120,7 @@ def main(args):
             try:
                 tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
                 #tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label])
+                print(logits)
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
@@ -128,7 +129,7 @@ def main(args):
         v_loss /= count
         v_accuracy /= count
         print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        print(logits[0:10], gt[0:10])
+        #print(logits[0:10], gt[0:10])
         feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
