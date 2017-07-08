@@ -201,16 +201,16 @@ class VGG16(model.Model):
                 pool5_flat = tf.reshape(self.pool5, [-1, shape])
                 fc1l = tf.nn.bias_add(tf.matmul(pool5_flat, fc1w), fc1b)
                 self.fc1 = tf.nn.relu(fc1l)
-                dropedfc1 = tf.contrib.layers.dropout(self.fc1, keep_prob=0.7, is_training=self.is_training)
+                #dropedfc1 = tf.contrib.layers.dropout(self.fc1, keep_prob=0.7, is_training=self.is_training)
                 self.parameters += [fc1w, fc1b]
 
             # fc2 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 4096]
             with tf.name_scope('fc2') as scope:
                 fc2w = tf.Variable(tf.truncated_normal([4096, 4096], dtype=tf.float32, stddev=1e-1),trainable=self.trainable, name='weights')
                 fc2b = tf.Variable(tf.constant(1.0, shape=[4096], dtype=tf.float32), trainable=self.trainable, name='biases')
-                fc2l = tf.nn.bias_add(tf.matmul(dropedfc1, fc2w), fc2b)
+                fc2l = tf.nn.bias_add(tf.matmul(self.fc1, fc2w), fc2b)
                 self.fc2 = tf.nn.relu(fc2l)
-                dropedfc2 = tf.contrib.layers.dropout(self.fc2, keep_prob=0.7, is_training=self.is_training)
+                #dropedfc2 = tf.contrib.layers.dropout(self.fc2, keep_prob=0.7, is_training=self.is_training)
                 self.parameters += [fc2w, fc2b]
 
             # fc3 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 1]
@@ -218,7 +218,7 @@ class VGG16(model.Model):
                 fc3w = tf.Variable(tf.truncated_normal([4096, 1], dtype=tf.float32, stddev=1e-1), trainable=True, name='weights')
                 fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
                 #batch_norm = tf.contrib.layers.batch_norm(self.fc2, is_training=self.is_training, updates_collections=None)
-                self.fc3l = tf.nn.bias_add(tf.matmul(dropedfc2, fc3w), fc3b)
+                self.fc3l = tf.nn.bias_add(tf.matmul(self.fc2, fc3w), fc3b)
                 self.parameters += [fc3w, fc3b]
                 self.logits = tf.reshape(self.fc3l, [-1])
 
