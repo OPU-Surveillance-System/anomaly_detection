@@ -35,6 +35,7 @@ class VGG16(model.Model):
         self.get_probs()
         self.infer()
         #Pretrained weights load
+        weights_file = None
         if weights_file is not None and sess is not None:
             weights = np.load(weights_file)
             keys = sorted(weights.keys())
