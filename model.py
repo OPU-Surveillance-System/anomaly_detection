@@ -71,14 +71,7 @@ class Model:
 
         with tf.name_scope('cross_entropy'):
             ratio = 0.58684
-            class_weight = tf.constant([[ratio, 1.0 - ratio]])
-            print("W", class_weight)
-            print("GT", self.groundtruth)
-            weight_per_label = tf.transpose(tf.matmul(tf.reshape(self.groundtruth, [-1, 1]), tf.transpose(class_weight))) #shape [1, batch_size]
-            print("WL", weight_per_label)
-            print("L", self.logits)
-            self.cross_entropy = tf.mul(weight_per_label, tf.nn.sigmoid_cross_entropy_with_logits(self.logits, self.groundtruth, name="x_entropy"))
-            print("X", self.cross_entropy)
+            self.cross_entropy = tf.nn.weighted_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, pos_weight=ratio, name='x_entropy')
             #self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
 
         return self.cross_entropy
