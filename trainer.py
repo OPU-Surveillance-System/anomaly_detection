@@ -60,6 +60,7 @@ def main(args):
     correct_prediction = model.count_correct_prediction()
     accuracy_batch = model.get_accuracy_batch()
     train, learning_rate = model.train()
+    probs = model.get_probs()
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
@@ -93,11 +94,11 @@ def main(args):
         while True:
             feed_dict = {is_training: True}
             try:
-                t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label], feed_dict=feed_dict)
+                t_loss, t_accuracy, _, lr, logits, gt, det = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label, probs], feed_dict=feed_dict)
                 #t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label])
                 if step % args.summary_step == 0 and epoch != 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
-                    print(logits[0:10], gt[0:10], sum(gt))
+                    print(logits[0:10], gt[0:10], sum(gt), sum(det))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
