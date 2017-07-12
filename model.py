@@ -77,7 +77,7 @@ class Model:
             weight_per_label = tf.transpose(tf.matmul(self.groundtruth, tf.transpose(class_weight))) #shape [1, batch_size]
             print("WL", weight_per_label)
             print("L", self.logits)
-            self.cross_entropy = tf.mul(weight_per_label, tf.nn.sigmoid_cross_entropy_with_logits(self.logits, self.groundtruth, name="x_entropy")
+            self.cross_entropy = tf.mul(weight_per_label, tf.nn.sigmoid_cross_entropy_with_logits(self.logits, self.groundtruth, name="x_entropy"))
             print("X", self.cross_entropy)
             #self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
 
