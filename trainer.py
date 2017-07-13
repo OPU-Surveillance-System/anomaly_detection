@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
+import numpy as np
 
 import vgg16
 
@@ -132,6 +133,7 @@ def main(args):
                     os.makedirs('verif/%d'%(b))
                 element = 0
                 tupni = np.transpose(tupni, (0, 3, 1, 2))
+                print(tupni.shape)
                 for elt in tupni:
                     misc.imsave('verif/%d/%d_%d.png'%(b, element, 1), elt[0])
                     misc.imsave('verif/%d/%d_%d.png'%(b, element, 2), elt[1])
