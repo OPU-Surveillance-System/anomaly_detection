@@ -123,10 +123,6 @@ def main(args):
             try:
                 tmp_xentropy, tmp_correct_prediction, logits, gt= sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
                 print(logits, gt)
-                if not os.path.exists('verif'):
-                    os.makedirs('verif')
-                if not os.path.exists('verif/%d'%(b)):
-                    os.makedirs('verif/%d'%(b))
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
