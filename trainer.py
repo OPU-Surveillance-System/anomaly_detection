@@ -6,6 +6,7 @@ import os
 import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
+from scipy import misc
 
 import vgg16
 
@@ -119,11 +120,22 @@ def main(args):
         v_loss = 0
         v_accuracy = 0
         count = 0
+        b = 0
         while True:
             try:
-                tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
-                #tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label])
-                print(logits)
+                b +=1
+                tmp_xentropy, tmp_correct_prediction, logits, gt, tupni = sess.run([cross_entropy, correct_prediction, model.logits, label, image], feed_dict=feed_dict)
+                print(logits, gt)
+                if not os.path.exists('verif'):
+                    os.makedirs('verif')
+                if not os.path.exists('verif/%d'%(b)):
+                    os.makedirs('verif/%d'%(b))
+                element = 0
+                for elt in tpni:
+                    element += 1
+                    misc.imsave('verif/%d/%d_%d'%(b, element, 1), elt[0])
+                    misc.imsave('verif/%d/%d_%d'%(b, element, 2), elt[1])
+                    misc.imsave('verif/%d/%d_%d'%(b, element, 3), elt[2])
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
@@ -132,7 +144,6 @@ def main(args):
         v_loss /= count
         v_accuracy /= count
         print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        #print(logits[0:10], gt[0:10])
         feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
