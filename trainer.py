@@ -7,7 +7,6 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
-import numpy as np
 
 import vgg16
 
@@ -90,30 +89,29 @@ def main(args):
     batch_count = 0
     for epoch in range(args.epochs):
         #Training
-        # training_filenames = args.train_records.split(',')
-        # sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
-        # step = 0
-        # while True:
-        #     feed_dict = {is_training: True}
-        #     try:
-        #         t_loss, t_accuracy, _, lr, logits, gt, det = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label, probs], feed_dict=feed_dict)
-        #         #t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label])
-        #         if step % args.summary_step == 0 and epoch != 0:
-        #             print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
-        #             print(logits[0:10], gt[0:10], sum(gt), sum(det))
-        #             feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
-        #             train_str = sess.run(t_summaries, feed_dict=feed_dict)
-        #             train_writer.add_summary(train_str, batch_count)
-        #             train_writer.flush()
-        #         step += 1
-        #         batch_count += 1
-        #     except tf.errors.OutOfRangeError:
-        #         print('Epoch %d complete'%(epoch))
-        #         break
-        # #Save model
-        # if epoch % args.save_epoch == 0:
-        #     save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
-        #     print('Model saved in file: %s'%(save_path))
+        training_filenames = args.train_records.split(',')
+        sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
+        step = 0
+        while True:
+            feed_dict = {is_training: True}
+            try:
+                t_loss, t_accuracy, _, lr, logits, gt, det = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label, probs], feed_dict=feed_dict)
+                if step % args.summary_step == 0 and epoch != 0:
+                    print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
+                    print(logits[0:10], gt[0:10], sum(gt), sum(det))
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
+                    train_str = sess.run(t_summaries, feed_dict=feed_dict)
+                    train_writer.add_summary(train_str, batch_count)
+                    train_writer.flush()
+                step += 1
+                batch_count += 1
+            except tf.errors.OutOfRangeError:
+                print('Epoch %d complete'%(epoch))
+                break
+        #Save model
+        if epoch % args.save_epoch == 0:
+            save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
+            print('Model saved in file: %s'%(save_path))
         #Validation
         validation_filenames = [args.val_records]
         feed_dict = {is_training: False}
@@ -121,23 +119,14 @@ def main(args):
         v_loss = 0
         v_accuracy = 0
         count = 0
-        b = 0
         while True:
             try:
-                b +=1
-                tmp_xentropy, tmp_correct_prediction, logits, gt, tupni = sess.run([cross_entropy, correct_prediction, model.logits, label, image], feed_dict=feed_dict)
+                tmp_xentropy, tmp_correct_prediction, logits, gt= sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
                 print(logits, gt)
                 if not os.path.exists('verif'):
                     os.makedirs('verif')
                 if not os.path.exists('verif/%d'%(b)):
                     os.makedirs('verif/%d'%(b))
-                element = 0
-                tupni = np.transpose(tupni, (0, 3, 1, 2))
-                print(tupni.shape)
-                for elt in tupni:
-                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 1), elt[0])
-                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 2), elt[1])
-                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 3), elt[2])
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
