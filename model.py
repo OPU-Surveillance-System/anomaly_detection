@@ -70,9 +70,9 @@ class Model:
         """
 
         with tf.name_scope('cross_entropy'):
-            ratio = 0.58684
-            self.cross_entropy = tf.nn.weighted_cross_entropy_with_logits(logits=self.logits, targets=self.groundtruth, pos_weight=ratio, name='x_entropy')
-            #self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
+            #ratio = 0.58684
+            #self.cross_entropy = tf.nn.weighted_cross_entropy_with_logits(logits=self.logits, targets=self.groundtruth, pos_weight=ratio, name='x_entropy')
+            self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=self.logits, labels=self.groundtruth, name='x_entropy')
 
         return self.cross_entropy
 
