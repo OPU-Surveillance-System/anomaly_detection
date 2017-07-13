@@ -131,7 +131,7 @@ def main(args):
                 if not os.path.exists('verif/%d'%(b)):
                     os.makedirs('verif/%d'%(b))
                 element = 0
-                for elt in tpni:
+                for elt in tupni:
                     element += 1
                     misc.imsave('verif/%d/%d_%d'%(b, element, 1), elt[0])
                     misc.imsave('verif/%d/%d_%d'%(b, element, 2), elt[1])
