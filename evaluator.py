@@ -94,7 +94,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
-    parser.add_argument('--trecord', dest='test_records', type=str, default='data/test.tfrecords', help='Path to testset tfrecords')
+    parser.add_argument('--trecord', dest='test_records', type=str, default='data/test.tfrecord', help='Path to testset tfrecords')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
     parser.add_argument('--model', dest='model_path', type=str, default='exp/serial/model.ckpt', help='Path to the trained model')
