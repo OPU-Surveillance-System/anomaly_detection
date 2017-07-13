@@ -16,9 +16,9 @@ def main(args):
         "attacking": 1,
         "talking": 0,
         "stealing": 1,
-        "cycling": 0,
-        "loitering": 0,
-        "running": 0,
+        "cycling": 1,
+        "loitering": 1,
+        "running": 1,
         "driving": 0,
         "parking": 0,
         "parked": 0,
@@ -77,7 +77,7 @@ def main(args):
                         label = 1
                     if len(data[frame]) == 0:
                         data[frame] = ['nothing']
-                    f.write('%s/%sset/%s_%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
+                    f.write('%s/%sset/%s-%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset labeler')

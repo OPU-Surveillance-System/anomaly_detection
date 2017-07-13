@@ -1,5 +1,5 @@
 """
-Save data and labels into tfrecords files.
+Save specified data and their label into tfrecord files.
 """
 
 import argparse
@@ -16,42 +16,60 @@ def _bytes_feature(value):
   return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 def main(args):
-    subsets = args.subset.split(',')
-    sets = [[p + '/' + frame for p, n, f in os.walk(args.dataset) for frame in f if s in p and args.format in frame] for s in subsets]
-    for s in tqdm(range(len(sets))):
-        setname = subsets[s]
-        if subsets[s] != 'train':
-            frames = [misc.imread(f) for f in sets[s]]
-            writer = tf.python_io.TFRecordWriter('%s.tfrecords'%(setname))
+    #Create tfrecord writer
+    writer = tf.python_io.TFRecordWriter('%s.tfrecord'%(args.record_name))
+    #Parse dataset summary (file listing images and their label)
+    with open(args.set_summary, 'r') as f:
+        summary = f.read()
+    summary = summary.split('\n')[:-1]
+    summary = [l.split('\t') for l in summary]
+    print('Group frames from the same video together')
+    video = summary[0][0].split('-')[0]
+    group = [summary[0]]
+    tmp = []
+    for s in summary[1:]:
+        if s[0].split('-')[0] == video and s not in group:
+            group.append(s)
         else:
-            writer = tf.python_io.TFRecordWriter('%s%s.tfrecords'%(args.name, setname))
-            if args.data_modification == None:
-                frames = [misc.imread(f) for f in sets[s]]
-            elif args.data_modification == 'flip':
-                frames = [np.fliplr(misc.imread(f)) for f in sets[s]]
-        frames = np.array(frames)
-        with open('%sset_labels'%(setname), 'r') as f:
-            labels = f.read()
-        labels = np.array([int(l.split('\t')[1]) for l in labels.split('\n')[:-1]])
-        rows = frames.shape[1]
-        cols = frames.shape[2]
-        for i in range(frames.shape[0]):
-            image_raw = frames[i].tostring()
+            tmp.append(group)
+            video = s[0].split('-')[0]
+            group = [s]
+    tmp.append(group)
+    summary = tmp
+    for s in tqdm(summary):
+        #Slide a window over frames and write content in the tfrecord
+        for w in range(len(s) - (args.window_lenght - 1)):
+            #Load frames
+            frames = [misc.imread('%s.png'%(f[0]), mode='L') for f in s[w:w + args.window_lenght]]
+            #Apply transformation if requested
+            if args.data_modification == 'flip':
+                frames = [np.fliplr(f) for f in frames]
+            frames = np.array(frames)
+            frames = np.transpose(frames, (1, 2, 0))
+            #Get frames' height width
+            rows = frames.shape[0]
+            cols = frames.shape[1]
+            #Load label
+            label = sum([int(l[1]) for l in s[w:w + args.window_lenght]])
+            if label > 1:
+                label = 1
+            #Write to tfrecord file
+            frames_raw = frames.tostring()
             data = tf.train.Example(features=tf.train.Features(feature={
                 'height': _int64_feature(rows),
                 'width': _int64_feature(cols),
-                'label': _int64_feature(labels[i]),
-                'image': _bytes_feature(image_raw)}))
+                'label': _int64_feature(label),
+                'image': _bytes_feature(frames_raw)}))
             writer.write(data.SerializeToString())
-        writer.close()
+    writer.close()
+
     return 0
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset spliter')
-    parser.add_argument('--dataset', dest='dataset', default='MiniDrone_frames', help='Path to the dataset to split')
-    parser.add_argument('--format', dest='format', default='.png', help='Frames format')
-    parser.add_argument('--subset', dest='subset', default='train,val,test', help='Subsets for the dataset to be divided in')
-    parser.add_argument('--modif', dest='data_modification', default=None, help='Data augmentation method (None, flip)')
-    parser.add_argument('--name', dest='name', default='', help='Name for the resulting tf record file')
+    parser.add_argument('--summary', dest='set_summary', type=str, default='trainset_labels', help='Path to file summarizing the dataset')
+    parser.add_argument('--wl', dest='window_lenght', type=int, default=1, help='Lenght of the slinding window over frames')
+    parser.add_argument('--modif', dest='data_modification', type=str, default=None, help='Data augmentation method (None, flip)')
+    parser.add_argument('--name', dest='record_name', type=str, default='trainset', help='Name for the resulting tf record file')
     args = parser.parse_args()
     main(args)
