@@ -133,9 +133,9 @@ def main(args):
                 element = 0
                 for elt in tupni:
                     element += 1
-                    misc.imsave('verif/%d/%d_%d'%(b, element, 1), elt[0])
-                    misc.imsave('verif/%d/%d_%d'%(b, element, 2), elt[1])
-                    misc.imsave('verif/%d/%d_%d'%(b, element, 3), elt[2])
+                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 1), elt[0])
+                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 2), elt[1])
+                    misc.imsave('verif/%d/%d_%d.png'%(b, element, 3), elt[2])
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
