@@ -140,4 +140,4 @@ class Model:
             self.train = tf.train.AdamOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
             #self.train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
 
-        return self.train, self.learning_rate
+        return self.train, learning_rate
