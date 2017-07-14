@@ -49,6 +49,7 @@ def main(args):
     logits = model.logits
     probs = model.get_probs()
     true_positive = tf.contrib.metrics.streaming_true_positives(probs, label)
+    false_positive = tf.contrib.metrics.streaming_false_positives(probs, label)
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
@@ -64,15 +65,16 @@ def main(args):
     print('Computing logits on the testset...')
     while True:
         try:
-            score, detection, answer, tp = sess.run([logits, probs, label, true_positive])
+            score, detection, answer, tp, fp = sess.run([logits, probs, label, true_positive, false_positive])
             #print(score, detection)
-            print(tp)
+            #print(tp, fp)
             model_responses += list(detection)
             groundtruths += list(answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
     print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
+    print('%f true positives, %f false positives'%(tp[1], fp[1]))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
