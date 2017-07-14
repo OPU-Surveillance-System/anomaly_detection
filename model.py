@@ -134,14 +134,9 @@ class Model:
         """
 
         with tf.name_scope('training'):
-            #update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-            #with tf.control_dependencies(update_ops):
-            #train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch)
-            global_step = tf.Variable(0, trainable=False)
-            starter_learning_rate = self.learning_rate
-            learning_rate = learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step, decay_steps=10000, end_learning_rate=0.00001, power=0.5)
-            # Passing global_step to minimize() will increment it at each step.
-            #self.train = tf.train.GradientDescentOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
-            self.train = tf.train.AdamOptimizer(learning_rate).minimize(self.loss_batch, global_step=global_step)
+            # global_step = tf.Variable(0, trainable=False)
+            # starter_learning_rate = self.learning_rate
+            # learning_rate = learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step, decay_steps=10000, end_learning_rate=0.00001, power=0.5)
+            self.train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_batch, global_step=global_step)
 
         return self.train, learning_rate
