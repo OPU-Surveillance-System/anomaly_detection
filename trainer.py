@@ -100,7 +100,7 @@ def main(args):
                 if step % args.summary_step == 0 and epoch != 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
                     print(logits[0:10], gt[0:10], sum(gt), sum(det))
-                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: args.lr}
+                    feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: args.learning_rate}
                     train_str = sess.run(t_summaries, feed_dict=feed_dict)
                     train_writer.add_summary(train_str, batch_count)
                     train_writer.flush()
