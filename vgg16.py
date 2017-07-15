@@ -210,7 +210,7 @@ class VGG16(model.Model):
                 fc2b = tf.Variable(tf.constant(1.0, shape=[4096], dtype=tf.float32), trainable=self.trainable, name='biases')
                 fc2l = tf.nn.bias_add(tf.matmul(self.dropedfc1, fc2w), fc2b)
                 self.fc2 = tf.nn.relu(fc2l)
-                self.dropedfc2 = tf.contrib.layers.dropout(self.fc2, keep_prob=0.5, is_training=self.is_training)
+                self.dropedfc2 = tf.contrib.layers.dropout(self.fc2, keep_prob=0.3, is_training=self.is_training)
                 self.parameters += [fc2w, fc2b]
 
             # fc3 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 1]
@@ -219,8 +219,7 @@ class VGG16(model.Model):
                 fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
                 self.bnfc2 = tf.contrib.layers.batch_norm(self.dropedfc2, is_training=self.is_training, updates_collections=None)
                 self.fc3l = tf.nn.bias_add(tf.matmul(self.bnfc2, fc3w), fc3b)
-                self.bnfc3l = tf.contrib.layers.batch_norm(self.fc3l, is_training=self.is_training, updates_collections=None)
                 self.parameters += [fc3w, fc3b]
-                self.logits = tf.reshape(self.bnfc3l, [-1])
+                self.logits = tf.reshape(self.fc3l, [-1])
 
         return self.logits, normalized_inputs
