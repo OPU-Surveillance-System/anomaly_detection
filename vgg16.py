@@ -201,7 +201,7 @@ class VGG16(model.Model):
                 pool5_flat = tf.reshape(self.pool5, [-1, shape])
                 fc1l = tf.nn.bias_add(tf.matmul(pool5_flat, fc1w), fc1b)
                 self.fc1 = tf.nn.relu(fc1l)
-                self.dropedfc1 = tf.contrib.layers.dropout(self.fc1, keep_prob=0.5, is_training=self.is_training)
+                self.dropedfc1 = tf.contrib.layers.dropout(self.fc1, keep_prob=0.3, is_training=self.is_training)
                 self.parameters += [fc1w, fc1b]
 
             # fc2 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 4096]
