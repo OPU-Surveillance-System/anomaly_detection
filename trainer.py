@@ -78,7 +78,7 @@ def main(args):
     train_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/train'), sess.graph)
     validation_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/validation'), sess.graph)
     #Create saver
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=0)
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
