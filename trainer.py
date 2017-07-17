@@ -8,6 +8,7 @@ from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
 from imgaug import augmenters as iaa
+import numpy as np
 
 import vgg16
 
@@ -31,7 +32,7 @@ def augmentate(image):
         iaa.PiecewiseAffine((0.01, 0.03), name='piecewiseaffine'),
         iaa.ElasticTransformation((0.1, 1.5), sigma=0.2, name='elastictransformation')
     ]
-    print(image)
+    image = np.array(image)
     seq = iaa.SomeOf((1, 3), augmentations, True)
     augmentated_image = seq.augment_image(image)
 
