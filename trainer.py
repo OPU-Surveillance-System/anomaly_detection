@@ -7,65 +7,10 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
-from imgaug import augmenters as iaa
-import numpy as np
 
 import vgg16
 
-def augmentate(image):
-    #List of augmentations
-    augmentations = [
-        iaa.Noop(name='original'),
-        iaa.Fliplr(1.0, name='fliplr'),
-        iaa.Invert(1.0, name='invert'),
-        iaa.Add((-45, 45), name='add'),
-        iaa.Multiply((0.75, 1.5), name='multply'),
-        iaa.GaussianBlur((0.25, 1.5), name='gaussianblur'),
-        iaa.AverageBlur((2, 5), name='averageblur'),
-        iaa.Sharpen((1, 2), name='sharpen'),
-        iaa.Emboss((0.01, 1), name='emboss'),
-        iaa.EdgeDetect((0.01, 0.5), name='edgedetect'),
-        iaa.AdditiveGaussianNoise((0.03*255, 0.1*255), name='gaussiannoise'),
-        iaa.Dropout((0.01, 0.1), name='dropout'),
-        iaa.CoarseDropout((0.01, 0.1), size_percent=(0.01, 0.1), name='coarsedropout'),
-        iaa.ContrastNormalization((0.5, 1.5), name='contrastnormalization'),
-        iaa.PiecewiseAffine((0.01, 0.03), name='piecewiseaffine'),
-        iaa.ElasticTransformation((0.1, 1.5), sigma=0.2, name='elastictransformation')
-    ]
-    image = np.array(image)
-    print(image.shape)
-    seq = iaa.SomeOf((1, 3), augmentations, True)
-    augmentated_image = seq.augment_image(image)
-
-    return augmentated_image
-
-def _training_parse_function(example_proto):
-    """
-    Parse a given tfrecord's entry into an image and a label.
-    Inputs:
-        example_proto: A tfrecord's entry.
-    Returns:
-        image_tofloat: A tensor representing the image.
-        preproc_label: A tensor representing the label.
-    """
-
-    features = {'height': tf.FixedLenFeature((), tf.int64, default_value=0),
-                'width': tf.FixedLenFeature((), tf.int64, default_value=0),
-                'label': tf.FixedLenFeature((), tf.int64, default_value=0),
-                'image': tf.FixedLenFeature((), tf.string, default_value="")}
-    parsed_features = tf.parse_single_example(example_proto, features)
-    image = tf.decode_raw(parsed_features['image'], tf.uint8)
-    image.set_shape([224 * 224 * 3])
-    image_resized = tf.reshape(image, shape=[224, 224, 3])
-    image_transposed1 = tf.transpose(image_resized, [2, 0, 1])
-    image_augmentated = augmentate(image_transposed1)
-    image_transposed2 = tf.transpose(image_augmentated, [1, 2, 0])
-    image_tofloat = tf.cast(image_transposed2, tf.float32)
-    preproc_label = tf.cast(parsed_features["label"], tf.float32)
-
-    return image_tofloat, preproc_label
-
-def _validation_parse_function(example_proto):
+def _parse_function(example_proto):
     """
     Parse a given tfrecord's entry into an image and a label.
     Inputs:
@@ -98,19 +43,13 @@ def main(args):
         os.makedirs(args.exp_out + '/serial')
     #Create dataset
     filenames = tf.placeholder(tf.string, shape=[None])
-    training_dataset = tf.contrib.data.TFRecordDataset(filenames)
-    training_dataset = training_dataset.map(_training_parse_function)
-    training_dataset = training_dataset.shuffle(buffer_size=10000)
-    training_dataset = training_dataset.batch(args.batch_size)
-    validation_dataset = tf.contrib.data.TFRecordDataset(filenames)
-    validation_dataset = validation_dataset.map(_validation_parse_function)
-    validation_dataset = validation_dataset.shuffle(buffer_size=10000)
-    validation_dataset = validation_dataset.batch(args.batch_size)
+    dataset = tf.contrib.data.TFRecordDataset(filenames)
+    dataset = dataset.map(_parse_function)
+    dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.batch(args.batch_size)
     #Create iterator
     iterator = dataset.make_initializable_iterator()
     image, label = iterator.get_next()
-    training_it_init = iterator.make_initializer(training_dataset)
-    validation_it_init = iterator.make_initializer(validation_dataset)
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
@@ -151,7 +90,7 @@ def main(args):
     for epoch in range(args.epochs):
         #Training
         training_filenames = args.train_records.split(',')
-        sess.run(training_it_init, feed_dict={filenames: training_filenames})
+        sess.run(iterator.initializer, feed_dict={filenames: training_filenames})
         step = 0
         while True:
             feed_dict = {is_training: True}
@@ -177,7 +116,7 @@ def main(args):
         #Validation
         validation_filenames = [args.val_records]
         feed_dict = {is_training: False}
-        sess.run(validation_it_init, feed_dict={filenames: validation_filenames})
+        sess.run(iterator.initializer, feed_dict={filenames: validation_filenames})
         v_loss = 0
         v_accuracy = 0
         count = 0
@@ -205,7 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
     parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
-    parser.add_argument('--trecord', dest='train_records', type=str, default='data/trainset.tfrecord', help='Path to trainset tfrecords')
+    parser.add_argument('--trecord', dest='train_records', type=str, default='data/trainset.tfrecord,data/fliptrainset.tfrecord', help='Path to trainset tfrecords')
     parser.add_argument('--vrecord', dest='val_records', type=str, default='data/valset.tfrecord', help='Path to valset tfrecords')
     parser.add_argument('--epochs', dest='epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
