@@ -146,7 +146,7 @@ if __name__ == '__main__':
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
     parser.add_argument('--trecord', dest='train_records', type=str, default='data/trainset.tfrecord,data/fliptrainset.tfrecord', help='Path to trainset tfrecords')
     parser.add_argument('--vrecord', dest='val_records', type=str, default='data/valset.tfrecord', help='Path to valset tfrecords')
-    parser.add_argument('--epochs', dest='epochs', type=int, default=200, help='Number of training epochs')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
