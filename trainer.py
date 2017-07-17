@@ -36,7 +36,7 @@ def augmentate(image):
 
     return augmentated_image
 
-def __training_parse_function(example_proto):
+def _training_parse_function(example_proto):
     """
     Parse a given tfrecord's entry into an image and a label.
     Inputs:
@@ -60,7 +60,7 @@ def __training_parse_function(example_proto):
 
     return image_tofloat, preproc_label
 
-def __validation_parse_function(example_proto):
+def _validation_parse_function(example_proto):
     """
     Parse a given tfrecord's entry into an image and a label.
     Inputs:
@@ -94,11 +94,11 @@ def main(args):
     #Create dataset
     filenames = tf.placeholder(tf.string, shape=[None])
     training_dataset = tf.contrib.data.TFRecordDataset(filenames)
-    training_dataset = training_dataset.map(_parse_function)
+    training_dataset = training_dataset.map(_training_parse_function)
     training_dataset = training_dataset.shuffle(buffer_size=10000)
     training_dataset = training_dataset.batch(args.batch_size)
     validation_dataset = tf.contrib.data.TFRecordDataset(filenames)
-    validation_dataset = validation_dataset.map(_parse_function)
+    validation_dataset = validation_dataset.map(_validation_parse_function)
     validation_dataset = validation_dataset.shuffle(buffer_size=10000)
     validation_dataset = validation_dataset.batch(args.batch_size)
     #Create iterator
