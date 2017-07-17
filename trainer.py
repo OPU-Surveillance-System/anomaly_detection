@@ -31,6 +31,7 @@ def augmentate(image):
         iaa.PiecewiseAffine((0.01, 0.03), name='piecewiseaffine'),
         iaa.ElasticTransformation((0.1, 1.5), sigma=0.2, name='elastictransformation')
     ]
+    print(image)
     seq = iaa.SomeOf((1, 3), augmentations, True)
     augmentated_image = seq.augment_image(image)
 
@@ -54,8 +55,10 @@ def _training_parse_function(example_proto):
     image = tf.decode_raw(parsed_features['image'], tf.uint8)
     image.set_shape([224 * 224 * 3])
     image_resized = tf.reshape(image, shape=[224, 224, 3])
-    image_augmentated = augmentate(image_resized)
-    image_tofloat = tf.cast(image_augmentated, tf.float32)
+    image_transposed1 = tf.transpose(image_resized, [2, 0, 1])
+    image_augmentated = augmentate(image_transposed1)
+    image_transposed2 = tf.transpose(image_augmentated, [1, 2, 0])
+    image_tofloat = tf.cast(image_transposed2, tf.float32)
     preproc_label = tf.cast(parsed_features["label"], tf.float32)
 
     return image_tofloat, preproc_label
