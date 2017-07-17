@@ -33,6 +33,7 @@ def augmentate(image):
         iaa.ElasticTransformation((0.1, 1.5), sigma=0.2, name='elastictransformation')
     ]
     image = np.array(image)
+    print(image.shape)
     seq = iaa.SomeOf((1, 3), augmentations, True)
     augmentated_image = seq.augment_image(image)
 
