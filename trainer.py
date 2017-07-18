@@ -54,7 +54,13 @@ def main(args):
     sess = tf.Session()
     #Instantiate model and define operations
     is_training = tf.placeholder(tf.bool, name='pl_istraining')
-    model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, is_training, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
+    margs = {
+        'trainable': args.trainable,
+        'weights_file': args.vgg_weights,
+        'session': sess,
+        'dropout': args.dpr
+    }
+    model = vgg16.VGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
     #model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
@@ -151,5 +157,6 @@ if __name__ == '__main__':
     parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
     parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
     parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
+    parser.add_argument('--dpr', dest='dpr', type=float, default=0.5, help='Dropout probability')
     args = parser.parse_args()
     main(args)
