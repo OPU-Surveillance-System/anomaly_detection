@@ -13,7 +13,7 @@ class VGG16(model.Model):
     VGG16 class' definition.
     """
 
-    def __init__(self, x, y, learning_rate, is_training, threshold = 0.5, margs):
+    def __init__(self, x, y, learning_rate, is_training, threshold = 0.5, margs=None):
     #def __init__(self, x, y, learning_rate, trainable, threshold = 0.5, weights_file=None, sess=None):
         """
         VGG16's constructor.
