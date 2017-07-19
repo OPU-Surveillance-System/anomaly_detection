@@ -116,9 +116,9 @@ def main(args):
                 print('Epoch %d complete'%(epoch))
                 break
         #Save model
-        if epoch % args.save_epoch == 0:
-            save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
-            print('Model saved in file: %s'%(save_path))
+        #if epoch % args.save_epoch == 0:
+        save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
+        print('Model saved in file: %s'%(save_path))
         #Validation
         validation_filenames = [args.val_records]
         feed_dict = {is_training: False}
