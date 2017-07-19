@@ -29,21 +29,21 @@ class VGG16(model.Model):
 
         super().__init__(x, y, learning_rate, threshold)
         #VGG construction
-        self.trainable = margs["trainable"]
-        self.dropout_rate = margs["dropout"]
+        self.trainable = margs['trainable']
+        self.dropout_rate = margs['dropout']
         self.is_training = is_training
         self.get_logits()
         self.get_probs()
         self.infer()
         #Pretrained weights load
-        if margs["weights_file"] is not None and margs["sess"] is not None:
-            weights = np.load(margs["weights_file"])
+        if margs['weights_file'] is not None and margs['session'] is not None:
+            weights = np.load(margs['weights_file'])
             keys = sorted(weights.keys())
             print('Loading pretrained VGG16 weights...')
             for i, k in enumerate(keys):
                 if i < 30:
                     #print(i, k, np.shape(weights[k]))
-                    margs["sess"].run(self.parameters[i].assign(weights[k]))
+                    margs['sess'].run(self.parameters[i].assign(weights[k]))
             print('Pretrained VGG16 weights loaded.')
 
     def get_logits(self):
