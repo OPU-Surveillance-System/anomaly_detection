@@ -43,7 +43,7 @@ class VGG16(model.Model):
             for i, k in enumerate(keys):
                 if i < 30:
                     #print(i, k, np.shape(weights[k]))
-                    margs['sess'].run(self.parameters[i].assign(weights[k]))
+                    margs['session'].run(self.parameters[i].assign(weights[k]))
             print('Pretrained VGG16 weights loaded.')
 
     def get_logits(self):
