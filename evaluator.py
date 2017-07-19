@@ -45,7 +45,13 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    model = vgg16.VGG16(image, label, 0.1, False, False, threshold=args.threshold, weights_file=None, sess=None)
+    margs = {
+        'trainable': False,
+        'weights_file': None,
+        'session': sess,
+        'dropout': 0.0
+    }
+    model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold,  margs=margs)
     logits = model.logits
     probs = model.get_probs()
     true_positive = tf.contrib.metrics.streaming_true_positives(probs, label)
