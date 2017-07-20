@@ -76,6 +76,7 @@ def main(args):
             #print(tp, fp)
             model_responses += list(detection)
             groundtruths += list(answer)
+            print(score, answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
