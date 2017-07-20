@@ -103,7 +103,7 @@ def main(args):
             try:
                 t_loss, t_accuracy, _, lr, logits, gt, det = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label, probs], feed_dict=feed_dict)
                 #t_loss, t_accuracy, _, logits, gt, det = sess.run([loss_batch, accuracy_batch, train, model.logits, label, probs], feed_dict=feed_dict)
-                if step % args.summary_step == 0 and epoch != 0:
+                if step % args.summary_step == 0:
                     print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
                     print(logits[0:10], gt[0:10], sum(gt), sum(det))
                     feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
