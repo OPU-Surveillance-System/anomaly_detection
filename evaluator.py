@@ -53,6 +53,7 @@ def main(args):
     }
     model = vgg16.VGG16(image, label, 0.1, False, threshold=args.threshold,  margs=margs)
     logits = model.logits
+    correct_prediction = model.count_correct_prediction()
     probs = model.get_probs()
     true_positive = tf.contrib.metrics.streaming_true_positives(probs, label)
     false_positive = tf.contrib.metrics.streaming_false_positives(probs, label)
@@ -68,20 +69,24 @@ def main(args):
     step = 0
     model_responses = []
     groundtruths = []
+    accuracy = 0
+    count = 0
     print('Computing logits on the testset...')
     while True:
         try:
-            score, detection, answer, tp, fp = sess.run([logits, probs, label, true_positive, false_positive])
+            score, detection, answer, tp, fp, tmp_correct_prediction = sess.run([logits, probs, label, true_positive, false_positive, correct_prediction])
             #print(score, detection)
             #print(tp, fp)
             model_responses += list(detection)
             groundtruths += list(answer)
+            count += len(tmp_correct_prediction)
             print(score, answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
             break
+    accuracy /= count
     print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
-    print('%f true positives, %f false positives'%(tp[1], fp[1]))
+    print('%f true positives, %f false positives, accuracy: %f'%(tp[1], fp[1], accuracy))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
