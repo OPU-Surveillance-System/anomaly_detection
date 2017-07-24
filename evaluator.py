@@ -83,6 +83,7 @@ def main(args):
             groundtruths += list(answer)
             accuracy += sum(tmp_correct_prediction)
             count += len(tmp_correct_prediction)
+            print(tfauc)
             print(score, detection, answer)
         except tf.errors.OutOfRangeError:
             print('Evaluation complete')
