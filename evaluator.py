@@ -55,10 +55,10 @@ def main(args):
     logits = model.logits
     correct_prediction = model.count_correct_prediction()
     probs = model.get_probs()
-    true_positive = tf.contrib.metrics.streaming_true_positives(probs, label)
-    false_positive = tf.contrib.metrics.streaming_false_positives(probs, label)
-    false_negative = tf.contrib.metrics.streaming_false_negatives(probs, label)
-    true_negative = tf.contrib.metrics.streaming_true_negatives(probs, label)
+    true_positive = tf.contrib.metrics.streaming_true_positives_at_thresholds(probs, label, args.threshold)
+    false_positive = tf.contrib.metrics.streaming_false_positives_at_thresholds(probs, label, args.threshold)
+    false_negative = tf.contrib.metrics.streaming_false_negatives_at_thresholds(probs, label, args.threshold)
+    true_negative = tf.contrib.metrics.streaming_true_negatives_at_thresholds(probs, label, args.threshold)
     op_auc = tf.metrics.auc(label, probs, num_thresholds=200, curve='ROC', name=None)
     #Init variables
     sess.run(tf.global_variables_initializer())
