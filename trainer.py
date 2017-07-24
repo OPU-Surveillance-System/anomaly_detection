@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
+from sklearn.metrics import roc_curve, auc, confusion_matrix
 
 import vgg16
 
