@@ -78,7 +78,7 @@ def main(args):
     print('Computing logits on the testset...')
     while True:
         try:
-            score, detection, answer, tp, fp, fn, tn, tmp_correct_prediction, tfauc = sess.run([logits, probs, label, true_positive, false_positive, false_negative, true_negative, correct_prediction, op_auc])
+            score, detection, answer, tp, fp, fn, tn, tmp_correct_prediction, tfauc = sess.run([logits, inference, label, true_positive, false_positive, false_negative, true_negative, correct_prediction, op_auc])
             #print(score, detection)
             #print(tp, fp)
             model_responses += list(detection)
