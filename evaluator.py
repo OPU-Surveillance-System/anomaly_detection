@@ -57,6 +57,8 @@ def main(args):
     probs = model.get_probs()
     true_positive = tf.contrib.metrics.streaming_true_positives(probs, label)
     false_positive = tf.contrib.metrics.streaming_false_positives(probs, label)
+    false_negative = tf.contrib.metrics.streaming_false_negatives(probs, label)
+    true_negative = tf.contrib.metrics.streaming_true_negatives(probs, label)
     op_auc = tf.metrics.auc(label, probs, num_thresholds=200, curve='ROC', name=None)
     #Init variables
     sess.run(tf.global_variables_initializer())
@@ -75,7 +77,7 @@ def main(args):
     print('Computing logits on the testset...')
     while True:
         try:
-            score, detection, answer, tp, fp, tmp_correct_prediction, tfauc = sess.run([logits, probs, label, true_positive, false_positive, correct_prediction, op_auc])
+            score, detection, answer, tp, fp, fn, tn, tmp_correct_prediction, tfauc = sess.run([logits, probs, label, true_positive, false_positive, false_negative, true_negative, correct_prediction, op_auc])
             #print(score, detection)
             #print(tp, fp)
             model_responses += list(detection)
@@ -88,7 +90,7 @@ def main(args):
             break
     accuracy /= count
     print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
-    print('%f true positives, %f false positives, accuracy: %f, TF AUC: %f'%(tp[1], fp[1], accuracy, tfauc[1]))
+    print('%f true positives, %f false positives, %f false negatives, %f true negatives, accuracy: %f, TF AUC: %f'%(tp[1], fp[1], fn[1], tn[1], accuracy, tfauc[1]))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
