@@ -89,6 +89,7 @@ def main(args):
             print('Evaluation complete')
             break
     accuracy /= count
+    print('COUNT %d'(count))
     print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
     print('%f true positives, %f false positives, %f false negatives, %f true negatives, accuracy: %f, TF AUC: %f'%(tp[1], fp[1], fn[1], tn[1], accuracy, tfauc[1]))
     #AUC measure
