@@ -71,6 +71,7 @@ def main(args):
     #Create summaries
     pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
     pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
+    pl_auc = tf.placeholder(tf.float32, name='auc_placeholder')
     pl_lr = tf.placeholder(tf.float32, name='learning_rate_placeholder')
     with tf.variable_scope("train_set"):
         t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
@@ -80,7 +81,8 @@ def main(args):
     with tf.variable_scope("validation_set"):
         v_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
         v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary])
+        v_auc_summary = tf.summary.scalar(tensor=pl_auc, name='auc')
+        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary, v_auc_summary])
     train_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/train'), sess.graph)
     validation_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/validation'), sess.graph)
     #Create saver
@@ -126,19 +128,25 @@ def main(args):
         v_loss = 0
         v_accuracy = 0
         count = 0
+        model_responses = []
+        groundtruths = []
         while True:
             try:
-                tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
+                tmp_xentropy, tmp_correct_prediction, logits, gt, ans = sess.run([cross_entropy, correct_prediction, model.logits, label, probs], feed_dict=feed_dict)
                 print(logits, gt)
                 v_loss += sum(tmp_xentropy)
                 v_accuracy += sum(tmp_correct_prediction)
                 count += len(tmp_xentropy)
+                model_responses += list(ans)
+                groundtruths += list(gt)
             except tf.errors.OutOfRangeError:
                 break
+        fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
+        roc_auc = auc(fpr, tpr)
         v_loss /= count
         v_accuracy /= count
         print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
+        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy, pl_auc: roc_auc}
         validation_str = sess.run(v_summaries, feed_dict=feed_dict)
         validation_writer.add_summary(validation_str, epoch)
         validation_writer.flush()
