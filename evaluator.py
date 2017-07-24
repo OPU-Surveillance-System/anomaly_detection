@@ -99,7 +99,7 @@ def main(args):
     plt.figure()
     lw = 2
     plt.plot(fpr, tpr, color='darkorange', lw=lw, label='ROC curve (area = %0.4f)' % roc_auc)
-    for thr in range(0, len(fpr), 150):
+    for thr in range(0, len(fpr), 200):
         plt.text(fpr[thr], tpr[thr], thresholds[thr])
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([0.0, 1.0])
