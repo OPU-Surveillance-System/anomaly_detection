@@ -88,7 +88,7 @@ def main(args):
             break
     accuracy /= count
     print('%d abnormal frames within %d frames'%(sum(groundtruths), len(groundtruths)))
-    print('%f true positives, %f false positives, accuracy: %f, TF AUC: %f'%(tp[1], fp[1], accuracy, tfauc))
+    print('%f true positives, %f false positives, accuracy: %f, TF AUC: %f'%(tp[1], fp[1], accuracy, tfauc[1]))
     #AUC measure
     fpr, tpr, thresholds = roc_curve(groundtruths, model_responses)
     roc_auc = auc(fpr, tpr)
