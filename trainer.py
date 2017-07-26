@@ -9,7 +9,7 @@ import argparse
 from scipy import misc
 from sklearn.metrics import roc_curve, auc, confusion_matrix
 
-import vgg16
+import win_vgg16
 
 def _parse_function(example_proto):
     """
