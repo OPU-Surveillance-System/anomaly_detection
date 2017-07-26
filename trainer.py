@@ -27,8 +27,8 @@ def _parse_function(example_proto):
                 'image': tf.FixedLenFeature((), tf.string, default_value="")}
     parsed_features = tf.parse_single_example(example_proto, features)
     image = tf.decode_raw(parsed_features['image'], tf.uint8)
-    image.set_shape([224 * 224 * 3])
-    image_resized = tf.reshape(image, shape=[224, 224, 3])
+    image.set_shape([224 * 224 * 10])
+    image_resized = tf.reshape(image, shape=[224, 224, 10])
     image_tofloat = tf.cast(image_resized, tf.float32)
     preproc_label = tf.cast(parsed_features["label"], tf.float32)
 
