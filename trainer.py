@@ -61,7 +61,7 @@ def main(args):
         'session': sess,
         'dropout': args.dpr
     }
-    model = vgg16.VGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
+    model = win_vgg16.VGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
     #model = vgg16.VGG16(image, label, args.learning_rate, args.trainable, threshold=args.threshold, weights_file=args.vgg_weights, sess=sess)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
