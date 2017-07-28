@@ -8,6 +8,8 @@ from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
 
+import lstmvgg16
+
 def main(args):
     #Create output directories
     if not os.path.exists(args.exp_out):
@@ -38,7 +40,7 @@ def main(args):
         'state size': args.state_size,
         'lstm num layers': args.lstm_num_layers
     }
-    model = win_vgg16.VGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
+    model = lstmvgg16.LTSMVGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
     cross_entropy = model.get_cross_entropy()
     loss_batch = model.get_loss_batch()
     correct_prediction = model.count_correct_prediction()
