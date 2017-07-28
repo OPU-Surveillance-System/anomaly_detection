@@ -35,6 +35,7 @@ def main(args):
             video = s[0].split('-')[0]
             group = [s]
     tmp.append(group)
+    print(len(tmp))
     summary = tmp
     for s in tqdm(summary):
         #Slide a window over frames and write content in the tfrecord
