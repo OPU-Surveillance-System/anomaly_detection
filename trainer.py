@@ -30,7 +30,7 @@ def main(args):
     sess = tf.Session()
     #Instantiate model and define operations
     image = tf.placeholder(tf.float32, [None, 224, 224, 3], name='pl_input')
-    label = tf.placeholder(tf.float32, [None, 1], name='pl_label')
+    label = tf.placeholder(tf.float32, name='pl_label')
     init_state = tf.placeholder(tf.float32, [args.lstm_num_layers, 2, args.batch_size, args.state_size], name='pl_init_state')
     is_training = tf.placeholder(tf.bool, name='pl_init_state')
     margs = {
