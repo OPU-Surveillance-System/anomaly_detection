@@ -28,7 +28,7 @@ def main(args):
     #Instantiate session
     sess = tf.Session()
     #Instantiate model and define operations
-    image = tf.placeholder(tf.float32, [None, 10, 224, 224, 3], name='pl_input')
+    image = tf.placeholder(tf.float32, [None, 224, 224, 3], name='pl_input')
     label = tf.placeholder(tf.float32, [None, 1], name='pl_label')
     init_state = tf.placeholder(tf.float32, [args.lstm_num_layers, 2, args.batch_size, args.state_size], name='pl_init_state')
     is_training = tf.placeholder(tf.bool, name='pl_init_state')
@@ -76,10 +76,10 @@ def main(args):
     for epoch in range(args.epochs):
         #Training
         step = 0
-        max_step = len(trainset) // args.bs
+        max_step = len(trainset)
         while step < max_step:
-            idx_start = step * args.bs
-            idx_end = idx_start + args.bs
+            idx_start = step
+            idx_end = idx_start + 1
             img = [[misc.imread(trainset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
             lbl = [int(trainset[i][-1]) for i in range(idx_start, idx_end)]
             _current_state = np.zeros((args.lstm_num_layers, 2, args.bs, args.state_size))
@@ -87,7 +87,7 @@ def main(args):
             t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label], feed_dict=feed_dict)
             if step % args.summary_step == 0:
                 print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
-                print(logits[0:10], gt[0:10], sum(gt), sum(det))
+                print(logits, gt, sum(gt), sum(det))
                 feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
                 train_str = sess.run(t_summaries, feed_dict=feed_dict)
                 train_writer.add_summary(train_str, batch_count)
@@ -103,10 +103,10 @@ def main(args):
         v_accuracy = 0
         count = 0
         step = 0
-        max_step = len(valset) // args.bs
+        max_step = len(valset)
         while step < max_step:
-            idx_start = step * args.bs
-            idx_end = idx_start + args.bs
+            idx_start = step
+            idx_end = idx_start + 1
             img = [[misc.imread(valset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
             lbl = [int(valset[i][-1]) for i in range(idx_start, idx_end)]
             _current_state = np.zeros((args.lstm_num_layers, 2, args.bs, args.state_size))
