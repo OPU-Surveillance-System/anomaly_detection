@@ -215,6 +215,14 @@ class LSTMVGG16(model.Model):
                 self.fc2 = tf.nn.relu(fc2l)
                 self.parameters += [fc2w, fc2b]
 
+            # fc3 [batch size, 1, 1, 4096] -> [batch size, 1, 1, 1]
+            with tf.name_scope('fc3') as scope:
+                fc3w = tf.Variable(tf.truncated_normal([4096, 1], dtype=tf.float32, stddev=1e-1), trainable=True, name='weights')
+                fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
+                self.bnfc2 = tf.contrib.layers.batch_norm(self.fc2, is_training=self.is_training, updates_collections=None)
+                self.fc3l = tf.nn.bias_add(tf.matmul(self.bnfc2, fc3w), fc3b)
+                self.parameters += [fc3w, fc3b]
+
         #LSTM part
         with tf.name_scope('lstm'):
             state_per_layer_list = tf.unstack(self.init_state, axis=0)
@@ -222,10 +230,8 @@ class LSTMVGG16(model.Model):
             stacked_rnn = [tf.nn.rnn_cell.LSTMCell(self.margs['state size'], state_is_tuple=True)]
             cell = tf.nn.rnn_cell.MultiRNNCell(cells=stacked_rnn, state_is_tuple=True)
             states_series, current_state = tf.nn.dynamic_rnn(cell, tf.expand_dims(self.fc2, -1), initial_state=rnn_tuple_state)
-            states_series = tf.reshape(states_series, [-1, self.margs['state size'], 4096])
-            print(states_series)
-            W = tf.Variable(np.random.rand(4096, self.margs['state size'], 1), dtype=tf.float32)
-            print(W)
+            states_series = tf.reshape(states_series, [-1, self.margs['state size']])
+            W = tf.Variable(np.random.rand(self.margs['state size'], 1), dtype=tf.float32)
             b = tf.Variable(np.zeros((1, 1)), dtype=tf.float32)
             self.logits = tf.matmul(states_series, W) + b
 
