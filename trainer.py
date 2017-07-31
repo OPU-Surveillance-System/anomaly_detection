@@ -83,7 +83,7 @@ def main(args):
             idx_end = idx_start + 1
             img = [[misc.imread(trainset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
             lbl = [int(trainset[i][-1]) for i in range(idx_start, idx_end)]
-            _current_state = np.zeros((args.lstm_num_layers, 2, args.bs, args.state_size))
+            _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
             feed_dict = {image:img, label:lbl, init_state:_current_state}
             t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label], feed_dict=feed_dict)
             if step % args.summary_step == 0:
@@ -110,7 +110,7 @@ def main(args):
             idx_end = idx_start + 1
             img = [[misc.imread(valset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
             lbl = [int(valset[i][-1]) for i in range(idx_start, idx_end)]
-            _current_state = np.zeros((args.lstm_num_layers, 2, args.bs, args.state_size))
+            _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
             feed_dict = {image:img, label:lbl, init_state:_current_state}
             tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
             v_loss += sum(tmp_xentropy)
