@@ -222,8 +222,10 @@ class LSTMVGG16(model.Model):
             stacked_rnn = [tf.nn.rnn_cell.LSTMCell(self.margs['state size'], state_is_tuple=True)]
             cell = tf.nn.rnn_cell.MultiRNNCell(cells=stacked_rnn, state_is_tuple=True)
             states_series, current_state = tf.nn.dynamic_rnn(cell, tf.expand_dims(self.fc2, -1), initial_state=rnn_tuple_state)
-            states_series = tf.reshape(states_series, [-1, 4096, self.margs['state size']])
+            states_series = tf.reshape(states_series, [-1, self.margs['state size'], 4096])
+            print(states_series)
             W = tf.Variable(np.random.rand(4096, self.margs['state size'], 1), dtype=tf.float32)
+            print(W)
             b = tf.Variable(np.zeros((1, 1)), dtype=tf.float32)
             self.logits = tf.matmul(states_series, W) + b
 
