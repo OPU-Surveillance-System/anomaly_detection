@@ -31,6 +31,7 @@ def main(args):
     image = tf.placeholder(tf.float32, name='pl_input')
     label = tf.placeholder(tf.float32, name='pl_label')
     init_state = tf.placeholder(tf.float32, name='pl_init_state')
+    is_training = tf.placeholder(tf.bool, name='pl_init_state')
     margs = {
         'trainable': args.trainable,
         'weights file': args.vgg_weights,
