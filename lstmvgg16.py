@@ -216,7 +216,7 @@ class LSTMVGG16(model.Model):
 
         #LSTM part
         with tf.name_scope('lstm'):
-            state_per_layer_list = tf.unstack(init_state, axis=0)
+            state_per_layer_list = tf.unstack(self.init_state, axis=0)
             rnn_tuple_state = tuple([tf.nn.rnn_cell.LSTMStateTuple(state_per_layer_list[idx][0], state_per_layer_list[idx][1]) for idx in range(margs['lstm num layers'])])
             stacked_rnn = [tf.nn.rnn_cell.LSTMCell(margs['state size'], state_is_tuple=True)]
             cell = tf.nn.rnn_cell.MultiRNNCell(cells=stacked_rnn, state_is_tuple=True)
