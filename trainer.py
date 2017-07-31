@@ -81,7 +81,7 @@ def main(args):
         while step < max_step:
             idx_start = step
             idx_end = idx_start + 1
-            img = [[misc.imread(trainset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
+            img = [misc.imread(trainset[idx_start][f]) for f in range(args.sliding_window_len)]
             lbl = [int(trainset[i][-1]) for i in range(idx_start, idx_end)]
             _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
             feed_dict = {image:img, label:lbl, init_state:_current_state}
@@ -108,7 +108,7 @@ def main(args):
         while step < max_step:
             idx_start = step
             idx_end = idx_start + 1
-            img = [[misc.imread(valset[i][f]) for f in range(args.sliding_window_len)] for i in range(idx_start, idx_end)]
+            img = [misc.imread(valset[idx_start][f]) for f in range(args.sliding_window_len)]
             lbl = [int(valset[i][-1]) for i in range(idx_start, idx_end)]
             _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
             feed_dict = {image:img, label:lbl, init_state:_current_state}
