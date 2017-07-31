@@ -33,6 +33,7 @@ class LSTMVGG16(model.Model):
         self.trainable = margs['trainable']
         self.dropout_rate = margs['dropout']
         self.init_state = margs['init state']
+        self.margs = margs
         self.is_training = is_training
         self.get_logits()
         self.get_probs()
@@ -217,12 +218,12 @@ class LSTMVGG16(model.Model):
         #LSTM part
         with tf.name_scope('lstm'):
             state_per_layer_list = tf.unstack(self.init_state, axis=0)
-            rnn_tuple_state = tuple([tf.nn.rnn_cell.LSTMStateTuple(state_per_layer_list[idx][0], state_per_layer_list[idx][1]) for idx in range(margs['lstm num layers'])])
-            stacked_rnn = [tf.nn.rnn_cell.LSTMCell(margs['state size'], state_is_tuple=True)]
+            rnn_tuple_state = tuple([tf.nn.rnn_cell.LSTMStateTuple(state_per_layer_list[idx][0], state_per_layer_list[idx][1]) for idx in range(self.margs['lstm num layers'])])
+            stacked_rnn = [tf.nn.rnn_cell.LSTMCell(self.margs['state size'], state_is_tuple=True)]
             cell = tf.nn.rnn_cell.MultiRNNCell(cells=stacked_rnn, state_is_tuple=True)
             states_series, current_state = tf.nn.dynamic_rnn(cell, tf.expand_dims(self.fc2, -1), initial_state=rnn_tuple_state)
-            states_series = tf.reshape(states_series, [-1, 4096, margs['state size']])
-            W = tf.Variable(np.random.rand(4096, margs['state size'], 1), dtype=tf.float32)
+            states_series = tf.reshape(states_series, [-1, 4096, self.margs['state size']])
+            W = tf.Variable(np.random.rand(4096, self.margs['state size'], 1), dtype=tf.float32)
             b = tf.Variable(np.zeros((1, 1)), dtype=tf.float32)
             self.logits = tf.matmul(states_series, W) + b
 
