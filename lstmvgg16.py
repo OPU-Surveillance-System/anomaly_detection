@@ -59,19 +59,15 @@ class LSTMVGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            # test = tf.unstack(self.inputs, axis=1)
-            #
-            # normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), test2)
-            mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-            normalized_inputs = self.inputs - mean
-            print(normalized_inputs)
+            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            # mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+            # normalized_inputs = self.inputs - mean
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
-            test = tf.split(normalized_inputs, 10, axis=1)
             with tf.name_scope('conv1_1') as scope:
                 kernel = tf.Variable(tf.truncated_normal([3, 3, 3, 64], dtype=tf.float32, stddev=1e-1), trainable=self.trainable, name='weights')
-                conv = tf.nn.conv2d(test, kernel, [1, 1, 1, 1], padding='SAME')
+                conv = tf.nn.conv2d(normalized_inputs, kernel, [1, 1, 1, 1], padding='SAME')
                 biases = tf.Variable(tf.constant(0.0, shape=[64], dtype=tf.float32), trainable=self.trainable, name='biases')
                 out = tf.nn.bias_add(conv, biases)
                 self.conv1_1 = tf.nn.relu(out, name=scope)
