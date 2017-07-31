@@ -59,13 +59,11 @@ class LSTMVGG16(model.Model):
 
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
-            test = tf.unstack(self.inputs, axis=0)
-            test2 = tf.unstack(test, axis=0)
-            print(test)
-            print(test2)
-            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), test2)
-            # mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-            # normalized_inputs = self.inputs - mean
+            # test = tf.unstack(self.inputs, axis=1)
+            #
+            # normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), test2)
+            mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+            normalized_inputs = self.inputs - mean
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
