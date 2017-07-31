@@ -67,7 +67,7 @@ class LSTMVGG16(model.Model):
 
         with tf.name_scope('vgg') as scope:
             # conv1_1 [batch size, 224, 224, 3] -> [batch size, 224, 224, 64]
-            test = tf.split(normalized_inputs, axis=1)
+            test = tf.split(normalized_inputs, 10, axis=1)
             with tf.name_scope('conv1_1') as scope:
                 kernel = tf.Variable(tf.truncated_normal([3, 3, 3, 64], dtype=tf.float32, stddev=1e-1), trainable=self.trainable, name='weights')
                 conv = tf.nn.conv2d(test, kernel, [1, 1, 1, 1], padding='SAME')
