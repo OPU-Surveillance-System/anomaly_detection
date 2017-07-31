@@ -221,7 +221,7 @@ class LSTMVGG16(model.Model):
                 fc3b = tf.Variable(tf.constant(1.0, shape=[1], dtype=tf.float32), trainable=True, name='biases')
                 self.bnfc2 = tf.contrib.layers.batch_norm(self.fc2, is_training=self.is_training, updates_collections=None)
                 self.fc3l = tf.nn.bias_add(tf.matmul(self.bnfc2, fc3w), fc3b)
-                self.fc3 = tf.nn.relu(fc3l)
+                self.fc3 = tf.nn.relu(self.fc3l)
                 self.parameters += [fc3w, fc3b]
 
         #LSTM part
