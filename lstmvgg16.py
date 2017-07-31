@@ -45,7 +45,7 @@ class LSTMVGG16(model.Model):
             print('Loading pretrained VGG16 weights...')
             for i, k in enumerate(keys):
                 if i < 30:
-                    print(i, k, np.shape(weights[k]))
+                    #print(i, k, np.shape(weights[k]))
                     margs['session'].run(self.parameters[i].assign(weights[k]))
             print('Pretrained VGG16 weights loaded.')
 

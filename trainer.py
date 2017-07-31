@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 import argparse
 from scipy import misc
+import numpy as np
 
 import lstmvgg16
 
@@ -68,8 +69,8 @@ def main(args):
     #Init variables
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
-    print(model.parameters)
-    print(len(model.parameters))
+    # print(model.parameters)
+    # print(len(model.parameters))
 
     #Training loop
     batch_count = 0
