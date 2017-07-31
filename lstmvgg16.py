@@ -60,7 +60,8 @@ class LSTMVGG16(model.Model):
         # zero-mean input
         with tf.name_scope('preprocess') as scope:
             test = tf.unstack(self.inputs, axis=1)
-            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.inputs)
+            print(test)
+            normalized_inputs = tf.map_fn(lambda img: tf.image.per_image_standardization(img), test)
             # mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
             # normalized_inputs = self.inputs - mean
 
