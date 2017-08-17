@@ -69,7 +69,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 # forward
                 outputs = model(inputs)
                 _, preds = torch.max(outputs.data, 1)
-                loss = criterion(torch.sigmoid(outputs).long(), labels)
+                loss = criterion(torch.sigmoid(outputs), labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
                     loss.backward()
