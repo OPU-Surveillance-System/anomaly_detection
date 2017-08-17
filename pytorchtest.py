@@ -69,7 +69,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 # forward
                 outputs = model(inputs)
                 _, preds = torch.max(outputs.data, 1)
-                loss = nn.functional.binary_cross_entropy_with_logits(outputs, labels)
+                loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
                     loss.backward()
@@ -120,7 +120,7 @@ if use_gpu:
     model_ft = model_ft.cuda()
 
 #criterion = nn.CrossEntropyLoss()
-#criterion = nn.functional.binary_cross_entropy_with_logits()
+criterion = nn.BCELoss()
 # Observe that all parameters are being optimized
 optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
-model_ft = train_model(model_ft, None, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
