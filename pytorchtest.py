@@ -58,7 +58,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 labels = np.reshape(labels, (40, 1))
                 print(labels.shape)
                 #convert to tensor
-                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).int()
+                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).long()
                 # wrap them in Variable
                 if use_gpu:
                     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
@@ -69,7 +69,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 # forward
                 outputs = model(inputs)
                 _, preds = torch.max(outputs.data, 1)
-                loss = criterion(outputs, labels)
+                loss = criterion(torch.sigmoid(outputs), labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
                     loss.backward()
