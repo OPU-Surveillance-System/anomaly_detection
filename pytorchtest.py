@@ -76,7 +76,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                     optimizer.step()
                 # statistics
                 running_loss += loss.data[0]
-                running_corrects += torch.sum(preds == labels.data)
+                running_corrects += torch.sum(preds == labels.data.int())
                 # next step
                 step += 1
             epoch_loss = running_loss / dset_sizes[phase]
