@@ -12,7 +12,7 @@ import os
 import matplotlib.pyplot as plt
 from scipy import misc
 
-with open('data/augmentated_trainset', 'r') as f:
+with open('data/trainset', 'r') as f:
     trainset = f.read().split('\n')[:-1]
 trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
 with open('data/valset_labels', 'r') as f:
