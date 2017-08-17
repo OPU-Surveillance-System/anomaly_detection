@@ -11,6 +11,7 @@ import copy
 import os
 from scipy import misc
 import argparse
+from random import shuffle
 
 use_gpu = torch.cuda.is_available()
 
@@ -51,6 +52,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 # get the inputs
                 idx_start = step * args.batch_size
                 idx_end = idx_start + args.batch_size
+                shuffle(dsets[phase])
                 inputs = np.array([misc.imread(os.path.join('data', dsets[phase][i][0] + '.png')) for i in range(idx_start, idx_end)])
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[phase][i][1] for i in range(idx_start, idx_end)])
