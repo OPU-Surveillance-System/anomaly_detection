@@ -14,6 +14,15 @@ import argparse
 
 use_gpu = torch.cuda.is_available()
 
+with open('data/trainset_labels', 'r') as f:
+    trainset = f.read().split('\n')[:-1]
+trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
+with open('data/valset_labels', 'r') as f:
+    valset = f.read().split('\n')[:-1]
+valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
+dsets = {'train': trainset, 'val': valset}
+dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
+
 def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
     since = time.time()
 
@@ -99,15 +108,6 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
     return optimizer
 
 def main(args):
-    with open('data/trainset_labels', 'r') as f:
-        trainset = f.read().split('\n')[:-1]
-    trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
-    with open('data/valset_labels', 'r') as f:
-        valset = f.read().split('\n')[:-1]
-    valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
-    dsets = {'train': trainset, 'val': valset}
-    dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
-
     model_ft = models.vgg16(pretrained=True)
     mod = list(model_ft.classifier.children())
     mod.pop()
@@ -127,5 +127,6 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
     parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
+    parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
     args = parser.parse_args()
     main(args)
