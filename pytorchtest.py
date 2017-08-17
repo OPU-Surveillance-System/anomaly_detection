@@ -82,7 +82,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
             epoch_loss = running_loss / dset_sizes[phase]
             epoch_acc = running_corrects / dset_sizes[phase]
 
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
+            print('{} Loss: {} Acc: {}'.format(phase, epoch_loss, epoch_acc))
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
@@ -93,7 +93,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
+    print('Best val Acc: {}'.format(best_acc))
 
     return best_model
 
