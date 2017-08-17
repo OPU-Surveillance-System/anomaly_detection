@@ -12,15 +12,6 @@ import os
 import matplotlib.pyplot as plt
 from scipy import misc
 
-with open('data/trainset_labels', 'r') as f:
-    trainset = f.read().split('\n')[:-1]
-trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
-with open('data/valset_labels', 'r') as f:
-    valset = f.read().split('\n')[:-1]
-valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
-dsets = {'train': trainset, 'val': valset}
-dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
-
 use_gpu = torch.cuda.is_available()
 
 def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
@@ -36,7 +27,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
             if phase == 'train':
-                optimizer = lr_scheduler(optimizer, epoch)
+                #optimizer = lr_scheduler(optimizer, epoch)
                 model.train(True)  # Set model to training mode
             else:
                 model.train(False)  # Set model to evaluate mode
@@ -107,18 +98,34 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
 
     return optimizer
 
-model_ft = models.vgg16(pretrained=True)
-mod = list(model_ft.classifier.children())
-mod.pop()
-mod.append(torch.nn.Linear(4096, 1))
-new_classifier = torch.nn.Sequential(*mod)
-model_ft.classifier = new_classifier
-print(model_ft)
-if use_gpu:
-    model_ft = model_ft.cuda()
+def main(args):
+    with open('data/trainset_labels', 'r') as f:
+        trainset = f.read().split('\n')[:-1]
+    trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
+    with open('data/valset_labels', 'r') as f:
+        valset = f.read().split('\n')[:-1]
+    valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
+    dsets = {'train': trainset, 'val': valset}
+    dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
 
-#criterion = nn.CrossEntropyLoss()
-criterion = nn.BCEWithLogitsLoss()
-# Observe that all parameters are being optimized
-optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
-model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+    model_ft = models.vgg16(pretrained=True)
+    mod = list(model_ft.classifier.children())
+    mod.pop()
+    mod.append(torch.nn.Linear(4096, 1))
+    new_classifier = torch.nn.Sequential(*mod)
+    model_ft.classifier = new_classifier
+    print(model_ft)
+    if use_gpu:
+        model_ft = model_ft.cuda()
+
+    #criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCEWithLogitsLoss()
+    # Observe that all parameters are being optimized
+    optimizer_ft = optim.Adam(model_ft.parameters(), lr=args.learning_rate)
+    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
+    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
+    args = parser.parse_args()
+    main(args)
