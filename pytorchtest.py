@@ -44,17 +44,17 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
             running_loss = 0.0
             running_corrects = 0
             step = 0
-            max_step = int(dset_sizes[phase] / 40)
+            max_step = int(dset_sizes[phase] / args.batch_size)
 
             # Iterate over data.
             while step < max_step:
                 # get the inputs
-                idx_start = step * 40
-                idx_end = idx_start + 40
+                idx_start = step * args.batch_size
+                idx_end = idx_start + args.batch_size
                 inputs = np.array([misc.imread(os.path.join('data', dsets[phase][i][0] + '.png')) for i in range(idx_start, idx_end)])
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[phase][i][1] for i in range(idx_start, idx_end)])
-                labels = np.reshape(labels, (40, 1))
+                labels = np.reshape(labels, (args.batch_size, 1))
                 #convert to tensor
                 inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
                 # wrap them in Variable
