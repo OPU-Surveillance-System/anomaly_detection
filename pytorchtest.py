@@ -69,8 +69,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 # forward
                 outputs = model(inputs)
                 _, preds = torch.max(outputs.data, 1)
-                print(outputs.type, labels.type)
-                loss = nn.functional.binary_cross_entropy_with_logits(outputs, labels)
+                loss = nn.functional.binary_cross_entropy_with_logits(outputs.long(), labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
                     loss.backward()
