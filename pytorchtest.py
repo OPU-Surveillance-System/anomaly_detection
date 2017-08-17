@@ -112,7 +112,7 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
 model_ft = models.vgg16(pretrained=True)
 mod = list(model_ft.classifier.children())
 mod.pop()
-mod.append(torch.nn.Linear(4096, 2))
+mod.append(torch.nn.Linear(4096, 1))
 new_classifier = torch.nn.Sequential(*mod)
 model_ft.classifier = new_classifier
 print(model_ft)
