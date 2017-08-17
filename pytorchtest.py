@@ -55,6 +55,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[phase][i][1] for i in range(idx_start, idx_end)])
                 np.reshape(labels, (40, 1))
+                print(labels.shape)
                 #convert to tensor
                 inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
                 # wrap them in Variable
