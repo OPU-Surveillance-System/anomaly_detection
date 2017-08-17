@@ -9,8 +9,8 @@ from torchvision import datasets, models, transforms
 import time
 import copy
 import os
-import matplotlib.pyplot as plt
 from scipy import misc
+import argparse
 
 use_gpu = torch.cuda.is_available()
 
