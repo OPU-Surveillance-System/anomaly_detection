@@ -58,7 +58,7 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
                 labels = np.reshape(labels, (40, 1))
                 print(labels.shape)
                 #convert to tensor
-                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
+                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).int()
                 # wrap them in Variable
                 if use_gpu:
                     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
