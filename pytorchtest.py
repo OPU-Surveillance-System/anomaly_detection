@@ -88,8 +88,8 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             epoch_acc = running_corrects / dset_sizes[phase]
             summaries[phase]['loss'].append(epoch_loss)
             summaries[phase]['accuracy'].append(epoch_acc)
-            lineloss = axes[0].plot(list(range(epoch)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
-            lineloss = axes[1].plot(list(range(epoch)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
+            lineloss = axes[0].plot(list(range(epoch + 1)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
+            lineloss = axes[1].plot(list(range(epoch + 1)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
