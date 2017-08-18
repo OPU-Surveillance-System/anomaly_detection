@@ -12,6 +12,7 @@ import os
 from scipy import misc
 import argparse
 from random import shuffle
+import matplotlib.pyplot as plt
 
 use_gpu = torch.cuda.is_available()
 
@@ -29,6 +30,10 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
     best_model = model
     best_acc = 0.0
+    summaries = {'train':{'loss':[], 'accuracy':[]}, 'val':{'loss':[], 'accuracy':[]}}
+
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    color = {'train':'blue', 'val':'red'}
 
     for epoch in range(args.epochs):
         print('Epoch {}/{}'.format(epoch, args.epochs - 1))
@@ -81,6 +86,10 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 step += 1
             epoch_loss = running_loss / dset_sizes[phase]
             epoch_acc = running_corrects / dset_sizes[phase]
+            summaries[phase]['loss'].append(epoch_loss)
+            summaries[phase]['accuracy'].append(epoch_acc)
+            lineloss = axes[0].plot(list(range(epoch)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
+            lineloss = axes[1].plot(list(range(epoch)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
@@ -88,6 +97,10 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model = copy.deepcopy(model)
+        axloss.legend(loc='lower right')
+        axacc.legend(loc='lower right')
+        plt.imsave('training.svg', format='svg')
+        plt.clf()
 
         print()
 
