@@ -111,11 +111,15 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
 
 def main(args):
     model_ft = models.vgg16(pretrained=True)
+    for param in model_ft.parameters():
+        param.requires_grad = False
     mod = list(model_ft.classifier.children())
     mod.pop()
     mod.append(torch.nn.Linear(4096, 1))
     new_classifier = torch.nn.Sequential(*mod)
     model_ft.classifier = new_classifier
+    for param in model_ft.classifier.parameters():
+        param.requires_grad = True
     print(model_ft)
     if use_gpu:
         model_ft = model_ft.cuda()
@@ -123,8 +127,8 @@ def main(args):
     #criterion = nn.CrossEntropyLoss()
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
-    optimizer_ft = optim.Adam(model_ft.parameters(), lr=args.learning_rate)
-    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
+    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
