@@ -99,7 +99,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 best_model = copy.deepcopy(model)
         axes[0].legend(loc='lower right')
         axes[1].legend(loc='lower right')
-        plt.imsave('training.svg', format='svg')
+        plt.savefig('training.svg', format='svg')
         plt.clf()
 
         print()
