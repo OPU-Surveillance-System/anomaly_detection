@@ -97,8 +97,8 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model = copy.deepcopy(model)
-        axloss.legend(loc='lower right')
-        axacc.legend(loc='lower right')
+        axes[0].legend(loc='lower right')
+        axes[1].legend(loc='lower right')
         plt.imsave('training.svg', format='svg')
         plt.clf()
 
