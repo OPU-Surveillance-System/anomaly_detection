@@ -24,14 +24,14 @@ valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
 dsets = {'train': trainset, 'val': valset}
 dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
 
-def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=25):
+def train_model(model, criterion, optimizer, lr_scheduler):
     since = time.time()
 
     best_model = model
     best_acc = 0.0
 
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+    for epoch in range(args.epochs):
+        print('Epoch {}/{}'.format(epoch, args.epochs - 1))
         print('-' * 10)
 
         # Each epoch has a training and validation phase
@@ -124,11 +124,12 @@ def main(args):
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(model_ft.parameters(), lr=args.learning_rate)
-    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
     parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
+    parser.add_argument('--ep', dest='epochs', type=int, default=50, help='Number of training epochs')
     args = parser.parse_args()
     main(args)
