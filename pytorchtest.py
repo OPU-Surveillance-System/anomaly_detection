@@ -68,7 +68,6 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 optimizer.zero_grad()
                 # forward
                 outputs = model(inputs)
-                print(outputs)
                 _, preds = torch.max(outputs.data, 1)
                 loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
@@ -83,7 +82,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             epoch_loss = running_loss / dset_sizes[phase]
             epoch_acc = running_corrects / dset_sizes[phase]
 
-            print('{} Loss: {} Acc: {}'.format(phase, epoch_loss, epoch_acc))
+            print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
