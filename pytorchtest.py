@@ -68,6 +68,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 optimizer.zero_grad()
                 # forward
                 outputs = model(inputs)
+                print(outputs)
                 _, preds = torch.max(outputs.data, 1)
                 loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
