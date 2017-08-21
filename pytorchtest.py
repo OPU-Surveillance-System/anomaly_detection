@@ -16,17 +16,16 @@ import matplotlib.pyplot as plt
 
 use_gpu = torch.cuda.is_available()
 
-#with open('data/augmentated_trainset', 'r') as f:
-with open('data/trainset_labels', 'r') as f:
-    trainset = f.read().split('\n')[:-1]
-trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
-with open('data/valset_labels', 'r') as f:
-    valset = f.read().split('\n')[:-1]
-valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
-dsets = {'train': trainset, 'val': valset}
-dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
-
 def train_model(model, criterion, optimizer, lr_scheduler):
+    with open(args.trainset, 'r') as f:
+        trainset = f.read().split('\n')[:-1]
+    trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
+    print(trainset)
+    with open(args.valset, 'r') as f:
+        valset = f.read().split('\n')[:-1]
+    valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
+    dsets = {'train': trainset, 'val': valset}
+    dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
     since = time.time()
 
     best_model = model
@@ -152,5 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
     parser.add_argument('--ep', dest='epochs', type=int, default=50, help='Number of training epochs')
+    parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
+    parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
     args = parser.parse_args()
     main(args)
