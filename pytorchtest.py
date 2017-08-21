@@ -34,6 +34,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
     fig, axes = plt.subplots(nrows=1, ncols=2)
     color = {'train':'blue', 'val':'red'}
+    m = nn.Sigmoid()
 
     for epoch in range(args.epochs):
         print('Epoch {}/{}'.format(epoch, args.epochs - 1))
@@ -81,7 +82,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                     optimizer.step()
                 # statistics
                 running_loss += loss.data[0]
-                running_corrects += torch.sum(torch.gt(nn.Sigmoid(preds), 0.5).int() == labels.data.int())
+                running_corrects += torch.sum(torch.gt(m(preds), 0.5).int() == labels.data.int())
                 # next step
                 step += 1
             epoch_loss = running_loss / dset_sizes[phase]
