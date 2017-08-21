@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 
 use_gpu = torch.cuda.is_available()
 
-with open('data/augmentated_trainset', 'r') as f:
+#with open('data/augmentated_trainset', 'r') as f:
+with open('data/trainset_labels', 'r') as f:
     trainset = f.read().split('\n')[:-1]
 trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
 with open('data/valset_labels', 'r') as f:
@@ -54,7 +55,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             max_step = int(dset_sizes[phase] / args.batch_size)
 
             # Iterate over data.
-            while step < int(max_step / 2):
+            while step < max_step:
                 # get the inputs
                 idx_start = step * args.batch_size
                 idx_end = idx_start + args.batch_size
