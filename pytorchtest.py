@@ -143,6 +143,7 @@ def main(args):
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    torch.save(model_ft, './modelsave')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
