@@ -53,7 +53,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             max_step = int(dset_sizes[phase] / args.batch_size)
 
             # Iterate over data.
-            while step < max_step:
+            while step < int(max_step / 2):
                 # get the inputs
                 idx_start = step * args.batch_size
                 idx_end = idx_start + args.batch_size
@@ -89,7 +89,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             summaries[phase]['loss'].append(epoch_loss)
             summaries[phase]['accuracy'].append(epoch_acc)
             lineloss = axes[0].plot(list(range(epoch + 1)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
-            lineloss = axes[1].plot(list(range(epoch + 1)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
+            lineacc = axes[1].plot(list(range(epoch + 1)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
@@ -100,7 +100,8 @@ def train_model(model, criterion, optimizer, lr_scheduler):
         axes[0].legend(loc='lower right')
         axes[1].legend(loc='lower right')
         plt.savefig('training.svg', format='svg')
-        plt.clf()
+        axes[0].cla()
+        axes[1].cla()
 
         print()
 
