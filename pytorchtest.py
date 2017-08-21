@@ -82,7 +82,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                     optimizer.step()
                 # statistics
                 running_loss += loss.data[0]
-                running_corrects += torch.sum(torch.gt(m(preds), 0.5).int() == labels.data.int())
+                running_corrects += torch.sum(torch.gt(m(outputs), 0.5).int() == labels.data.int())
                 # next step
                 step += 1
             epoch_loss = running_loss / dset_sizes[phase]
