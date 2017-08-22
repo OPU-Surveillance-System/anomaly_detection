@@ -124,26 +124,37 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
     return optimizer
 
 def main(args):
+    #Create experiment directory
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
+    #Load pretrained VGG16
     model_ft = models.vgg16(pretrained=True)
+    #Freeze convolutional layers
     for param in model_ft.parameters():
         param.requires_grad = False
+    #Extract classifier part
     mod = list(model_ft.classifier.children())
+    #Use dropout
+    mod[2] = torch.nn.Dropout(args.drop_prob)
+    mod[5] = torch.nn.Dropout(args.drop_prob)
+    #Change the final layer
     mod.pop()
     mod.append(torch.nn.Linear(4096, 1))
     new_classifier = torch.nn.Sequential(*mod)
+    #Replace the classifier part
     model_ft.classifier = new_classifier
-    for param in model_ft.classifier.parameters():
+    #Set specified parameters trainable
+    parameters = list(model_ft.classifier.parameters())
+    parameters = [parameters[5 - p] for p in range(args.trainable_parameters * 2)]
+    for param in parameters:
         param.requires_grad = True
     print(model_ft)
     if use_gpu:
         model_ft = model_ft.cuda()
 
-    #criterion = nn.CrossEntropyLoss()
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
-    optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
+    optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
     torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
@@ -155,5 +166,7 @@ if __name__ == '__main__':
     parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
     parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
+    parser.add_argument('--doprob', dest='drop_prob', type=float, default='0.5', help='Dropout keep probability')
+    parser.add_argument('--trp', dest='trainable_parameters', type=int, default=3, help='Trainable parameters (range in [1, 3] - FC3 to FC1)')
     args = parser.parse_args()
     main(args)
