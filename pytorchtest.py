@@ -73,7 +73,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 optimizer.zero_grad()
                 # forward
                 outputs = model(inputs)
-                _, preds = torch.max(outputs.data, 1)
+                _, preds = torch.sigmoid(outputs.data).long()
                 loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
@@ -144,7 +144,7 @@ def main(args):
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
-    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
     torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
 if __name__ == '__main__':
