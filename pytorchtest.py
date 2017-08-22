@@ -144,7 +144,7 @@ def main(args):
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
-    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
     torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
 if __name__ == '__main__':
