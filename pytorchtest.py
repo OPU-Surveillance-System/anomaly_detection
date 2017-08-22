@@ -20,7 +20,6 @@ def train_model(model, criterion, optimizer, lr_scheduler):
     with open(args.trainset, 'r') as f:
         trainset = f.read().split('\n')[:-1]
     trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
-    print(trainset)
     with open(args.valset, 'r') as f:
         valset = f.read().split('\n')[:-1]
     valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
