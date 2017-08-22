@@ -125,6 +125,8 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
     return optimizer
 
 def main(args):
+    if not os.path.exists(args.directory):
+        os.makedirs(args.directory)
     model_ft = models.vgg16(pretrained=True)
     for param in model_ft.parameters():
         param.requires_grad = False
@@ -144,7 +146,7 @@ def main(args):
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(model_ft.classifier.parameters(), lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
-    torch.save(model_ft, './modelsave')
+    torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
@@ -153,5 +155,6 @@ if __name__ == '__main__':
     parser.add_argument('--ep', dest='epochs', type=int, default=50, help='Number of training epochs')
     parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
     parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
+    parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
     args = parser.parse_args()
     main(args)
