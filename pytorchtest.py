@@ -13,6 +13,8 @@ from scipy import misc
 import argparse
 from random import shuffle
 import matplotlib.pyplot as plt
+import imgaug as ia
+from imgaug import augmenters as iaa
 
 use_gpu = torch.cuda.is_available()
 
@@ -46,7 +48,46 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 model.train(True)  # Set model to training mode
             else:
                 model.train(False)  # Set model to evaluate mode
+            #Data augmenters
+            if phase == 'train' and args.augdata:
+                seq = iaa.Sequential(iaa.SomeOf((0, 2), [
+                    iaa.Fliplr(0.5),
+                    #iaa.Invert(0.5),
+                    iaa.OneOf([
+                        iaa.Add((-5, 25)),
+                        iaa.Multiply((0.25, 1.5))
+                    ]),
+                    iaa.OneOf([
+                        iaa.OneOf([
+                            iaa.GaussianBlur((0, 1.0)),
+                            iaa.AverageBlur(k=(1, 5)),
+                            iaa.MedianBlur(k=(1, 5)),
+                            iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.1*255), per_channel=0.5),
+                            iaa.Dropout((0.01, 0.3), per_channel=0.5),
+                            iaa.CoarseDropout((0.03, 0.15), size_percent=(0.03, 0.05), per_channel=0.2)
+                        ]),
+                        iaa.OneOf([
+                            iaa.Sharpen(alpha=(0, 1.0), lightness=(1.0, 1.75)),
+                            iaa.Emboss(alpha=(0, 1.0), strength=(0.2, 0.75)),
+                            iaa.EdgeDetect(alpha=(0.1, 0.3)),
+                            iaa.ContrastNormalization((0.5, 1.5), per_channel=0.5),
+                            iaa.Grayscale(alpha=(0.0, 1.0)),
+                        ])
+                    ]),
+                    iaa.OneOf([
+                        iaa.PiecewiseAffine(scale=(0.01, 0.03)),
+                        iaa.Affine(scale=(1.0, 1.3),
+                                   translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
+                                   rotate=(-15, 15),
+                                   shear=(-15, 15),
+                                   order=[0, 1],
+                                   cval=(0, 255),
+                                   mode=ia.ALL),
+                        iaa.ElasticTransformation(alpha=(0.01, 2.0), sigma=0.25)
+                    ]),
+                ]), random_order=True)
 
+            #Local variables
             running_loss = 0.0
             running_corrects = 0
             step = 0
@@ -59,6 +100,8 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 idx_end = idx_start + args.batch_size
                 shuffle(dsets[phase])
                 inputs = np.array([misc.imread(os.path.join('data', dsets[phase][i][0] + '.png')) for i in range(idx_start, idx_end)])
+                if phase == 'train' and args.augdata:
+                    inputs = seq.augment_images(inputs)
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[phase][i][1] for i in range(idx_start, idx_end)])
                 labels = np.reshape(labels, (args.batch_size, 1))
@@ -163,7 +206,7 @@ def main(args):
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
-    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
     torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
 if __name__ == '__main__':
@@ -177,5 +220,6 @@ if __name__ == '__main__':
     parser.add_argument('--doprob', dest='drop_prob', type=float, default='0.5', help='Dropout keep probability')
     parser.add_argument('--trp', dest='trainable_parameters', type=int, default=3, help='Trainable parameters (range in [1, 3] - FC3 to FC1)')
     parser.add_argument('--bn', dest='batch_norm', type=bool, default=False, help='Whether to use batch normalization or not')
+    parser.add_argument('--da', dest='augdata', type=bool, default=False, help='Whether to activate data augmentation pipeline or not during training')
     args = parser.parse_args()
     main(args)
