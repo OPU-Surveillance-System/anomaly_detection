@@ -137,6 +137,10 @@ def main(args):
     #Use dropout
     mod[2] = torch.nn.Dropout(args.drop_prob)
     mod[5] = torch.nn.Dropout(args.drop_prob)
+    #Add batch norm if specified
+    if args.batch_norm:
+        mod.insert(1, torch.nn.BatchNorm1d(4096))
+        mod.insert(5, torch.nn.BatchNorm1d(4096))
     #Change the final layer
     mod.pop()
     mod.append(torch.nn.Linear(4096, 1))
@@ -145,17 +149,21 @@ def main(args):
     model_ft.classifier = new_classifier
     #Set specified parameters trainable
     parameters = list(model_ft.classifier.parameters())
-    parameters = [parameters[5 - p] for p in range(args.trainable_parameters * 2)]
+    if args.batch_norm:
+        tmp = [parameters[9], parameters[8]]
+        parameters = [parameters[7 - p] for p in range((args.trainable_parameters - 1) * 4)]
+        parameters = list(reversed(tmp + parameters))
+    else:
+        parameters = [parameters[5 - p] for p in range(args.trainable_parameters * 2)]
     for param in parameters:
         param.requires_grad = True
-    print(model_ft)
     if use_gpu:
         model_ft = model_ft.cuda()
-
+    #Cross entropy function
     criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
-    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+    #model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
     torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
 
 if __name__ == '__main__':
@@ -168,5 +176,6 @@ if __name__ == '__main__':
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
     parser.add_argument('--doprob', dest='drop_prob', type=float, default='0.5', help='Dropout keep probability')
     parser.add_argument('--trp', dest='trainable_parameters', type=int, default=3, help='Trainable parameters (range in [1, 3] - FC3 to FC1)')
+    parser.add_argument('--bn', dest='batch_norm', type=bool, default=False, help='Whether to use batch normalization or not')
     args = parser.parse_args()
     main(args)
