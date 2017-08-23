@@ -203,7 +203,11 @@ def main(args):
     if use_gpu:
         model_ft = model_ft.cuda()
     #Cross entropy function
-    criterion = nn.BCEWithLogitsLoss()
+    if args.weighted_loss:
+        weight = [0.343723, 0.656277]
+    else:
+        weight = [1, 1]
+    criterion = nn.BCEWithLogitsLoss(weight)
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
@@ -221,5 +225,6 @@ if __name__ == '__main__':
     parser.add_argument('--trp', dest='trainable_parameters', type=int, default=3, help='Trainable parameters (range in [1, 3] - FC3 to FC1)')
     parser.add_argument('--bn', dest='batch_norm', type=bool, default=False, help='Whether to use batch normalization or not')
     parser.add_argument('--da', dest='augdata', type=bool, default=False, help='Whether to activate data augmentation pipeline or not during training')
+    parser.add_argument('--wl', dest='weighted_loss', type=bool, default=False, help='Whether to weight the loss or not')
     args = parser.parse_args()
     main(args)
