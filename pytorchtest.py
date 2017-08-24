@@ -117,7 +117,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 # forward
                 outputs = model(inputs)
                 preds = torch.sigmoid(outputs.data).long()
-                loss = criterion(torch.Tensor(outputs), torch.Tensor(labels))
+                loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
                     loss.backward()
@@ -207,7 +207,7 @@ def main(args):
         weight = [0.343723, 0.656277]
     else:
         weight = [1, 1]
-    criterion = nn.BCEWithLogitsLoss(Variable(torch.Tensor(weight)))
+    criterion = nn.BCEWithLogitsLoss(torch.Tensor(weight))
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
