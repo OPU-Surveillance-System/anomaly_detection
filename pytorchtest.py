@@ -134,7 +134,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
             lineloss = axes[0].plot(list(range(epoch + 1)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
             lineacc = axes[1].plot(list(range(epoch + 1)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
 
-            print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
+            print('{} Loss: {} Acc: {}, some outputs: {} and their groundtruths'.format(phase, epoch_loss, epoch_acc, preds[0:10], labels[0:10]))
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
