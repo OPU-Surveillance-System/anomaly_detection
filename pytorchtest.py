@@ -207,7 +207,7 @@ def main(args):
         weight = [0.343723, 0.656277]
     else:
         weight = [1, 1]
-    criterion = nn.BCEWithLogitsLoss(torch.Tensor(weight))
+    criterion = nn.BCEWithLogitsLoss()
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
