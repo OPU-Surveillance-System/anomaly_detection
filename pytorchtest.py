@@ -116,7 +116,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
                 optimizer.zero_grad()
                 # forward
                 outputs = model(inputs)
-                preds = torch.sigmoid(outputs.data)
+                preds = (torch.sigmoid(outputs.data) > 0.5).long()
                 loss = criterion(outputs, labels)
                 # backward + optimize only if in training phase
                 if phase == 'train':
