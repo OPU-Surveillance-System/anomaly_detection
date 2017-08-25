@@ -52,7 +52,7 @@ def test_model(model):
             answer.append(p)
         for l in labels:
             groundtruth.append(l)
-        print('Processed {} images'.format(len(inputs)))
+        #print('Processed {} images'.format(len(inputs)))
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
