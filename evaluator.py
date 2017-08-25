@@ -68,6 +68,8 @@ def main(args):
     if use_gpu:
         model = model.cuda()
     answer, groundtruth = test_model(model)
+    answer = np.array(answer)
+    groundtruth = np.array(groundtruth)
     print(answer.shape, groundtruth.shape)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
     auc = metrics.auc(fpr, tpr)
