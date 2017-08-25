@@ -69,7 +69,7 @@ def main(args):
         model = model.cuda()
     answer, groundtruth = test_model(model)
     answer = np.array(answer)
-    groundtruth = np.array(groundtruth)
+    groundtruth = np.array(groundtruth).reshape(len(groundtruth), 1)
     print(answer.shape, groundtruth.shape)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
     auc = metrics.auc(fpr, tpr)
