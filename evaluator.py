@@ -57,7 +57,7 @@ def test_model(model):
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
-return answer, groundtruth
+    return answer, groundtruth
 
 def main(args):
     #Create experiment directory
