@@ -14,6 +14,7 @@ import argparse
 from random import shuffle
 import matplotlib.pyplot as plt
 from sklearn import metrics
+from tqdm import tqdm
 
 use_gpu = torch.cuda.is_available()
 
@@ -29,7 +30,7 @@ def test_model(model):
     groundtruth = []
 
     # Iterate over data.
-    while step < max_step:
+    for step in range(tqdm(max_step)):
         # get the inputs
         idx_start = step * args.batch_size
         idx_end = idx_start + args.batch_size
@@ -47,7 +48,6 @@ def test_model(model):
         # forward
         outputs = model(inputs)
         preds = torch.sigmoid(outputs.data)
-        step += 1
         for p in preds:
             answer.append(p)
         for l in labels:
@@ -68,6 +68,7 @@ def main(args):
     if use_gpu:
         model = model.cuda()
     answer, groundtruth = test_model(model)
+    print(answer.shape, groundtruth.shape)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
