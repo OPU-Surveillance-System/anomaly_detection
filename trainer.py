@@ -1,147 +1,237 @@
-"""
-Train a given model according to a given dataset.
-"""
-
-import os
-import tensorflow as tf
-from tensorflow.python.framework import ops
-import argparse
-from scipy import misc
+from __future__ import print_function, division
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.autograd import Variable
 import numpy as np
+import torchvision
+from torchvision import datasets, models, transforms
+import time
+import copy
+import os
+from scipy import misc
+import argparse
+from random import shuffle
+import matplotlib.pyplot as plt
+import imgaug as ia
+from imgaug import augmenters as iaa
 
-import lstmvgg16
+use_gpu = torch.cuda.is_available()
 
-def main(args):
-    #Create output directories
-    if not os.path.exists(args.exp_out):
-        os.makedirs(args.exp_out)
-    if not os.path.exists(args.exp_out + '/logs'):
-        os.makedirs(args.exp_out + '/logs')
-    if not os.path.exists(args.exp_out + '/serial'):
-        os.makedirs(args.exp_out + '/serial')
-    #Create dataset
+def train_model(model, criterion, optimizer, lr_scheduler):
     with open(args.trainset, 'r') as f:
         trainset = f.read().split('\n')[:-1]
-    trainset = [c.split('\t') for c in trainset]
+    trainset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in trainset]
     with open(args.valset, 'r') as f:
         valset = f.read().split('\n')[:-1]
-    valset = [c.split('\t') for c in valset]
-    #Instantiate session
-    sess = tf.Session()
-    #Instantiate model and define operations
-    image = tf.placeholder(tf.float32, [None, 224, 224, 3], name='pl_input')
-    label = tf.placeholder(tf.float32, name='pl_label')
-    init_state = tf.placeholder(tf.float32, [args.lstm_num_layers, 2, args.batch_size, args.state_size], name='pl_init_state')
-    is_training = tf.placeholder(tf.bool, name='pl_init_state')
-    margs = {
-        'trainable': args.trainable,
-        'weights file': args.vgg_weights,
-        'session': sess,
-        'dropout': args.dpr,
-        'init state': init_state,
-        'state size': args.state_size,
-        'lstm num layers': args.lstm_num_layers
-    }
-    model = lstmvgg16.LSTMVGG16(image, label, args.learning_rate, is_training, threshold=args.threshold,  margs=margs)
-    cross_entropy = model.get_cross_entropy()
-    loss_batch = model.get_loss_batch()
-    correct_prediction = model.count_correct_prediction()
-    accuracy_batch = model.get_accuracy_batch()
-    train, learning_rate = model.train()
-    probs = model.get_probs()
-    #Create summaries
-    pl_loss = tf.placeholder(tf.float32, name='loss_placeholder')
-    pl_accuracy = tf.placeholder(tf.float32, name='accuracy_placeholder')
-    pl_lr = tf.placeholder(tf.float32, name='learning_rate_placeholder')
-    with tf.variable_scope("train_set"):
-        t_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
-        t_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        t_lr_summary = tf.summary.scalar(tensor=pl_lr, name='learning_rate')
-        t_summaries = tf.summary.merge([t_loss_summary, t_accuracy_summary, t_lr_summary])
-    with tf.variable_scope("validation_set"):
-        v_loss_summary = tf.summary.scalar(tensor=pl_loss, name='loss')
-        v_accuracy_summary = tf.summary.scalar(tensor=pl_accuracy, name='accuracy')
-        v_summaries = tf.summary.merge([v_loss_summary, v_accuracy_summary])
-    train_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/train'), sess.graph)
-    validation_writer = tf.summary.FileWriter(os.path.join(args.exp_out, 'logs/validation'), sess.graph)
-    #Create saver
-    saver = tf.train.Saver(max_to_keep=10)
-    #Init variables
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.local_variables_initializer())
-    # print(model.parameters)
-    # print(len(model.parameters))
+    valset = [(c.split('\t')[0], int(c.split('\t')[1])) for c in valset]
+    dsets = {'train': trainset, 'val': valset}
+    dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
+    since = time.time()
 
-    #Training loop
-    batch_count = 0
+    best_model = model
+    best_acc = 0.0
+    best_loss = 0
+    summaries = {'train':{'loss':[], 'accuracy':[]}, 'val':{'loss':[], 'accuracy':[]}}
+
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    color = {'train':'blue', 'val':'red'}
+    m = nn.Sigmoid()
+
     for epoch in range(args.epochs):
-        #Training
-        step = 0
-        max_step = len(trainset)
-        while step < max_step:
-            idx_start = step
-            idx_end = idx_start + 1
-            img = [misc.imread(trainset[idx_start][f]) for f in range(args.sliding_window_len)]
-            lbl = [int(trainset[i][-1]) for i in range(idx_start, idx_end)]
-            _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
-            feed_dict = {image:img, label:lbl, init_state:_current_state}
-            t_loss, t_accuracy, _, lr, logits, gt = sess.run([loss_batch, accuracy_batch, train, learning_rate, model.logits, label], feed_dict=feed_dict)
-            if step % args.summary_step == 0:
-                print('epoch %d, step %d (%d images), loss: %.4f, accuracy: %.4f'%(epoch, step, (step + 1) * args.batch_size, t_loss, t_accuracy))
-                print(logits, gt, sum(gt), sum(det))
-                feed_dict = {pl_loss: t_loss, pl_accuracy: t_accuracy, pl_lr: lr}
-                train_str = sess.run(t_summaries, feed_dict=feed_dict)
-                train_writer.add_summary(train_str, batch_count)
-                train_writer.flush()
+        print('Epoch {}/{}'.format(epoch, args.epochs - 1))
+        print('-' * 10)
+
+        # Each epoch has a training and validation phase
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                #optimizer = lr_scheduler(optimizer, epoch)
+                model.train(True)  # Set model to training mode
+            else:
+                model.train(False)  # Set model to evaluate mode
+            #Data augmenters
+            if phase == 'train' and args.augdata:
+                seq = iaa.Sequential(iaa.SomeOf((0, 2), [
+                    iaa.Fliplr(0.5),
+                    #iaa.Invert(0.5),
+                    iaa.OneOf([
+                        iaa.Add((-5, 25)),
+                        iaa.Multiply((0.25, 1.5))
+                    ]),
+                    iaa.OneOf([
+                        iaa.OneOf([
+                            iaa.GaussianBlur((0, 1.0)),
+                            iaa.AverageBlur(k=(1, 5)),
+                            iaa.MedianBlur(k=(1, 5)),
+                            iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.1*255), per_channel=0.5),
+                            iaa.Dropout((0.01, 0.3), per_channel=0.5),
+                            iaa.CoarseDropout((0.03, 0.15), size_percent=(0.03, 0.05), per_channel=0.2)
+                        ]),
+                        iaa.OneOf([
+                            iaa.Sharpen(alpha=(0, 1.0), lightness=(1.0, 1.75)),
+                            iaa.Emboss(alpha=(0, 1.0), strength=(0.2, 0.75)),
+                            iaa.EdgeDetect(alpha=(0.1, 0.3)),
+                            iaa.ContrastNormalization((0.5, 1.5), per_channel=0.5),
+                            iaa.Grayscale(alpha=(0.0, 1.0)),
+                        ])
+                    ]),
+                    iaa.OneOf([
+                        iaa.PiecewiseAffine(scale=(0.01, 0.03)),
+                        iaa.Affine(scale=(1.0, 1.3),
+                                   translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
+                                   rotate=(-15, 15),
+                                   shear=(-15, 15),
+                                   order=[0, 1],
+                                   cval=(0, 255),
+                                   mode=ia.ALL),
+                        iaa.ElasticTransformation(alpha=(0.01, 2.0), sigma=0.25)
+                    ]),
+                ]), random_order=True)
+
+            #Local variables
+            running_loss = 0.0
+            running_corrects = 0
+            step = 0
+            max_step = int(dset_sizes[phase] / args.batch_size)
+
+            # Iterate over data.
+            while step < max_step:
+                # get the inputs
+                idx_start = step * args.batch_size
+                idx_end = idx_start + args.batch_size
+                shuffle(dsets[phase])
+                inputs = np.array([misc.imread(os.path.join('data', dsets[phase][i][0] + '.png')) for i in range(idx_start, idx_end)])
+                if phase == 'train' and args.augdata:
+                    inputs = seq.augment_images(inputs)
+                inputs = np.transpose(inputs, (0, 3, 1, 2))
+                labels = np.array([dsets[phase][i][1] for i in range(idx_start, idx_end)])
+                labels = np.reshape(labels, (args.batch_size, 1))
+                #convert to tensor
+                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
+                # wrap them in Variable
+                if use_gpu:
+                    inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+                else:
+                    inputs, labels = Variable(inputs), Variable(labels)
+                # zero the parameter gradients
+                optimizer.zero_grad()
+                # forward
+                outputs = model(inputs)
+                preds = (torch.sigmoid(outputs.data) > 0.5).long()
+                loss = criterion(outputs, labels)
+                # backward + optimize only if in training phase
+                if phase == 'train':
+                    loss.backward()
+                    optimizer.step()
+                # statistics
+                running_loss += loss.data[0]
+                running_corrects += torch.sum(preds == labels.data.long())
+                # next step
                 step += 1
-                batch_count += 1
-        #Save model
-        if epoch % args.save_epoch == 0:
-            save_path = saver.save(sess, os.path.join(args.exp_out, 'serial/model.ckpt'), global_step=epoch)
-            print('Model saved in file: %s'%(save_path))
-        #Validation
-        v_loss = 0
-        v_accuracy = 0
-        count = 0
-        step = 0
-        max_step = len(valset)
-        while step < max_step:
-            idx_start = step
-            idx_end = idx_start + 1
-            img = [misc.imread(valset[idx_start][f]) for f in range(args.sliding_window_len)]
-            lbl = [int(valset[i][-1]) for i in range(idx_start, idx_end)]
-            _current_state = np.zeros((args.lstm_num_layers, 2, args.batch_size, args.state_size))
-            feed_dict = {image:img, label:lbl, init_state:_current_state}
-            tmp_xentropy, tmp_correct_prediction, logits, gt = sess.run([cross_entropy, correct_prediction, model.logits, label], feed_dict=feed_dict)
-            v_loss += sum(tmp_xentropy)
-            v_accuracy += sum(tmp_correct_prediction)
-            count += len(tmp_xentropy)
-            print(logits, gt)
-        v_loss /= count
-        v_accuracy /= count
-        print('epoch %d validation, %d validation images, loss: %.4f, accuracy: %.4f'%(epoch, count, v_loss, v_accuracy))
-        feed_dict = {pl_loss: v_loss, pl_accuracy: v_accuracy}
-        validation_str = sess.run(v_summaries, feed_dict=feed_dict)
-        validation_writer.add_summary(validation_str, epoch)
-        validation_writer.flush()
-    return 0
+            epoch_loss = running_loss / dset_sizes[phase]
+            epoch_acc = running_corrects / dset_sizes[phase]
+            summaries[phase]['loss'].append(epoch_loss)
+            summaries[phase]['accuracy'].append(epoch_acc)
+            lineloss = axes[0].plot(list(range(epoch + 1)), summaries[phase]['loss'], color=color[phase], label='%s loss'%(phase))
+            lineacc = axes[1].plot(list(range(epoch + 1)), summaries[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
+
+            print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
+
+            if phase == 'val' and epoch == 0:
+                best_loss = epoch_loss
+            # deep copy the model
+            if phase == 'val' and epoch_acc > best_acc:
+                best_acc = epoch_acc
+                best_model = copy.deepcopy(model)
+                torch.save(best_model, os.path.join(args.directory, 'best_acc_model'))
+            if phase == 'val' and epoch_loss < best_loss:
+                best_loss = epoch_loss
+                torch.save(model, os.path.join(args.directory, 'best_loss_model'))
+        axes[0].legend(loc='lower right')
+        axes[1].legend(loc='lower right')
+        plt.savefig(os.path.join(args.directory, 'training.svg'), format='svg')
+        axes[0].cla()
+        axes[1].cla()
+
+        print()
+
+    time_elapsed = time.time() - since
+    print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+    print('Best val Acc: {}'.format(best_acc))
+
+    return best_model
+
+def exp_lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=7):
+    """Decay learning rate by a factor of 0.1 every lr_decay_epoch epochs."""
+    lr = init_lr * (0.1**(epoch // lr_decay_epoch))
+
+    if epoch % lr_decay_epoch == 0:
+        print('LR is set to {}'.format(lr))
+
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+    return optimizer
+
+def main(args):
+    #Create experiment directory
+    if not os.path.exists(args.directory):
+        os.makedirs(args.directory)
+    #Load pretrained VGG16
+    model_ft = models.vgg16(pretrained=True)
+    #Freeze convolutional layers
+    for param in model_ft.parameters():
+        param.requires_grad = False
+    #Extract classifier part
+    mod = list(model_ft.classifier.children())
+    #Use dropout
+    mod[2] = torch.nn.Dropout(args.drop_prob)
+    mod[5] = torch.nn.Dropout(args.drop_prob)
+    #Add batch norm if specified
+    if args.batch_norm:
+        mod.insert(1, torch.nn.BatchNorm1d(4096))
+        mod.insert(5, torch.nn.BatchNorm1d(4096))
+    #Change the final layer
+    mod.pop()
+    mod.append(torch.nn.Linear(4096, 1))
+    new_classifier = torch.nn.Sequential(*mod)
+    #Replace the classifier part
+    model_ft.classifier = new_classifier
+    #Set specified parameters trainable
+    parameters = list(model_ft.classifier.parameters())
+    if args.batch_norm:
+        tmp = [parameters[9], parameters[8]]
+        parameters = [parameters[7 - p] for p in range((args.trainable_parameters - 1) * 4)]
+        parameters = list(reversed(tmp + parameters))
+    else:
+        parameters = [parameters[5 - p] for p in range(args.trainable_parameters * 2)]
+    for param in parameters:
+        param.requires_grad = True
+    if use_gpu:
+        model_ft = model_ft.cuda()
+    #Cross entropy function
+    if args.weighted_loss:
+        weight = [0.343723, 0.656277]
+    else:
+        weight = [1, 1]
+    criterion = nn.BCEWithLogitsLoss()
+    # Observe that all parameters are being optimized
+    optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
+    model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
-    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.000001, help='Learning rate')
-    parser.add_argument('--ftrain', dest='trainable', type=bool, default=False, help='Full train (VGG)')
-    parser.add_argument('--weights', dest='vgg_weights', type=str, default='vgg16_weights.npz', help='Path to the VGG\'s pretrained weights')
-    parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='Model\'s detection threshold')
-    parser.add_argument('--trainset', dest='trainset', type=str, default='data/augmentatedtrainset', help='Path to the trainset summary')
-    parser.add_argument('--valset', dest='valset', type=str, default='data/valset', help='Path to the valset summary')
-    parser.add_argument('--epochs', dest='epochs', type=int, default=500, help='Number of training epochs')
-    parser.add_argument('--sumstep', dest='summary_step', type=int, default=50, help='Number of summary steps')
-    parser.add_argument('--saveepoch', dest='save_epoch', type=int, default=10, help='Number of save epochs')
-    parser.add_argument('--bs', dest='batch_size', type=int, default=20, help='Mini batch size')
-    parser.add_argument('--out', dest='exp_out', type=str, default='exp', help='Path for experiment\'s outputs')
-    parser.add_argument('--dpr', dest='dpr', type=float, default=0.5, help='Dropout probability')
-    parser.add_argument('--statesize', dest='state_size', type=int, default=4, help='LSTM state size')
-    parser.add_argument('--lstml', dest='lstm_num_layers', type=int, default=1, help='Number of stacked LSTM')
-    parser.add_argument('--swl', dest='sliding_window_len', type=int, default=10, help='Length of the sliding window')
+    parser.add_argument('--lr', dest='learning_rate', type=float, default=0.00001, help='Learning rate')
+    parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
+    parser.add_argument('--ep', dest='epochs', type=int, default=50, help='Number of training epochs')
+    parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
+    parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
+    parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
+    parser.add_argument('--doprob', dest='drop_prob', type=float, default='0.5', help='Dropout keep probability')
+    parser.add_argument('--trp', dest='trainable_parameters', type=int, default=3, help='Trainable parameters (range in [1, 3] - FC3 to FC1)')
+    parser.add_argument('--bn', dest='batch_norm', type=bool, default=False, help='Whether to use batch normalization or not')
+    parser.add_argument('--da', dest='augdata', type=bool, default=False, help='Whether to activate data augmentation pipeline or not during training')
+    parser.add_argument('--wl', dest='weighted_loss', type=bool, default=False, help='Whether to weight the loss or not')
     args = parser.parse_args()
     main(args)

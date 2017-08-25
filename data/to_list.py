@@ -29,7 +29,7 @@ def main(args):
         for s in tqdm(summary):
             for w in range(len(s) - (args.wl - 1)):
                 ex = s[w:w + args.wl]
-                line = '\t'.join([e[0] for e in ex])
+                line = '\t'.join(['data/' + e[0] + '.png' for e in ex])
                 label = sum([int(e[1]) for e in ex])
                 if label > 1:
                     label = 1
