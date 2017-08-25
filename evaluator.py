@@ -70,7 +70,6 @@ def main(args):
     answer, groundtruth = test_model(model)
     answer = np.array(answer).reshape(len(answer))
     groundtruth = np.array(groundtruth).reshape(len(groundtruth))
-    print(len(set(groundtruth)))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
