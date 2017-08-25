@@ -72,7 +72,6 @@ def main(args):
     groundtruth = np.array(groundtruth).reshape(len(groundtruth))
     for a in answer:
         print(a)
-    print(typeg)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
