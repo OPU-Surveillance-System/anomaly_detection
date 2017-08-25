@@ -30,7 +30,7 @@ def test_model(model):
     groundtruth = []
 
     # Iterate over data.
-    for step in range(tqdm(max_step)):
+    for step in tqdm(range(max_step)):
         # get the inputs
         idx_start = step * args.batch_size
         idx_end = idx_start + args.batch_size
