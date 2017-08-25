@@ -51,7 +51,7 @@ def test_model(model):
         outputs = model(inputs)
         preds = torch.sigmoid(outputs.data)
         for p in preds:
-            answer.append(Variable(p).data.numpy())
+            answer.append(Variable(p).data).cpu().numpy())
         #print('Processed {} images'.format(len(inputs)))
 
     time_elapsed = time.time() - since
