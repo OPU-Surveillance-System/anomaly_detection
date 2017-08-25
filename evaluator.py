@@ -37,6 +37,8 @@ def test_model(model):
         inputs = np.array([misc.imread(os.path.join('data', testset[i][0] + '.png')) for i in range(idx_start, idx_end)])
         inputs = np.transpose(inputs, (0, 3, 1, 2))
         labels = np.array([testset[i][1] for i in range(idx_start, idx_end)])
+        for l in labels:
+            groundtruth.append(l)
         labels = np.reshape(labels, (args.batch_size, 1))
         #convert to tensor
         inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
@@ -49,9 +51,7 @@ def test_model(model):
         outputs = model(inputs)
         preds = torch.sigmoid(outputs.data)
         for p in preds:
-            answer.append(p)
-        for l in labels:
-            groundtruth.append(l)
+            answer.append(p.data.numpy())
         #print('Processed {} images'.format(len(inputs)))
 
     time_elapsed = time.time() - since
