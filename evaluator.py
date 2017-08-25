@@ -68,8 +68,8 @@ def main(args):
     if use_gpu:
         model = model.cuda()
     answer, groundtruth = test_model(model)
-    answer = np.array(answer)
-    groundtruth = np.array(groundtruth).reshape(len(groundtruth), 1)
+    answer = np.array(answer).reshape(len(answer))
+    groundtruth = np.array(groundtruth).reshape(len(groundtruth))
     typeg=[]
     for g in groundtruth:
         if g not in typeg:
