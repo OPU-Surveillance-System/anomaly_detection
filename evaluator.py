@@ -70,10 +70,8 @@ def main(args):
     answer, groundtruth = test_model(model)
     answer = np.array(answer).reshape(len(answer))
     groundtruth = np.array(groundtruth).reshape(len(groundtruth))
-    typeg=[]
-    for g in groundtruth:
-        if g not in typeg:
-            typeg.append(g)
+    for a in answer:
+        print(a)
     print(typeg)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
     auc = metrics.auc(fpr, tpr)
