@@ -71,7 +71,7 @@ def main(args):
     answer = np.array(answer).reshape(len(answer))
     groundtruth = np.array(groundtruth).reshape(len(groundtruth))
     print(len(set(groundtruth)))
-    fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer, pos_label=2)
+    fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
     lw = 2
