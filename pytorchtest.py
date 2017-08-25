@@ -31,6 +31,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
     best_model = model
     best_acc = 0.0
+    best_loss = 0
     summaries = {'train':{'loss':[], 'accuracy':[]}, 'val':{'loss':[], 'accuracy':[]}}
 
     fig, axes = plt.subplots(nrows=1, ncols=2)
@@ -136,10 +137,16 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
+            if phase == 'val' and epoch == 0:
+                best_loss = epoch_loss
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model = copy.deepcopy(model)
+                torch.save(best_model, os.path.join(args.directory, 'best_acc_model'))
+            if phase == 'val' and epoch_loss < best_loss:
+                best_loss = epoch_loss
+                torch.save(model, os.path.join(args.directory, 'best_loss_model'))
         axes[0].legend(loc='lower right')
         axes[1].legend(loc='lower right')
         plt.savefig(os.path.join(args.directory, 'training.svg'), format='svg')
@@ -211,7 +218,7 @@ def main(args):
     # Observe that all parameters are being optimized
     optimizer_ft = optim.Adam(parameters, lr=args.learning_rate)
     model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler)
-    torch.save(model_ft, os.path.join(args.directory, 'modelsave'))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
