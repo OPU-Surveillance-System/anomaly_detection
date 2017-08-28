@@ -137,7 +137,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
-            if phase == 'val' and epoch == 0:
+            if phase == 'val' and epoch == 1:
                 best_loss = epoch_loss
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
