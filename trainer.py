@@ -31,7 +31,7 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
     best_model = model
     best_acc = 0.0
-    best_loss = 0
+    best_loss = 100000000
     summaries = {'train':{'loss':[], 'accuracy':[]}, 'val':{'loss':[], 'accuracy':[]}}
 
     fig, axes = plt.subplots(nrows=1, ncols=2)
@@ -137,8 +137,6 @@ def train_model(model, criterion, optimizer, lr_scheduler):
 
             print('{} Loss: {} Acc: {}, some outputs: {}'.format(phase, epoch_loss, epoch_acc, outputs[0:10]))
 
-            if phase == 'val' and epoch == 1:
-                best_loss = epoch_loss
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
