@@ -63,7 +63,7 @@ class CLSTM(nn.Module):
         cell_list.append(CLSTM_cell(self.shape, self.input_chans, self.filter_size, self.num_features).cuda())#the first
         #one has a different number of input channels
 
-        for idcell in xrange(1,self.num_layers):
+        for idcell in range(1,self.num_layers):
             cell_list.append(CLSTM_cell(self.shape, self.num_features, self.filter_size, self.num_features).cuda())
         self.cell_list=nn.ModuleList(cell_list)
 
@@ -81,12 +81,12 @@ class CLSTM(nn.Module):
         seq_len=current_input.size(0)
 
 
-        for idlayer in xrange(self.num_layers):#loop for every layer
+        for idlayer in range(self.num_layers):#loop for every layer
 
             hidden_c=hidden_state[idlayer]#hidden and c are images with several channels
             all_output = []
             output_inner = []
-            for t in xrange(seq_len):#loop for every step
+            for t in range(seq_len):#loop for every step
                 hidden_c=self.cell_list[idlayer](current_input[t,...],hidden_c)#cell_list is a list with different conv_lstms 1 for every layer
 
                 output_inner.append(hidden_c[0])
@@ -99,6 +99,6 @@ class CLSTM(nn.Module):
 
     def init_hidden(self,batch_size):
         init_states=[]#this is a list of tuples
-        for i in xrange(self.num_layers):
+        for i in range(self.num_layers):
             init_states.append(self.cell_list[i].init_hidden(batch_size))
         return init_states
