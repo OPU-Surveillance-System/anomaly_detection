@@ -15,7 +15,7 @@ seq_len=4
 input = Variable(torch.rand(batch_size,seq_len,inp_chans,shape[0],shape[1]))
 
 conv_lstm=clstm.CLSTM(shape, inp_chans, filter_size, num_features,nlayers)
-conv_lstm.apply(weights_init)
+#conv_lstm.apply(weights_init)
 #conv_lstm.cuda()
 
 print('convlstm module:', conv_lstm)
