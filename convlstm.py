@@ -7,6 +7,7 @@ from torch.nn import Parameter
 from torch.nn import functional as F
 from torch.nn.modules.utils import _pair
 from torch.autograd import Variable
+import math
 
 
 class LSTMCell(nn.LSTMCell):
