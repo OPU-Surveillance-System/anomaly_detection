@@ -11,30 +11,18 @@ inp_chans=3
 nlayers=2
 seq_len=4
 
-# input = Variable(torch.rand(batch_size,seq_len,inp_chans,shape[0],shape[1])).cuda()
-input = Variable(torch.rand(batch_size,seq_len,inp_chans,shape[0],shape[1]))
+convlstm=clstm.Conv2dLSTMCell(in_channels=2, out_channels=1, kernel_size=(3, 3), stride=1, padding=0)
+convlstm.cuda()
+x = Variable(torch.ones(1, 2)).cuda()
+h = Variable(torch.ones(1, 1)).cuda()
+c = Variable(torch.ones(1, 1)).cuda()
+t = Variable(torch.zeros(1, 1)).cuda()
+x.data.resize_(1, 2, 22, 22).random_()
+h.data.resize_(1, 1, 20, 20).random_()
+c.data.resize_(1, 1, 20, 20).random_()
+t.data.resize_(1, 1, 20, 20).random_()
 
-conv_lstm=clstm.CLSTM(shape, inp_chans, filter_size, num_features,nlayers)
-#conv_lstm.apply(weights_init)
-#conv_lstm.cuda()
-
+y, hx = convlstm(x, (h, c))
+loss = (y - t).mean()
+loss.backward()
 print('convlstm module:', conv_lstm)
-
-
-print('params:')
-params=conv_lstm.parameters()
-for p in params:
-   print('param', p.size())
-   print('mean',torch.mean(p))
-
-
-hidden_state=conv_lstm.init_hidden(batch_size)
-print('hidden_h shape', len(hidden_state))
-print('hidden_h shape', hidden_state[0][0].size())
-out=conv_lstm(input,hidden_state)
-print('out shape', out[1].size())
-print('len hidden', len(out[0]))
-print('next hidden', out[0][0][0].size())
-print('convlstm dict', conv_lstm.state_dict().keys())
-L=torch.sum(out[1])
-L.backward()
