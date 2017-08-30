@@ -96,12 +96,12 @@ def train_model(model, criterion, optimizer):
 
     return best_model, best_trainepoch
 
-def main(args):
+def main(args, margs):
     #Create experiment directory
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
-    model_import = import_module('.'.join(args.model.split('.')[0:2]))
-    model_class = getattr(model_import, args.model.split('.')[2])
+    model_import = import_module('.'.join(args.model.split('.')[0:1]))
+    model_class = getattr(model_import, args.model.split('.')[1])
     model = model_class(margs)
     trained_model, best_trainepoch = train_model(model)
     model.model = deepcopy(trained_model)
@@ -109,6 +109,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
+    parser.add_argument('--m', dest='model', type=str, default='vgg16extractor.VGG16Extractor')
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
     parser.add_argument('--p', dest='max_patience', type=int, default=10, help='')
     parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
