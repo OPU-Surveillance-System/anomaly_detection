@@ -77,5 +77,5 @@ class VGG16Extractor():
     def predict(self, probs):
         """
         """
-        print(type(probs))
+        
         return (torch.sigmoid(probs.data) > float(self.margs['thr'])).long()
