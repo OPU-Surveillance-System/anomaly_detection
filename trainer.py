@@ -14,7 +14,7 @@ import argparse
 from random import shuffle
 from importlib import import_module
 
-def train_model(model, criterion, optimizer):
+def train_model(model):
     model = model.model
     criterion = model.criterion
     optimizer = model.optimizer
