@@ -119,4 +119,5 @@ if __name__ == '__main__':
     parser.add_argument('--plot', dest='plot', type=bool, default=False, help='')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}
+    print('arguments passed to the model: {}'.format(margs))
     main(args, margs)
