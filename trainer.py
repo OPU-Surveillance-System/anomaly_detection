@@ -84,7 +84,7 @@ def train_model(model_to_train):
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
                     best_model = copy.deepcopy(model)
-                    best_trainepoch = i
+                    best_trainepoch = trainepoch
                     best_loss = val_loss
                 else:
                     accumulated_patience += 1
