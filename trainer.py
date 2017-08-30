@@ -33,12 +33,14 @@ def train_model(model_to_train):
     trainepoch = 0
     accumulated_patience = 0
     best_loss = float('inf')
+    best_loss_acc = 0
     best_model = copy.deepcopy(model)
     best_trainepoch = 0
     max_trainstep = int(len(trainset) / args.batch_size)
     max_valstep = int(len(valset) / args.batch_size)
     hist = {'training':{'loss':[], 'accuracy':[]}, 'validation':{'loss':[], 'accuracy':[]}}
     #Train loop
+    since = time.time()
     while accumulated_patience < args.max_patience:
         print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
         print('-' * 10)
@@ -85,6 +87,7 @@ def train_model(model_to_train):
                     best_model = copy.deepcopy(model)
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
+                    best_loss_acc = epoch_acc
                 else:
                     accumulated_patience += 1
                 if args.plot:
@@ -93,6 +96,7 @@ def train_model(model_to_train):
     print()
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+    print('Best validation loss: {}, accuracy: {}, epoch: {}'.format(best_loss, best_loss_acc, best_trainepoch))
 
     return best_model, best_trainepoch
 
