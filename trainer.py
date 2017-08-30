@@ -88,7 +88,7 @@ def train_model(model_to_train):
                     best_loss = epoch_loss
                 else:
                     accumulated_patience += 1
-                if args.plot_hist:
+                if args.plot:
                     plot_history(hist)
     print()
     time_elapsed = time.time() - since
@@ -116,6 +116,7 @@ if __name__ == '__main__':
     parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
     parser.add_argument('--da', dest='augdata', type=bool, default=False, help='Whether to activate data augmentation pipeline or not during training')
+    parser.add_argument('--plot', dest='plot', type=bool, default=False, help='')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}
     main(args, margs)
