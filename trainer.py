@@ -40,7 +40,7 @@ def train_model(model_to_train):
     hist = {'training':{'loss':[], 'accuracy':[]}, 'validation':{'loss':[], 'accuracy':[]}}
     #Train loop
     while accumulated_patience < args.max_patience:
-        print('Epoch {}'.format(trainepoch))
+        print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
         print('-' * 10)
         for p in phase:
             if p == 'training':
