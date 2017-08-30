@@ -79,7 +79,6 @@ def train_model(model_to_train):
             hist[p]['loss'].append(epoch_loss)
             hist[p]['accuracy'].append(epoch_acc)
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
-            trainepoch+= 1
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
@@ -90,6 +89,7 @@ def train_model(model_to_train):
                     accumulated_patience += 1
                 if args.plot:
                     plot_history(hist)
+        trainepoch+= 1
     print()
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
