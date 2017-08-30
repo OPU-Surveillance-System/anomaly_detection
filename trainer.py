@@ -14,10 +14,10 @@ import argparse
 from random import shuffle
 from importlib import import_module
 
-def train_model(model):
-    model = model.model
-    criterion = model.criterion
-    optimizer = model.optimizer
+def train_model(model_to_train):
+    model = model_to_train.model
+    criterion = model_to_train.criterion
+    optimizer = model_to_train.optimizer
     #Read data
     with open(args.trainset, 'r') as f:
         trainset = f.read().split('\n')[:-1]
