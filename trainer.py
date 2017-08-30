@@ -68,7 +68,7 @@ def train_model(model, criterion, optimizer):
                 outputs = model(inputs)
                 preds = model.predict(outputs.data)
                 loss = criterion(outputs, labels)
-                if p == 'training'
+                if p == 'training':
                     # backward + optimize
                     loss.backward()
                     optimizer.step()
@@ -80,7 +80,7 @@ def train_model(model, criterion, optimizer):
             hist[p]['accuracy'].append(epoch_acc)
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             trainepoch+= 1
-            if p == 'validation'
+            if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
                     best_model = copy.deepcopy(model)
