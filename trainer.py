@@ -66,7 +66,9 @@ def train_model(model_to_train):
                 inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
                 #forward
                 outputs = model(inputs)
-                preds = model_to_train.predict(outputs.data)
+                #preds = model_to_train.predict(outputs.data)
+                print(type(outputs))
+                preds = (torch.sigmoid(outputs.data) > 0.5).long()
                 loss = criterion(outputs, labels)
                 if p == 'training':
                     # backward + optimize
