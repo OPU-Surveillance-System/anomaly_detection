@@ -66,7 +66,7 @@ def train_model(model_to_train):
                 inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
                 #forward
                 outputs = model(inputs)
-                preds = model.predict(outputs.data)
+                preds = model_to_train.predict(outputs.data)
                 loss = criterion(outputs, labels)
                 if p == 'training':
                     # backward + optimize
