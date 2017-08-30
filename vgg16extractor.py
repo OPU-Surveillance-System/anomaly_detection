@@ -1,3 +1,10 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.autograd import Variable
+import torchvision
+from torchvision import datasets, models, transforms
+
 class VGG16Extractor():
     """
     """
