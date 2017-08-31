@@ -108,7 +108,7 @@ def main(args, margs):
     model_class = getattr(model_import, args.model.split('.')[1])
     model = model_class(margs)
     trained_model, best_trainepoch = train_model(model)
-    model.model = deepcopy(trained_model)
+    model.model = copy.deepcopy(trained_model)
     torch.save(model.model, os.path.join(args.directory, 'best_loss_model'))
 
 if __name__ == '__main__':
