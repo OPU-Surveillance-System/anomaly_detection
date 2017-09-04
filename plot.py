@@ -9,4 +9,4 @@ def plot_history(history, directory):
         lineacc = axes[1].plot(list(range(len(history[phase]['accuracy']))), history[phase]['accuracy'], color=color[phase], label='%s accuracy'%(phase))
     axes[0].legend(loc='lower right')
     axes[1].legend(loc='lower right')
-    plt.savefig(os.path.join(args.directory, 'training.svg'), format='svg')
+    plt.savefig(os.path.join(directory, 'training.svg'), format='svg')
