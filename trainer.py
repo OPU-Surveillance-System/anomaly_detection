@@ -116,7 +116,7 @@ def main(args, margs):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
-    parser.add_argument('--m', dest='model', type=str, default='vgg16extractor.VGG16Extractor')
+    parser.add_argument('--m', dest='model', type=str, default='models.vgg16extractor.VGG16Extractor')
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
     parser.add_argument('--p', dest='max_patience', type=int, default=10, help='')
     parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
