@@ -15,6 +15,7 @@ from random import shuffle
 from importlib import import_module
 
 import plot as plt
+import data_augmentation as da
 
 def train_model(model_to_train):
     model = model_to_train.model
@@ -61,7 +62,7 @@ def train_model(model_to_train):
                 idx_end = idx_start + args.batch_size
                 inputs = np.array([misc.imread(os.path.join('data', dsets[p][i][0] + '.png')) for i in range(idx_start, idx_end)])
                 if p == 'training' and args.augdata == 1:
-                    inputs = augment_batch(inputs)
+                    inputs = da.augment_batch(inputs)
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[p][i][1] for i in range(idx_start, idx_end)])
                 labels = np.reshape(labels, (args.batch_size, 1))
@@ -121,8 +122,8 @@ if __name__ == '__main__':
     parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Path to the trainset summary')
     parser.add_argument('--val', dest='valset', type=str, default='data/valset_labels', help='Path to the valset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
-    parser.add_argument('--da', dest='augdata', type=int, default=False, help='Whether to activate data augmentation pipeline or not during training')
-    parser.add_argument('--plot', dest='plot', type=int, default=False, help='')
+    parser.add_argument('--da', dest='augdata', type=int, default=1, help='Whether to activate data augmentation pipeline or not during training')
+    parser.add_argument('--plot', dest='plot', type=int, default=1, help='')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}
     print('arguments passed to the model: {}'.format(margs))
