@@ -94,7 +94,7 @@ def train_model(model_to_train):
                 else:
                     accumulated_patience += 1
                 if args.plot == 1:
-                    plt.plot_history(hist)
+                    plt.plot_history(hist, args.directory)
         trainepoch+= 1
     print()
     time_elapsed = time.time() - since

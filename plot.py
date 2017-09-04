@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import os
 
-def plot_history(history):
+def plot_history(history, directory):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     color = {'training':'blue', 'validation':'red'}
     for phase in history:
