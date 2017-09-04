@@ -45,8 +45,8 @@ def train_model(model_to_train):
     #Train loop
     since = time.time()
     while accumulated_patience <= args.max_patience:
-        print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
         print('-' * 10)
+        print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
         for p in phase:
             if p == 'training':
                 model.train(True)
