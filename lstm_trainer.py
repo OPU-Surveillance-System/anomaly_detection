@@ -55,11 +55,11 @@ def train_model(model, loss_function, optimizer):
                 model.zero_grad()
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
-                inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)])
+                inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
-                labels = np.array([dsets[p][step][1][i] for i in range(10)]).reshape((10, 1))
+                labels = np.array([dsets[p][step][1][i] for i in range(10)]).reshape((10, 1), dtype=np.float)
                 #Convert to cuda tensor
                 inputs = torch.from_numpy(inputs).float()
                 labels = torch.from_numpy(labels).float()
