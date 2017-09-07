@@ -22,16 +22,20 @@ class VGG16LSTM(nn.Module):
         """
 
         if 'bn' not in margs.keys(): #Batch norm
+            print('**Missing batch norm argument, setting to False**')
             margs['bn'] = False
         if 'do' not in margs.keys(): #Dropout
+            print('**Missing dropout argument, setting to 0.0**')
             margs['do'] = 0.0
         if 'wl' not in margs.keys(): #weighted loss
             margs['wl'] = False
         if 'thr' not in margs.keys(): #Detection threshold
             margs['thr'] = 0.5
         if 'hd' not in margs.keys(): #LSTM Hidden state's dimension
+            print('**Missing hidden state dimension argument, setting to 100**')
             margs['hd'] = 100
         if 'rl' not in margs.keys(): #LSTM's number of layers
+            print('**Missing number of recurent layers argument, setting to 1**')
             margs['rl'] = 1
 
         super(VGG16LSTM, self).__init__()
