@@ -4,6 +4,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 import torchvision
 from torchvision import datasets, models, transforms
+import numpy as np
 
 class VGG16LSTM(nn.Module):
     """
