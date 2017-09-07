@@ -114,6 +114,7 @@ def main(args, margs):
     model_class = getattr(model_import, args.model.split('.')[2])
     model = model_class(margs)
     model = model.cuda()
+    print('Is the model on cuda?', next(model.parameters()).is_cuda)
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
