@@ -63,8 +63,8 @@ class VGG16LSTM(nn.Module):
         """
 
         #Dimension semantic: Number of recurent layers, Batch size, Hidden size
-        init = (Variable(torch.zeros(self.margs['rl'], 1, self.margs['hd'])),
-                Variable(torch.zeros(self.margs['rl'], 1, self.margs['hd'])))
+        init = (Variable(torch.zeros(self.margs['rl'], 1, self.margs['hd']).cuda()),
+                Variable(torch.zeros(self.margs['rl'], 1, self.margs['hd']).cuda()))
 
         return init
 

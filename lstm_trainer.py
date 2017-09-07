@@ -116,8 +116,7 @@ def main(args, margs):
     model_class = getattr(model_import, args.model.split('.')[2])
     model = model_class(margs)
     model = model.cuda()
-    print('Is the model on cuda?', next(model.parameters()).is_cuda)
-    print(model)
+    # print(model)
     # for p in model.parameters():
     #     print(p)
     loss_function = nn.BCEWithLogitsLoss()
