@@ -81,7 +81,7 @@ def train_model(model, loss_function, optimizer):
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
-                    best_model = copy.deepcopy(model)
+                    best_model = copy.deepcopy(model.detach())
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
                     best_loss_acc = epoch_acc
@@ -106,10 +106,6 @@ def main(args, margs):
     model_class = getattr(model_import, args.model.split('.')[2])
     model = model_class(margs)
     model = model.cuda()
-    # print(model)
-    for p in model.parameters():
-         if p.is_leaf == False:
-             print(p)
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
