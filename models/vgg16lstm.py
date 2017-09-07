@@ -68,7 +68,7 @@ class VGG16LSTM(nn.Module):
         input dimensions: [Sequence, Height, Width, Channels]
         """
 
-        frames = frames.transpose((0, 3, 1, 2))
+        frames = np.transpose(frames, (0, 3, 1, 2))
         embeds = self.vgg(frames)
         lstm_out, self.hidden = self.lstm(embeds.view(len(frames), 1, -1), self.hidden)
         logits = self.out_layer(lstm_out.view(len(frames), -1))
