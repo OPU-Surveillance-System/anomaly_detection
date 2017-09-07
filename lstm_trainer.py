@@ -107,8 +107,9 @@ def main(args, margs):
     model = model_class(margs)
     model = model.cuda()
     # print(model)
-    # for p in model.parameters():
-    #     print(p)
+    for p in model.parameters():
+         if p.is_leaf == False:
+             print(p)
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
