@@ -57,22 +57,30 @@ def train_model(model, loss_function, optimizer):
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
                 inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
+                print('Got inputs')
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
                 labels = np.array([dsets[p][step][1][i] for i in range(10)], dtype=np.float).reshape((10, 1))
+                print('Got labels')
                 #Convert to cuda tensor
                 inputs = torch.from_numpy(inputs).float()
                 labels = torch.from_numpy(labels).float()
                 inputs = Variable(inputs.cuda())
                 labels = Variable(labels.cuda())
+                print('Data converted to cuda')
                 #Forward
                 logits = model(inputs)
+                print('Logits computed')
                 probs = models.predict(logits)
+                print('Logits thresholded')
                 loss = loss_function(logits, labels)
+                print('Loss computed')
                 if p == 'training': #Backpropagation
                     loss.backward()
+                    print('Gradient backpropagated')
                     optimizer.step()
+                    print('Weights updated')
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_size[p]
