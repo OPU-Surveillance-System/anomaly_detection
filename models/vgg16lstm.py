@@ -77,7 +77,7 @@ class VGG16LSTM(nn.Module):
         print('frames transpoded')
         embeds = self.vgg(frames)
         print('VGG passed')
-        lstm_out, self.hidden = self.lstm(embeds.view(len(frames), 1, -1), self.hidden)
+        lstm_out, self.hidden = self.rnn(embeds.view(len(frames), 1, -1), self.hidden)
         print('LSTM passed')
         logits = self.out_layer(lstm_out.view(len(frames), -1))
         print('Last layer passed')
