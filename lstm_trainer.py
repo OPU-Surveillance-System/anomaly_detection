@@ -40,6 +40,8 @@ def train_model(model, loss_function, optimizer):
     best_trainepoch = 0
     t_start = time.time()
     while accumulated_patience < args.max_patience:
+        print('-' * 10)
+        print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
         for p in phase:
             if p == 'training':
                 model.train(True)
@@ -72,6 +74,7 @@ def train_model(model, loss_function, optimizer):
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_size[p]
             epoch_acc = running_corrects / dset_size[p]
+            print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
