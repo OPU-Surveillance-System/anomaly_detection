@@ -74,7 +74,7 @@ def train_model(model, loss_function, optimizer):
                 #Forward
                 logits = model(inputs)
                 print('Logits computed')
-                probs = models.predict(logits)
+                probs = model.predict(logits)
                 print('Logits thresholded')
                 loss = loss_function(logits, labels)
                 print('Loss computed')
