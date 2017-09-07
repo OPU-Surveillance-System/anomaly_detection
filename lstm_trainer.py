@@ -61,8 +61,10 @@ def train_model(model, loss_function, optimizer):
                     inputs = da.augment_batch(inputs)
                 labels = np.array([dsets[p][step][1][i] for i in range(10)]).reshape((10, 1))
                 #Convert to cuda tensor
-                inputs, labels = torch.from_numpy(inputs).float(), torch.from_numpy(labels).float()
-                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+                inputs = torch.from_numpy(inputs).float()
+                labels = torch.from_numpy(labels).float()
+                inputs = Variable(inputs.cuda())
+                labels = Variable(labels.cuda())
                 #Forward
                 logits = model(inputs)
                 probs = models.predict(logits)
