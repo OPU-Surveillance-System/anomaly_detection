@@ -75,8 +75,8 @@ def train_model(model, loss_function, optimizer):
                     optimizer.step()
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
-            epoch_loss = running_loss / dset_size[p]
-            epoch_acc = running_corrects / dset_size[p]
+            epoch_loss = running_loss / dset_sizes[p]
+            epoch_acc = running_corrects / dset_sizes[p]
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             if p == 'validation':
                 if epoch_loss < best_loss:
