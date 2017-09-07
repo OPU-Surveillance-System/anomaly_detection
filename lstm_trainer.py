@@ -78,7 +78,7 @@ def train_model(model, loss_function, optimizer):
                     best_model = copy.deepcopy(model)
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
-                    best_loss_acc = epoch_acc]
+                    best_loss_acc = epoch_acc
                 else:
                     accumulated_patience += 1
         trainepoch += 1
