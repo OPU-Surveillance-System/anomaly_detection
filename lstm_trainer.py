@@ -118,7 +118,7 @@ def main(args, margs):
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
     #3.
-    #torch.save(trained_model, os.path.join(args.directory, 'trained_model'))
+    torch.save(trained_model, os.path.join(args.directory, 'trained_model'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
