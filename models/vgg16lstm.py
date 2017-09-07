@@ -70,13 +70,10 @@ class VGG16LSTM(nn.Module):
 
     def forward(self, frames):
         """
-        input dimensions: [Sequence, Height, Width, Channels]
+        input dimensions: [Sequence, Channels, Height, Width]
         """
 
-        #frames = np.transpose(frames, (0, 3, 1, 2))
-        print('frames transpoded')
         embeds = self.vgg(frames)
-        print('VGG passed')
         lstm_out, self.hidden = self.rnn(embeds.view(len(frames), 1, -1), self.hidden)
         print('LSTM passed')
         logits = self.out_layer(lstm_out.view(len(frames), -1))

@@ -118,8 +118,8 @@ def main(args, margs):
     model = model.cuda()
     print('Is the model on cuda?', next(model.parameters()).is_cuda)
     print(model)
-    for p in model.parameters():
-        print(p)
+    # for p in model.parameters():
+    #     print(p)
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
