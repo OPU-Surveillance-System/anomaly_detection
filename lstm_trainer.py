@@ -51,6 +51,7 @@ def train_model(model, loss_function, optimizer):
             running_corrects = 0
             shuffle(dsets[p])
             for step in range(dset_sizes[p]):
+                print('Sequence: ' dsets[p][step][0][0])
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
