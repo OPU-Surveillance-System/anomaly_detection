@@ -58,6 +58,8 @@ def train_model(model, loss_function, optimizer):
                 #Fetch sequence frames and labels
                 inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
                 print('Got inputs')
+                inputs = np.transpose(inputs, (0, 3, 1, 2))
+                print('Input transposed')
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
@@ -116,6 +118,8 @@ def main(args, margs):
     model = model.cuda()
     print('Is the model on cuda?', next(model.parameters()).is_cuda)
     print(model)
+    for p in model.parameters():
+        print(p)
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)

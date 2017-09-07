@@ -73,7 +73,7 @@ class VGG16LSTM(nn.Module):
         input dimensions: [Sequence, Height, Width, Channels]
         """
 
-        frames = np.transpose(frames, (0, 3, 1, 2))
+        #frames = np.transpose(frames, (0, 3, 1, 2))
         print('frames transpoded')
         embeds = self.vgg(frames)
         print('VGG passed')
