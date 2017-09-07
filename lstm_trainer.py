@@ -113,7 +113,7 @@ def main(args, margs):
     model_import = import_module('.'.join(args.model.split('.')[0:2]))
     model_class = getattr(model_import, args.model.split('.')[2])
     model = model_class(margs)
-    model.cuda()
+    model = model.cuda()
     loss_function = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.trainable_parameters, args.learning_rate)
     trained_model, best_trainepoch = train_model(model, loss_function, optimizer)
