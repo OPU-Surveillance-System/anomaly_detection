@@ -59,6 +59,8 @@ def train_model(model, loss_function, optimizer):
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
+                    for i in range(len(inputs)):
+                        misc.imsave('{}.png'.format(i), exp)
                 labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
                 #Convert to cuda tensor
                 inputs = Variable(torch.from_numpy(inputs).float().cuda())
