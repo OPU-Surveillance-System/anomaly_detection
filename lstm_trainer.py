@@ -54,7 +54,7 @@ def train_model(model, loss_function, optimizer):
             for step in range(int(dset_sizes[p] / 100)):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
-                model.hidden = model.init_hidden()
+                # model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
                 inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
@@ -69,9 +69,9 @@ def train_model(model, loss_function, optimizer):
                 logits = model(inputs)
                 probs = model.predict(logits)
                 loss = loss_function(logits, labels)
-                #if p == 'training': #Backpropagation
-                    #loss.backward()
-                    #optimizer.step()
+                if p == 'training': #Backpropagation
+                    loss.backward()
+                    optimizer.step()
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_sizes[p]
