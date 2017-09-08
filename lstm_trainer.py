@@ -86,6 +86,10 @@ def train_model(model, loss_function, optimizer):
                 else:
                     accumulated_patience += 1
         trainepoch += 1
+    print()
+    time_elapsed = time.time() - since
+    print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+    print('Best validation loss: {}, accuracy: {}, epoch: {}'.format(best_loss, best_loss_acc, best_trainepoch))
 
     return best_model, best_trainepoch
 
