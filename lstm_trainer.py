@@ -69,9 +69,9 @@ def train_model(model, loss_function, optimizer):
                 logits = model(inputs)
                 probs = model.predict(logits)
                 loss = loss_function(logits, labels)
-                if p == 'training': #Backpropagation
-                    loss.backward()
-                    optimizer.step()
+                #if p == 'training': #Backpropagation
+                    #loss.backward()
+                    #optimizer.step()
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_sizes[p]
@@ -81,7 +81,7 @@ def train_model(model, loss_function, optimizer):
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
                     print(model)
-                    best_model = copy.deepcopy(model.cuda().detach())
+                    best_model = copy.deepcopy(model)
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
                     best_loss_acc = epoch_acc
