@@ -37,6 +37,7 @@ def train_model(model, loss_function, optimizer):
     best_loss = float('inf')
     best_loss_acc = 0
     best_model = copy.deepcopy(model)
+    print('Model copied')
     best_trainepoch = 0
     t_start = time.time()
     while accumulated_patience < args.max_patience:
@@ -50,7 +51,7 @@ def train_model(model, loss_function, optimizer):
             running_loss = 0
             running_corrects = 0
             shuffle(dsets[p])
-            for step in range(dset_sizes[p]):
+            for step in range(int(dset_sizes[p] / 100)):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
@@ -79,7 +80,7 @@ def train_model(model, loss_function, optimizer):
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
-                    best_model = copy.deepcopy(model)
+                    best_model = copy.deepcopy(model.cuda().detach())
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
                     best_loss_acc = epoch_acc
