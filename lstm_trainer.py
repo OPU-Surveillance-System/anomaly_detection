@@ -49,17 +49,14 @@ def train_model(model, loss_function, optimizer):
             running_corrects = 0
             nb_frames = 0
             shuffle(dsets[p])
-            for step in range(int(dset_sizes[p]/100)):
+            for step in range(dset_sizes[p]):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
                 inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))])
                 if p == 'training' and args.augdata == 1:
-                    #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
-                    for i in range(len(inputs)):
-                        misc.imsave('{}/{}.png'.format(args.directory, i), inputs[i])
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
                 #Convert to cuda tensor
