@@ -27,6 +27,8 @@ class VGG16LSTM(nn.Module):
         if 'do' not in margs.keys(): #Dropout
             print('**Missing dropout argument, setting to 0.0**')
             margs['do'] = 0.0
+        else:
+            margs['do'] = float(margs['do'])
         if 'wl' not in margs.keys(): #weighted loss
             margs['wl'] = False
         if 'thr' not in margs.keys(): #Detection threshold
@@ -52,7 +54,7 @@ class VGG16LSTM(nn.Module):
         self.rnn = nn.LSTM(input_size=4096,
                            hidden_size=self.margs['hd'],
                            num_layers=self.margs['rl'],
-                           dropout=float(self.margs['do']))
+                           dropout=self.margs['do'])
         self.hidden = self.init_hidden()
         self.trainable_parameters = list(self.rnn.parameters())
         self.out_layer = nn.Linear(self.margs['hd'], 1)
