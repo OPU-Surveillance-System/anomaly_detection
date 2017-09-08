@@ -37,7 +37,7 @@ def train_model(model, loss_function, optimizer):
     best_loss = float('inf')
     best_loss_acc = 0
     best_model = copy.deepcopy(model)
-    print('Model copied, {}'.format(type(model)))
+    print('Model copied, {}'.format(model))
     best_trainepoch = 0
     t_start = time.time()
     while accumulated_patience < args.max_patience:
@@ -80,7 +80,7 @@ def train_model(model, loss_function, optimizer):
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
-                    print(type(model))
+                    print(model)
                     best_model = copy.deepcopy(model.cuda().detach())
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
