@@ -36,6 +36,7 @@ def train_model(model, loss_function, optimizer):
     best_loss_acc = 0
     best_model = copy.deepcopy(model)
     best_trainepoch = 0
+    hist = {'training':{'loss':[], 'accuracy':[]}, 'validation':{'loss':[], 'accuracy':[]}}
     t_start = time.time()
     while accumulated_patience < args.max_patience:
         print('-' * 10)
@@ -74,6 +75,8 @@ def train_model(model, loss_function, optimizer):
                 nb_frames += len(probs)
             epoch_loss = running_loss / dset_sizes[p]
             epoch_acc = running_corrects / nb_frames
+            hist[p]['loss'].append(epoch_loss)
+            hist[p]['accuracy'].append(epoch_acc)
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             if p == 'validation':
                 if epoch_loss < best_loss:
@@ -84,6 +87,8 @@ def train_model(model, loss_function, optimizer):
                     best_loss_acc = epoch_acc
                 else:
                     accumulated_patience += 1
+                if args.plot == 1:
+                    plt.plot_history(hist, args.directory)
         trainepoch += 1
     print()
     time_elapsed = time.time() - t_start
