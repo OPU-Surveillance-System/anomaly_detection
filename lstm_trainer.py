@@ -66,17 +66,16 @@ def train_model(model, loss_function, optimizer):
                 labels = Variable(torch.from_numpy(labels).float().cuda())
                 #Forward
                 logits = model(inputs)
-                print(logits)
                 probs = model.predict(logits)
-                print(probs)
                 loss = loss_function(logits, labels)
                 if p == 'training': #Backpropagation
                     loss.backward()
                     optimizer.step()
                 running_loss += loss.data[0]
+                print(running_loss)
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_sizes[p]
-            epoch_acc = running_corrects / dset_sizes[p]
+            epoch_acc = running_corrects / dset_sizes[p] * 10
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             if p == 'validation':
                 if epoch_loss < best_loss:
