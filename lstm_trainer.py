@@ -54,7 +54,7 @@ def train_model(model, loss_function, optimizer):
                 model.zero_grad()
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
-                inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))], dtype=np.float)
+                inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))])
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
