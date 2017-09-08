@@ -75,7 +75,7 @@ class VGG16LSTM(nn.Module):
 
         embeds = self.vgg(frames)
         lstm_out, self.hidden = self.rnn(embeds.view(len(frames), 1, -1), self.hidden)
-        self.hidden = self.init_hidden()
+        print(self.hidden.is_leaf)
         logits = self.out_layer(lstm_out.view(len(frames), -1))
 
         return logits
