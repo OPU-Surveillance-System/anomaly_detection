@@ -52,7 +52,7 @@ class VGG16LSTM(nn.Module):
         self.rnn = nn.LSTM(input_size=4096,
                            hidden_size=self.margs['hd'],
                            num_layers=self.margs['rl'],
-                           dropout=self.margs['do'])
+                           dropout=float(self.margs['do']))
         self.hidden = self.init_hidden()
         self.trainable_parameters = list(self.rnn.parameters())
         self.out_layer = nn.Linear(self.margs['hd'], 1)
