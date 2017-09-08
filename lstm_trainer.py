@@ -67,8 +67,8 @@ def train_model(model, loss_function, optimizer):
                 #Forward
                 logits = model(inputs)
                 print(logits)
-                print(logits.shape)
                 probs = model.predict(logits)
+                print(probs)
                 loss = loss_function(logits, labels)
                 if p == 'training': #Backpropagation
                     loss.backward()
