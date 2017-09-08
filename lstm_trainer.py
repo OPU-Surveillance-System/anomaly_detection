@@ -47,6 +47,7 @@ def train_model(model, loss_function, optimizer):
                 model.train(False)
             running_loss = 0
             running_corrects = 0
+            nb_frames = 0
             shuffle(dsets[p])
             for step in range(int(dset_sizes[p]/100)):
                 #Initialize model's gradient and LSTM state
@@ -71,8 +72,9 @@ def train_model(model, loss_function, optimizer):
                     optimizer.step()
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
+                nb_frames += len(probs)
             epoch_loss = running_loss / dset_sizes[p]
-            epoch_acc = running_corrects / dset_sizes[p] * 10
+            epoch_acc = running_corrects / nb_frames
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
             if p == 'validation':
                 if epoch_loss < best_loss:
