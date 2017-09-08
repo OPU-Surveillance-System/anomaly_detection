@@ -62,12 +62,12 @@ def train_model(model, loss_function, optimizer):
                     inputs = da.augment_batch(inputs)
                 labels = np.array([dsets[p][step][1][i] for i in range(10)], dtype=np.float).reshape((10, 1))
                 #Convert to cuda tensor
-                inputs = torch.from_numpy(inputs).float()
-                labels = torch.from_numpy(labels).float()
-                inputs = Variable(inputs.cuda())
-                labels = Variable(labels.cuda())
+                inputs = Variable(torch.from_numpy(inputs).float().cuda())
+                labels = Variable(torch.from_numpy(labels).float().cuda())
                 #Forward
                 logits = model(inputs)
+                print(logits)
+                print(logits.shape)
                 probs = model.predict(logits)
                 loss = loss_function(logits, labels)
                 if p == 'training': #Backpropagation
