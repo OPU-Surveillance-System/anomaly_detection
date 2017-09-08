@@ -13,6 +13,7 @@ def augment_batch(inputs):
             iaa.OneOf([
                 iaa.GaussianBlur((0, 1.0)),
                 iaa.AverageBlur(k=(1, 5)),
+                iaa.MedianBlur(k=(1, 5)),
                 iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.1*255), per_channel=0.5),
                 iaa.Dropout((0.01, 0.3), per_channel=0.5),
                 iaa.CoarseDropout((0.03, 0.15), size_percent=(0.03, 0.05), per_channel=0.2)
