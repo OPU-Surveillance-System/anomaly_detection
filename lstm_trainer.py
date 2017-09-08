@@ -37,34 +37,23 @@ def train_model(model, loss_function, optimizer):
     best_loss = float('inf')
     best_loss_acc = 0
     best_model = copy.deepcopy(model)
-    print('Model copied, {}'.format(model))
     best_trainepoch = 0
     t_start = time.time()
     while accumulated_patience < args.max_patience:
         print('-' * 10)
         print('Epoch {} (patience: {}/{})'.format(trainepoch, accumulated_patience, args.max_patience))
-        print('Debut')
-        best_model = copy.deepcopy(model)
         for p in phase:
             if p == 'training':
                 model.train(True)
             else:
                 model.train(False)
-            print('Apres train activation')
-            best_model = copy.deepcopy(model)
             running_loss = 0
             running_corrects = 0
             shuffle(dsets[p])
             for step in range(int(dset_sizes[p] / 100)):
                 #Initialize model's gradient and LSTM state
-                print('Debut step')
-                best_model = copy.deepcopy(model)
                 model.zero_grad()
-                print('Apres zero grad')
-                best_model = copy.deepcopy(model)
                 model.hidden = model.init_hidden()
-                print('Apres init hidden')
-                best_model = copy.deepcopy(model)
                 #Fetch sequence frames and labels
                 inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
@@ -75,23 +64,13 @@ def train_model(model, loss_function, optimizer):
                 #Convert to cuda tensor
                 inputs = Variable(torch.from_numpy(inputs).float().cuda())
                 labels = Variable(torch.from_numpy(labels).float().cuda())
-                print('Apres cuda conversion')
-                best_model = copy.deepcopy(model)
                 #Forward
                 logits = model(inputs)
-                print('Apres calcul logits')
-                best_model = copy.deepcopy(model)
                 probs = model.predict(logits)
-                print('Apres calcul probs')
-                best_model = copy.deepcopy(model)
                 loss = loss_function(logits, labels)
-                print('Apres calcul loss')
-                best_model = copy.deepcopy(model)
                 if p == 'training': #Backpropagation
                     loss.backward()
                     optimizer.step()
-                print('Apres backprop')
-                best_model = copy.deepcopy(model)
                 running_loss += loss.data[0]
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_sizes[p]
