@@ -72,7 +72,6 @@ def train_model(model, loss_function, optimizer):
                     loss.backward()
                     optimizer.step()
                 running_loss += loss.data[0]
-                print(running_loss)
                 running_corrects += torch.sum(probs == labels.data.long())
             epoch_loss = running_loss / dset_sizes[p]
             epoch_acc = running_corrects / dset_sizes[p] * 10
