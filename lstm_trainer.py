@@ -79,7 +79,7 @@ def train_model(model, loss_function, optimizer):
             if p == 'validation':
                 if epoch_loss < best_loss:
                     accumulated_patience = 0
-                    best_model = copy.deepcopy(model.detach())
+                    best_model = copy.deepcopy(model)
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
                     best_loss_acc = epoch_acc
