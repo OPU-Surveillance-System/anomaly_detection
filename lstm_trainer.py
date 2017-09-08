@@ -23,12 +23,10 @@ def train_model(model, loss_function, optimizer):
 
     with open(args.trainset, 'r') as f:
         trainset = f.read().split('\n')[:-1]
-    #TODO: Sequence trainset
-    trainset = [([t.split('\t')[0] for i in range(10)], [t.split('\t')[1] for i in range(10)]) for t in trainset]
+    trainset = [(t.split('\t')[0:10], t.split('\t')[10:]) for t in trainset]
     with open(args.valset, 'r') as f:
         valset = f.read().split('\n')[:-1]
-    #TODO: Sequence trainset
-    valset = [([v.split('\t')[0] for i in range(10)], [v.split('\t')[1] for i in range(10)]) for v in valset]
+    valset = [(v.split('\t')[0:10], v.split('\t')[10:]) for v in valset]
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
@@ -50,17 +48,17 @@ def train_model(model, loss_function, optimizer):
             running_loss = 0
             running_corrects = 0
             shuffle(dsets[p])
-            for step in range(dset_sizes[p]):
+            for step in range(int(dset_sizes[p]/100)):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
-                inputs = np.array([misc.imread(os.path.join('data', dsets[p][step][0][i] + '.png')) for i in range(10)], dtype=np.float)
+                inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))], dtype=np.float)
                 inputs = np.transpose(inputs, (0, 3, 1, 2))
                 if p == 'training' and args.augdata == 1:
                     #TODO: Apply the same augmentation to each element
                     inputs = da.augment_batch(inputs)
-                labels = np.array([dsets[p][step][1][i] for i in range(10)], dtype=np.float).reshape((10, 1))
+                labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
                 #Convert to cuda tensor
                 inputs = Variable(torch.from_numpy(inputs).float().cuda())
                 labels = Variable(torch.from_numpy(labels).float().cuda())
