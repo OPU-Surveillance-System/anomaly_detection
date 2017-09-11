@@ -43,7 +43,7 @@ def test_model(model):
         probs = model.predict(logits)
         for p in probs:
             answer.append((Variable(p).data).cpu().numpy())
-        print('Processed {} images'.format(len(inputs)))
+        #print('Processed {} images'.format(len(inputs)))
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
