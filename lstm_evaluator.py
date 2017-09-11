@@ -31,7 +31,7 @@ def test_model(model):
         # get the inputs
         inputs = np.array([misc.imread(os.path.join(testset[step][0][i])) for i in range(len(testset[step][0]))])
         inputs = np.transpose(inputs, (0, 3, 1, 2))
-        labels = np.array(testset[step][1])
+        labels = np.array(testset[step][1], dtype=np.float)
         for l in labels:
             groundtruth.append(l)
         labels = np.reshape(labels, (len(labels), 1))
