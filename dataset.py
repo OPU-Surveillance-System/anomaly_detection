@@ -34,9 +34,8 @@ class MiniDroneVideoDataset(Dataset):
                 tmp = [c]
         groups.append(tmp)
         #Build sequences from the same video of length sequence_length
-        self.frames = [([os.path.join(self.root_dir, f + '.png') for f in g[i][0:self.sequence_length]], [int(f) for f in g[i][self.sequence_length:]])
+        self.frames = [(['data/' + f[0] + '.png' for f in g[i:i+self.sequence_length]], [int(f[1]) for f in g[i:i+self.sequence_length]])
                        for g in groups for i in range(len(g) - (self.sequence_length - 1))]
-        print(self.frames[0])
 
     def __len__(self):
         return len(self.frames)
@@ -170,14 +169,14 @@ class ToTensor(object):
         return {'images': torch.from_numpy(image),
                 'labels': torch.from_numpy(sample['labels'])}
 
-# ds = MiniDroneVideoDataset('data/trainset_labels',
-#                                 'data',
-#                                     10,
-#                                     transform=transforms.Compose([
-#                                            RandomCrop((160, 160)),
-#                                            RandomFlip(),
-#                                            Dropout(0.2)
-#                                        ]))
+ds = MiniDroneVideoDataset('data/trainset_labels',
+                                'data',
+                                    10,
+                                    transform=transforms.Compose([
+                                           RandomCrop((160, 160)),
+                                           RandomFlip(),
+                                           Dropout(0.2)
+                                       ]))
 # ds[0]
 # scale = Rescale((512, 600))
 # crop = RandomCrop(128)
