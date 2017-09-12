@@ -68,7 +68,6 @@ def train_model(model, loss_function, optimizer):
                 # #Convert to cuda tensor
                 # inputs = Variable(torch.from_numpy(inputs).float().cuda())
                 # labels = Variable(torch.from_numpy(labels).float().cuda())
-                print(sample['images'].shape)
                 inputs = Variable(sample['images'].float().cuda())[0]
                 labels = Variable(sample['labels'].float().cuda())[0]
                 #Forward
