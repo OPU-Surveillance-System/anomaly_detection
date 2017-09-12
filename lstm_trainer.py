@@ -83,7 +83,7 @@ def train_model(model, loss_function, optimizer):
                 running_corrects += torch.sum(probs == labels.data.long())
                 nb_frames += len(probs)
                 if p == 'training' and i_batch % 1000 == 0:
-                    print('{} : step {} -- Loss: {} Acc: {}'.format(p, step, batch_loss / len(inputs), batch_corrects / len(inputs)))
+                    print('{} : step {} -- Loss: {} Acc: {}'.format(p, i_batch, batch_loss / len(inputs), batch_corrects / len(inputs)))
             epoch_loss = running_loss / dset_sizes[p]
             epoch_acc = running_corrects / nb_frames
             hist[p]['loss'].append(epoch_loss)
