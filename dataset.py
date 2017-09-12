@@ -170,14 +170,14 @@ class ToTensor(object):
         return {'images': torch.from_numpy(image),
                 'labels': torch.from_numpy(sample['labels'])}
 
-ds = MiniDroneVideoDataset('data/trainset_labels',
-                                'data',
-                                    10,
-                                    transform=transforms.Compose([
-                                           RandomCrop((160, 160)),
-                                           RandomFlip(),
-                                           Dropout(0.2)
-                                       ]))
+# ds = MiniDroneVideoDataset('data/trainset_labels',
+#                                 'data',
+#                                     10,
+#                                     transform=transforms.Compose([
+#                                            RandomCrop((160, 160)),
+#                                            RandomFlip(),
+#                                            Dropout(0.2)
+#                                        ]))
 # ds[0]
 # scale = Rescale((512, 600))
 # crop = RandomCrop(128)
