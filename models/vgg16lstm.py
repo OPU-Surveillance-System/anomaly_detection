@@ -61,7 +61,7 @@ class VGG16LSTM(nn.Module):
         for param in self.vgg.parameters(): #Freeze convolutional layers
             param.requires_grad = False
         if self.margs['ft']: #Enable fine tuning of FC layers
-            parameters = list(model.classifier.parameters())
+            parameters = list(self.vgg.classifier.parameters())
             for p in parameters:
                 p.requires_grad = True
             self.trainable_parameters += parameters
