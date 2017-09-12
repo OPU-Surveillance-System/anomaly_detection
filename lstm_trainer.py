@@ -68,9 +68,8 @@ def train_model(model, loss_function, optimizer):
                 # #Convert to cuda tensor
                 # inputs = Variable(torch.from_numpy(inputs).float().cuda())
                 # labels = Variable(torch.from_numpy(labels).float().cuda())
-                inputs = sample['images']
-                print(inputs.shape)
-                labels = sample['labels']
+                inputs = sample['images'][0]
+                labels = sample['labels'][0]
                 #Forward
                 logits = model(inputs)
                 probs = model.predict(logits)

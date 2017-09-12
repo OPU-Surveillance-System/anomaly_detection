@@ -42,7 +42,6 @@ class MiniDroneVideoDataset(Dataset):
 
     def __getitem__(self, idx):
         images = np.array([io.imread(f) for f in self.frames[idx][0]])
-        print(images.shape)
         labels = np.array([f for f in self.frames[idx][1]], dtype=np.float)
         labels = labels.reshape(len(labels), 1)
         sample = {'images': images, 'labels':labels}
