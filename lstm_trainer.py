@@ -16,6 +16,7 @@ from importlib import import_module
 
 import plot as plt
 import data_augmentation as da
+import dataset as ds
 
 def train_model(model, loss_function, optimizer):
     """
@@ -27,10 +28,19 @@ def train_model(model, loss_function, optimizer):
     with open(args.valset, 'r') as f:
         valset = f.read().split('\n')[:-1]
     valset = [(v.split('\t')[0:10], v.split('\t')[10:]) for v in valset]
+    trainset = ds.MiniDroneVideoDataset('data/trainset_labels',
+                                        'data',
+                                        10,
+                                        transform=transforms.Compose([
+                                               ds.RandomCrop((160, 160)),
+                                               ds.RandomFlip(),
+                                               ds.Dropout(0.2)
+                                           ]))
+    valset = ds.MiniDroneVideoDataset('data/valset_labels', 'data', 10)
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
-    dset_sizes['training'] = int(dset_sizes['training'] / 2) 
+    dset_sizes['training'] = int(dset_sizes['training'] / 2)
     trainepoch = 0
     accumulated_patience = 0
     best_loss = float('inf')
@@ -50,20 +60,22 @@ def train_model(model, loss_function, optimizer):
             running_loss = 0
             running_corrects = 0
             nb_frames = 0
-            shuffle(dsets[p])
-            for step in range(dset_sizes[p]):
+            dataloader = DataLoader(dsets[p], batch_size=1, shuffle=True, num_workers=4)
+            for i_batch, sample in enumerate(dataloader):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
                 #Fetch sequence frames and labels
-                inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))])
-                if p == 'training' and args.augdata == 1:
-                    inputs = da.augment_batch(inputs)
-                inputs = np.transpose(inputs, (0, 3, 1, 2))
-                labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
-                #Convert to cuda tensor
-                inputs = Variable(torch.from_numpy(inputs).float().cuda())
-                labels = Variable(torch.from_numpy(labels).float().cuda())
+                # inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))])
+                # if p == 'training' and args.augdata == 1:
+                #     inputs = da.augment_batch(inputs)
+                # inputs = np.transpose(inputs, (0, 3, 1, 2))
+                # labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
+                # #Convert to cuda tensor
+                # inputs = Variable(torch.from_numpy(inputs).float().cuda())
+                # labels = Variable(torch.from_numpy(labels).float().cuda())
+                inputs = sample['images']
+                labels = sample['labels']
                 #Forward
                 logits = model(inputs)
                 probs = model.predict(logits)
@@ -134,6 +146,7 @@ if __name__ == '__main__':
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='')
     parser.add_argument('--da', dest='augdata', type=int, default=1, help='')
     parser.add_argument('--plot', dest='plot', type=int, default=1, help='')
+    parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}
     print('arguments passed to the model: {}'.format(margs))
