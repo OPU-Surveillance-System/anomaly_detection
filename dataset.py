@@ -36,7 +36,7 @@ class MiniDroneVideoDataset(Dataset):
         #Build sequences from the same video of length sequence_length
         self.frames = [([os.path.join(self.root_dir, f + '.png') for f in g[i][0:self.sequence_length]], [int(f) for f in g[i][self.sequence_length:]])
                        for g in groups for i in range(len(g) - (self.sequence_length - 1))]
-        self.frames[0]
+        print(self.frames[0])
 
     def __len__(self):
         return len(self.frames)
