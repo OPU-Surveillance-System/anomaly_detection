@@ -30,7 +30,7 @@ def train_model(model, loss_function, optimizer):
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
-    dset_sizes['training'] /= 2 
+    dset_sizes['training'] = int(dset_sizes['training'] / 2) 
     trainepoch = 0
     accumulated_patience = 0
     best_loss = float('inf')
