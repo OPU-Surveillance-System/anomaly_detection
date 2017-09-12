@@ -6,6 +6,7 @@ from torch.autograd import Variable
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
+from torch.utils.data import Dataset, DataLoader
 import time
 import copy
 import os
@@ -28,7 +29,7 @@ def train_model(model, loss_function, optimizer):
     with open(args.valset, 'r') as f:
         valset = f.read().split('\n')[:-1]
     valset = [(v.split('\t')[0:10], v.split('\t')[10:]) for v in valset]
-    trainset = ds.MiniDroneVideoDataset('data/trainset_labels',
+    trainset = ds.MiniDroneVideoDataset(args.trainset,
                                         'data',
                                         10,
                                         transform=transforms.Compose([
@@ -36,7 +37,7 @@ def train_model(model, loss_function, optimizer):
                                                ds.RandomFlip(),
                                                ds.Dropout(0.2)
                                            ]))
-    valset = ds.MiniDroneVideoDataset('data/valset_labels', 'data', 10)
+    valset = ds.MiniDroneVideoDataset(args.valset, 'data', 10)
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
