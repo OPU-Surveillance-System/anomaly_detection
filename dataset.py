@@ -77,7 +77,7 @@ class Rescale(object):
         new_h, new_w = int(new_h), int(new_w)
         rescaled = []
         for i in images:
-            rescaled.append(transform.resize(i, (new_h, new_w)))
+            rescaled.append(transform.resize(i, (new_h, new_w), mode='constant'))
         rescaled = np.array(rescaled)
 
         return {'images': rescaled, 'labels':sample['labels']}
