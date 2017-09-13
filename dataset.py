@@ -147,7 +147,6 @@ class Dropout(object):
 
     def __call__(self, sample):
         images = sample['images']
-        print(type(images), type(images[0]))
         if 0.5 > np.random.uniform(0.0, 1.0):
             droped = []
             num_droped = np.ceil(np.random.uniform(0.0, self.amount) * 224*224)
@@ -155,9 +154,13 @@ class Dropout(object):
             for i in images:
                 i[coords[:-1]] = (0, 0, 0)
                 droped.append(i)
+            print(type(images), type(droped), type(droped[0]))
             droped = np.array(droped)
+            print(type(images), type(droped), type(droped[0]))
         else:
+            print(type(images), type(droped), type(droped[0]))
             droped = np.array(images)
+            print(type(images), type(droped), type(droped[0]))
 
         return {'images': droped, 'labels': sample['labels']}
 
@@ -176,7 +179,9 @@ class Normalization(object):
         for i in images:
             i = normalization(i)
             normalized.append(i)
+        print(type(images), type(normalized), type(normalized[0]))
         normalized = np.array(normalized)
+        print(type(images), type(normalized), type(normalized[0]))
 
         return {'images': normalized, 'labels': sample['labels']}
 
