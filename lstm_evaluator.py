@@ -29,8 +29,8 @@ def test_model(model):
     dataloader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=4)
     model.zero_grad()
     model.hidden = model.init_hidden()
-    inputs = Variable(testset[0]['images'].float().cuda())[0]
-    labels = Variable(testset[0]['labels'].float().cuda())[0]
+    inputs = Variable(testset[0]['images'].float().cuda())
+    labels = Variable(testset[0]['labels'].float().cuda())
     print(labels.data)
     # for i_batch, sample in enumerate(tqdm(dataloader)):
     #     model.zero_grad()
