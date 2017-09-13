@@ -43,10 +43,9 @@ def test_model(model):
         probs = model.predict(logits)
         # for p in probs:
         #     answer.append((Variable(p).data).cpu().numpy())
-        groundtruth += labels.data.cpu().numpy()
-        print(labels.data.cpu().numpy())
-        answer += Variable(probs).data.cpu().numpy()
-        print(groundtruth)
+        groundtruth.append(labels.data.cpu().numpy())
+        answer.append(Variable(probs).data.cpu().numpy())
+        print(len(groundtruth))
         #print(answer.shape, groundtruth.shape)
 
     time_elapsed = time.time() - since
