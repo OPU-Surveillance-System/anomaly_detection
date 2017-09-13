@@ -34,8 +34,8 @@ def test_model(model):
         model.hidden = model.init_hidden()
         inputs = Variable(sample['images'].float().cuda())[0]
         labels = Variable(sample['labels'].float().cuda())[0]
-        for l in sample['labels']:
-            groundtruth.append(l)
+        # for l in sample['labels']:
+        #     groundtruth.append(l)
         #print(groundtruth)
         labels = np.reshape(labels, (len(labels), 1))
         # forward
