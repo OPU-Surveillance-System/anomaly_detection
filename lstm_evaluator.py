@@ -14,7 +14,7 @@ import plot as plt
 
 def test_model(model):
     tsfm = ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length, , transform=tsfm)
+    testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length, transform=tsfm)
     since = time.time()
     model.train(False)  # Set model to evaluate mode
     answer = []
