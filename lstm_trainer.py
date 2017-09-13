@@ -12,6 +12,7 @@ import copy
 import os
 import argparse
 from importlib import import_module
+from tqdm import tqdm
 
 import plot as plt
 import dataset as ds
