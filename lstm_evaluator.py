@@ -27,7 +27,7 @@ def test_model(model):
     groundtruth = []
     # Iterate over data.
     dataloader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=4)
-    for i_batch, sample in tqdm(enumerate(dataloader)):
+    for i_batch, sample in enumerate(tqdm(dataloader)):
         model.zero_grad()
         model.hidden = model.init_hidden()
         inputs = Variable(sample['images'].float().cuda())[0]
