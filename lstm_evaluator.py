@@ -1,18 +1,10 @@
 from __future__ import print_function, division
 import torch
-# import torch.nn as nn
-# import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
-# import torchvision
-# from torchvision import datasets, models, transforms
 import time
-# import copy
 import os
-# from scipy import misc
 import argparse
-# from random import shuffle
-# import matplotlib.pyplot as plt
 from sklearn import metrics
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
@@ -60,7 +52,6 @@ def main(args):
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.plot_auc(auc, fpr, tpr, args.directory, os.path.basename(args.model))
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')

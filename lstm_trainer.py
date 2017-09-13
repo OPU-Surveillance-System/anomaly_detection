@@ -10,9 +10,9 @@ from torch.utils.data import Dataset, DataLoader
 import time
 import copy
 import os
-from scipy import misc
+# from scipy import misc
 import argparse
-from random import shuffle
+# from random import shuffle
 from importlib import import_module
 
 import plot as plt
@@ -23,7 +23,9 @@ def train_model(model, loss_function, optimizer):
     """
     """
     if args.augdata == 1:
-        da = transforms.Compose([ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)])
+        da = transforms.Compose([ds.RandomCrop((160, 160)),
+                                 ds.RandomFlip(),
+                                 ds.Dropout(0.2)])
     else:
         da = None
     trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=da)
@@ -31,7 +33,6 @@ def train_model(model, loss_function, optimizer):
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
-    dset_sizes['training'] = int(dset_sizes['training'] / 2)
     trainepoch = 0
     accumulated_patience = 0
     best_loss = float('inf')
@@ -50,9 +51,8 @@ def train_model(model, loss_function, optimizer):
                 model.train(False)
             running_loss = 0
             running_corrects = 0
-            nb_frames = 0
             dataloader = DataLoader(dsets[p], batch_size=1, shuffle=True, num_workers=4)
-            for i_batch, sample in enumerate(dataloader):
+            for i_batch, sample in enumerate(tqdm(dataloader)):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
@@ -70,11 +70,8 @@ def train_model(model, loss_function, optimizer):
                 batch_loss = loss.data[0]
                 batch_corrects = torch.sum(probs == labels.data.long())
                 running_corrects += torch.sum(probs == labels.data.long())
-                nb_frames += len(probs)
-                if p == 'training' and i_batch % 1000 == 0:
-                    print('{} : step {} -- Loss: {} Acc: {}'.format(p, i_batch, batch_loss / len(inputs), batch_corrects / len(inputs)))
             epoch_loss = running_loss / dset_sizes[p]
-            epoch_acc = running_corrects / nb_frames
+            epoch_acc = running_corrects / dset_sizes[p]
             hist[p]['loss'].append(epoch_loss)
             hist[p]['accuracy'].append(epoch_acc)
             print('{} -- Loss: {} Acc: {}'.format(p, epoch_loss, epoch_acc))
