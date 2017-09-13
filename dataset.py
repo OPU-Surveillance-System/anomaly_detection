@@ -188,6 +188,7 @@ class ToTensor(object):
         for i in image:
             transposed.append(i.transpose((2, 0, 1)))
         transposed = np.array(transposed)
+        print(transposed.shape)
 
         return {'images': torch.from_numpy(transposed), 'labels': torch.from_numpy(sample['labels'])}
 
