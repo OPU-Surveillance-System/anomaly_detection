@@ -34,18 +34,11 @@ def test_model(model):
         model.hidden = model.init_hidden()
         inputs = Variable(sample['images'].float().cuda())[0]
         labels = Variable(sample['labels'].float().cuda())[0]
-        # for l in sample['labels']:
-        #     groundtruth.append(l)
-        #print(groundtruth)
-        #labels = np.reshape(labels, (len(labels), 1))
         # forward
         logits = model(inputs)
         probs = model.predict(logits)
-        # for p in probs:
-        #     answer.append((Variable(p).data).cpu().numpy())
         groundtruth.append(labels.data.cpu().numpy())
         answer.append(Variable(probs).data.cpu().numpy())
-
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
@@ -62,7 +55,7 @@ def main(args):
     answer, groundtruth = np.array(answer), np.array(groundtruth)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
-    #groundtruth = np.array(groundtruth).reshape(len(groundtruth))
+    print(answer)
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
