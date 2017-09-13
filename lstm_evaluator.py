@@ -45,8 +45,6 @@ def test_model(model):
         #     answer.append((Variable(p).data).cpu().numpy())
         groundtruth.append(labels.data.cpu().numpy())
         answer.append(Variable(probs).data.cpu().numpy())
-        print(len(groundtruth))
-        #print(answer.shape, groundtruth.shape)
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -61,9 +59,10 @@ def main(args):
     model = torch.load(args.model)
     model = model.cuda()
     answer, groundtruth = test_model(model)
+    answer, groundtruth = np.array(answer), np.array(groundtruth)
     print(answer.shape, groundtruth.shape)
-    answer = np.array(answer).reshape(len(answer))
-    groundtruth = np.array(groundtruth).reshape(len(groundtruth))
+    #answer = np.array(answer).reshape(len(answer))
+    #groundtruth = np.array(groundtruth).reshape(len(groundtruth))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.figure()
