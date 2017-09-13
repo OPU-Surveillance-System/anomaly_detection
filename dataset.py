@@ -183,9 +183,10 @@ class ToTensor(object):
 
     def __call__(self, sample):
         image = sample['images']
+        print(image.shape)
         image = image.transpose((2, 0, 1))
-        return {'images': torch.from_numpy(image),
-                'labels': torch.from_numpy(sample['labels'])}
+
+        return {'images': torch.from_numpy(image), 'labels': torch.from_numpy(sample['labels'])}
 
 ds = MiniDroneVideoDataset('data/trainset_labels',
                                 'data',

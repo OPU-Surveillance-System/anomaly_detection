@@ -25,7 +25,7 @@ def train_model(model, loss_function, optimizer):
             ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]
     da = tsfm
     if args.augdata == 1:
-        da += [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
+        da += [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)] 
     trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=transforms.Compose(da))
     valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, transform=transforms.Compose(tsfm))
     dsets = {'training': trainset, 'validation': valset}
