@@ -172,17 +172,9 @@ class Normalization(object):
         self.std = std
 
     def __call__(self, sample):
-        images = sample['images']
         normalization = transforms.Normalize(mean=self.mean, std=self.std)
-        normalized = []
-        for i in images:
-            i = normalization(i)
-            normalized.append(i)
-        print(type(images), type(normalized), type(normalized[0]))
-        normalized = np.array(normalized)
-        print(type(images), type(normalized), type(normalized[0]))
 
-        return {'images': normalized, 'labels': sample['labels']}
+        return normalization(sample)
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
