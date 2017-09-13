@@ -37,7 +37,7 @@ def test_model(model):
         # for l in sample['labels']:
         #     groundtruth.append(l)
         #print(groundtruth)
-        labels = np.reshape(labels, (len(labels), 1))
+        #labels = np.reshape(labels, (len(labels), 1))
         # forward
         logits = model(inputs)
         probs = model.predict(logits)
