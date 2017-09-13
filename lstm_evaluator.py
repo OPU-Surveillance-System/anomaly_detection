@@ -35,9 +35,6 @@ def test_model(model):
         for l in labels:
             groundtruth.append(l)
         labels = np.reshape(labels, (len(labels), 1))
-        #convert to tensor
-        inputs = Variable(torch.from_numpy(inputs).float().cuda())
-        labels = Variable(torch.from_numpy(labels).float().cuda())
         # forward
         logits = model(inputs)
         probs = model.predict(logits)
