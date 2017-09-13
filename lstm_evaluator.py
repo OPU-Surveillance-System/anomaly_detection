@@ -4,8 +4,8 @@ import torch
 # import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
-import torchvision
-from torchvision import datasets, models, transforms
+# import torchvision
+# from torchvision import datasets, models, transforms
 import time
 # import copy
 import os
