@@ -44,7 +44,7 @@ def test_model(model):
         # for p in probs:
         #     answer.append((Variable(p).data).cpu().numpy())
         groundtruth += labels.data.cpu().numpy()
-        answer += probs.data
+        answer += Variable(probs).data.cpu().numpy()
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
