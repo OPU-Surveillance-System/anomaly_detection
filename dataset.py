@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
-# from torch.autograd import Variable
+from torch.autograd import Variable
 
 class MiniDroneVideoDataset(Dataset):
     """
@@ -46,9 +46,11 @@ class MiniDroneVideoDataset(Dataset):
         images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]])
         labels = np.array([f for f in self.frames[idx][1]], dtype=np.float)
         labels = labels.reshape(len(labels), 1)
-        sample = {'images': images, 'labels':labels}
+        names = [os.path.basename(f) for f in self.frames[idx][0]]
+        sample = {'images': images, 'labels':labels, 'names':names}
         if self.transform:
             sample = self.transform(sample)
+        sample['images'] = sample['images'].transpose((0, 3, 1, 2))
 
         return sample
 
@@ -81,7 +83,7 @@ class Rescale(object):
             rescaled.append(transform.resize(i, (new_h, new_w), mode='constant'))
         rescaled = np.array(rescaled)
 
-        return {'images': rescaled, 'labels':sample['labels']}
+        return {'images': rescaled, 'labels':sample['labels'], 'names':sample['names']}
 
 
 class RandomCrop(object):
@@ -112,12 +114,12 @@ class RandomCrop(object):
                 croped.append(i[top: top + new_h, left: left + new_w])
             croped = np.array(croped)
             rescale = Rescale((224, 224))
-            rescaled = rescale({'images': croped, 'labels': sample['labels']})
+            rescaled = rescale({'images': croped, 'labels': sample['labels'], 'names':sample['names']})
             rescaled = rescaled['images']
         else:
             rescaled = np.array(images)
 
-        return {'images': rescaled, 'labels': sample['labels']}
+        return {'images': rescaled, 'labels': sample['labels'], 'names':sample['names']}
 
 class RandomFlip(object):
     """Flip randomly the image in a sample.
@@ -136,7 +138,7 @@ class RandomFlip(object):
         else:
             fliped = np.array(images)
 
-        return {'images': fliped, 'labels': sample['labels']}
+        return {'images': fliped, 'labels': sample['labels'], 'names':sample['names']}
 
 class Dropout(object):
     """Flip randomly the image in a sample.
@@ -154,14 +156,11 @@ class Dropout(object):
             for i in images:
                 i[coords[:-1]] = (0, 0, 0)
                 droped.append(i)
-            print(type(images), type(droped), type(droped[0]))
             droped = np.array(droped)
-            print(type(images), type(droped), type(droped[0]))
         else:
             droped = np.array(images)
-            print(type(images), type(droped), type(droped[0]))
 
-        return {'images': droped, 'labels': sample['labels']}
+        return {'images': droped, 'labels': sample['labels'], 'names':sample['names']}
 
 class Normalization(object):
     """Flip randomly the image in a sample.
@@ -172,50 +171,27 @@ class Normalization(object):
         self.std = std
 
     def __call__(self, sample):
-        normalization = transforms.Normalize(mean=self.mean, std=self.std)
+        images = sample['images']
+        normalized = []
+        for i in images:
+            i -= self.mean
+            i /= self.std
+            normalized.append(i)
+        normalized = np.array(normalized)
 
-        return normalization(sample)
+        return {'images': normalized, 'labels': sample['labels'], 'names':sample['names']}
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
-        images = sample['images']
-        normalization = Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        tensors = []
-        for i in images:
-            img = torch.from_numpy(i)
-            n = normalization(img)
-            tensors.append(n)
-        tensors = np.array(tensors)
-        print(tensors.shape)
-        tensors = tensors.reshape(20, 224, 224, 3)
+        return {'images': torch.from_numpy(sample['images']), 'labels': torch.from_numpy(sample['labels']), 'names':sample['names']}
 
-        return {'images': torch.from_numpy(tensors), 'labels': torch.from_numpy(sample['labels'])}
-
-# composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2), ToTensor(), Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 # ds = MiniDroneVideoDataset('data/trainset_labels',
 #                                 'data',
-#                                     10,
-#                                     transform=composed)
+#                                     20,
+#                                     transform=transforms.Compose([Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), RandomCrop((160, 160)), RandomFlip(), Dropout(0.2), ToTensor()]))
 # fig = plt.figure()
-# sample = ds[120]
-# print(Variable(sample['images'][0]).data.numpy().shape)
-# plt.imsave('{}.png'.format(120), Variable(sample['images'][0]).data.numpy().transpose(1, 2, 0))
-# for i, tsfrm in enumerate([composed]):
-#     transformed_sample = tsfrm(sample)
-#     for j in range(len(transformed_sample['images'])):
-#         plt.imsave('{}.png'.format(j), transformed_sample['images'][j])
-# ds[0]
-# scale = Rescale((512, 600))
-# crop = RandomCrop(128)
-# flip = RandomFlip()
-# composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2)])
-#
-# Apply each of the above transforms on sample.
-# fig = plt.figure()
-# sample = ds[120]
-# for i, tsfrm in enumerate([composed]):
-#     transformed_sample = tsfrm(sample)
-#     for j in range(len(transformed_sample['images'])):
-#         plt.imsave('{}.png'.format(j), transformed_sample['images'][j])
+# sample = ds[0]
+# for i in range(len(sample['images'])):
+#     plt.imsave('{}.png'.format(sample['names'][i]), Variable(sample['images'][i]).data.numpy())

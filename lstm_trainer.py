@@ -21,13 +21,12 @@ def train_model(model, loss_function, optimizer):
     """
     """
 
-    tsfm = [ds.ToTensor()]
+    tsfm = ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     da = tsfm
     if args.augdata == 1:
-        da = [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
-        da = tsfm + da
+        da = [da] + [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
     trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=transforms.Compose(da))
-    valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, transform=transforms.Compose(tsfm))
+    valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, transform=tsfm)
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: (len(dsets[p]) * args.sequence_length) for p in phase}
