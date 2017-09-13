@@ -159,6 +159,24 @@ class Dropout(object):
 
         return {'images': droped, 'labels': sample['labels']}
 
+class Normalization(mean, std):
+    """Flip randomly the image in a sample.
+    """
+
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, sample):
+        images = sample['images']
+        normalization = transforms.Normalize(mean=self.mean, std=self.std)
+        normalized = []
+        for i in images:
+            i = normalization(i)
+            normalized.append(i)
+        normalized = np.array(normalized)
+
+        return {'images': normalized, 'labels': sample['labels']}
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
