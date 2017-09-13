@@ -159,7 +159,7 @@ class Dropout(object):
 
         return {'images': droped, 'labels': sample['labels']}
 
-class Normalization(mean, std):
+class Normalization(object):
     """Flip randomly the image in a sample.
     """
 
