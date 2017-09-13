@@ -15,6 +15,7 @@ from random import shuffle
 import matplotlib.pyplot as plt
 from sklearn import metrics
 from tqdm import tqdm
+from torch.utils.data import Dataset, DataLoader
 
 import dataset as ds
 
