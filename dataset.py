@@ -187,8 +187,9 @@ class ToTensor(object):
         transposed = []
         for i in image:
             transposed.append(i.transpose((2, 0, 1)))
+        transposed = np.array(transposed)
 
-        return {'images': torch.from_numpy(np.array(transposed)), 'labels': torch.from_numpy(sample['labels'])}
+        return {'images': torch.from_numpy(transposed), 'labels': torch.from_numpy(sample['labels'])}
 
 # composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2), ToTensor(), Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 # ds = MiniDroneVideoDataset('data/trainset_labels',
