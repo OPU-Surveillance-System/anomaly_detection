@@ -10,13 +10,10 @@ from torch.utils.data import Dataset, DataLoader
 import time
 import copy
 import os
-# from scipy import misc
 import argparse
-# from random import shuffle
 from importlib import import_module
 
 import plot as plt
-import data_augmentation as da
 import dataset as ds
 
 def train_model(model, loss_function, optimizer):
