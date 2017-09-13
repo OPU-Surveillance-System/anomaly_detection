@@ -158,7 +158,6 @@ class Dropout(object):
             droped = np.array(droped)
             print(type(images), type(droped), type(droped[0]))
         else:
-            print(type(images), type(droped), type(droped[0]))
             droped = np.array(images)
             print(type(images), type(droped), type(droped[0]))
 
