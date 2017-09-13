@@ -22,9 +22,9 @@ def train_model(model, loss_function, optimizer):
     """
 
     if args.augdata == 1:
-        da = transforms.Compose([ds.RandomCrop((160, 160)),
+        da = transforms.Compose([ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                 ds.RandomCrop((160, 160)),
                                  ds.RandomFlip(),
-                                 ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
                                  ds.Dropout(0.2)])
     else:
         da = ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
