@@ -41,7 +41,7 @@ class MiniDroneVideoDataset(Dataset):
         return len(self.frames)
 
     def __getitem__(self, idx):
-        images = np.array([io.imread(f) for f in self.frames[idx][0]])
+        images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]])
         labels = np.array([f for f in self.frames[idx][1]], dtype=np.float)
         labels = labels.reshape(len(labels), 1)
         sample = {'images': images, 'labels':labels}
