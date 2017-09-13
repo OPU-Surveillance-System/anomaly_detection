@@ -36,7 +36,7 @@ def test_model(model):
         labels = Variable(sample['labels'].float().cuda())[0]
         for l in sample['labels']:
             groundtruth.append(l)
-        print(groundtruth)
+        #print(groundtruth)
         labels = np.reshape(labels, (len(labels), 1))
         # forward
         logits = model(inputs)
