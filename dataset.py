@@ -189,13 +189,15 @@ class ToTensor(object):
 
     def __call__(self, sample):
         image = sample['images']
-        transposed = []
-        for i in image:
-            transposed.append(torch.from_numpy(i.transpose((2, 0, 1))))
-        transposed = np.array(transposed)
-        print(transposed.shape)
+        normalization = Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        tensors = []
+        for i in images:
+            img = torch.from_numpy(i)
+            n = normalization(img)
+            tensors.append(n)
+        tensors = np.array(tensors)
 
-        return {'images': torch.from_numpy(transposed), 'labels': torch.from_numpy(sample['labels'])}
+        return {'images': torch.from_numpy(tensors), 'labels': torch.from_numpy(sample['labels'])}
 
 # composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2), ToTensor(), Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 # ds = MiniDroneVideoDataset('data/trainset_labels',
