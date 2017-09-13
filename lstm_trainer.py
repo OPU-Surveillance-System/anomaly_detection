@@ -22,15 +22,12 @@ import dataset as ds
 def train_model(model, loss_function, optimizer):
     """
     """
-
-    with open(args.trainset, 'r') as f:
-        trainset = f.read().split('\n')[:-1]
-    trainset = [(t.split('\t')[0:10], t.split('\t')[10:]) for t in trainset]
-    with open(args.valset, 'r') as f:
-        valset = f.read().split('\n')[:-1]
-    valset = [(v.split('\t')[0:10], v.split('\t')[10:]) for v in valset]
-    trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', 10, transform=transforms.Compose([ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]))
-    valset = ds.MiniDroneVideoDataset(args.valset, 'data', 10)
+    if args.augdata == 1:
+        da = transforms.Compose([ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)])
+    else:
+        da = None
+    trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=da)
+    valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length)
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: len(dsets[p]) for p in phase}
@@ -59,15 +56,7 @@ def train_model(model, loss_function, optimizer):
                 #Initialize model's gradient and LSTM state
                 model.zero_grad()
                 model.hidden = model.init_hidden()
-                #Fetch sequence frames and labels
-                # inputs = np.array([misc.imread(os.path.join(dsets[p][step][0][i])) for i in range(len(dsets[p][step][0]))])
-                # if p == 'training' and args.augdata == 1:
-                #     inputs = da.augment_batch(inputs)
-                # inputs = np.transpose(inputs, (0, 3, 1, 2))
-                # labels = np.array([dsets[p][step][1][i] for i in range(len(dsets[p][step][1]))], dtype=np.float).reshape((len(dsets[p][step][1]), 1))
                 # #Convert to cuda tensor
-                # inputs = Variable(torch.from_numpy(inputs).float().cuda())
-                # labels = Variable(torch.from_numpy(labels).float().cuda())
                 inputs = Variable(sample['images'].float().cuda())[0]
                 labels = Variable(sample['labels'].float().cuda())[0]
                 #Forward
