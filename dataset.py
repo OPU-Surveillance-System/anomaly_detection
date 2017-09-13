@@ -147,6 +147,7 @@ class Dropout(object):
 
     def __call__(self, sample):
         images = sample['images']
+        print(type(images), type(images[0]))
         if 0.5 > np.random.uniform(0.0, 1.0):
             droped = []
             num_droped = np.ceil(np.random.uniform(0.0, self.amount) * 224*224)
