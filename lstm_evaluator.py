@@ -78,5 +78,6 @@ if __name__ == '__main__':
     parser.add_argument('--te', dest='testset', type=str, default='data/testset_labels', help='Path to the testset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
     parser.add_argument('--m', dest='model', type=str, default='modelsave', help='Path to the serialized model')
+    parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
     args = parser.parse_args()
     main(args)
