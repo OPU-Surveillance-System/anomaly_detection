@@ -1,18 +1,18 @@
 from __future__ import print_function, division
 import torch
-import torch.nn as nn
-import torch.optim as optim
+# import torch.nn as nn
+# import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import time
-import copy
+# import copy
 import os
-from scipy import misc
+# from scipy import misc
 import argparse
-from random import shuffle
-import matplotlib.pyplot as plt
+# from random import shuffle
+# import matplotlib.pyplot as plt
 from sklearn import metrics
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
