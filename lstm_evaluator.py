@@ -43,6 +43,8 @@ def test_model(model):
         probs = model.predict(logits)
         # for p in probs:
         #     answer.append((Variable(p).data).cpu().numpy())
+        groundtruth += labels.data.numpy()
+        answer += probs.data.numpy()
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
