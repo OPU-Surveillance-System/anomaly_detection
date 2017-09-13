@@ -28,7 +28,7 @@ def train_model(model, loss_function, optimizer):
                                  normalization,
                                  ds.Dropout(0.2)])
     else:
-        da = normalization
+        da = None
     trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=da)
     valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length)
     dsets = {'training': trainset, 'validation': valset}
