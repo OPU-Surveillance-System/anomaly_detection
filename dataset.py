@@ -187,7 +187,9 @@ class ToTensor(object):
             img = torch.from_numpy(i)
             n = normalization(img)
             tensors.append(n)
-        tensors = np.array(tensors).reshape(20, 224, 224, 3)
+        tensors = np.array(tensors)
+        print(tensors.shape)
+        tensors = tensors.reshape(20, 224, 224, 3)
 
         return {'images': torch.from_numpy(tensors), 'labels': torch.from_numpy(sample['labels'])}
 
