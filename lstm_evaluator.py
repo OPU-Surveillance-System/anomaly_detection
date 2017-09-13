@@ -44,6 +44,7 @@ def test_model(model):
         # for p in probs:
         #     answer.append((Variable(p).data).cpu().numpy())
         groundtruth += labels.data.cpu().numpy()
+        print(labels.data.cpu().numpy())
         answer += Variable(probs).data.cpu().numpy()
         print(groundtruth)
         #print(answer.shape, groundtruth.shape)
