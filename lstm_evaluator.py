@@ -26,7 +26,7 @@ def test_model(model):
     answer = []
     groundtruth = []
     # Iterate over data.
-    dataloader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=4)
+    dataloader = DataLoader(testset, batch_size=1, shuffle=True, num_workers=4)
     model.zero_grad()
     model.hidden = model.init_hidden()
     for i_batch, sample in enumerate(tqdm(dataloader)):
