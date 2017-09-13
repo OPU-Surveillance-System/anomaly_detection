@@ -29,23 +29,20 @@ def test_model(model):
     dataloader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=4)
     model.zero_grad()
     model.hidden = model.init_hidden()
-    inputs = Variable(testset[0]['images'].float().cuda())
-    labels = Variable(testset[0]['labels'].float().cuda())
-    print(labels.data)
-    # for i_batch, sample in enumerate(tqdm(dataloader)):
-    #     model.zero_grad()
-    #     model.hidden = model.init_hidden()
-    #     inputs = Variable(sample['images'].float().cuda())[0]
-    #     labels = Variable(sample['labels'].float().cuda())[0]
-    #     for l in labels.data:
-    #         groundtruth.append(l)
-    #     #print(groundtruth)
-    #     labels = np.reshape(labels, (len(labels), 1))
-    #     # forward
-    #     logits = model(inputs)
-    #     probs = model.predict(logits)
-    #     for p in probs:
-    #         answer.append((Variable(p).data).cpu().numpy())
+    for i_batch, sample in enumerate(tqdm(dataloader)):
+        model.zero_grad()
+        model.hidden = model.init_hidden()
+        inputs = Variable(sample['images'].float().cuda())[0]
+        labels = Variable(sample['labels'].float().cuda())[0]
+        for l in sample['labels']:
+            groundtruth.append(l)
+        print(groundtruth)
+        labels = np.reshape(labels, (len(labels), 1))
+        # forward
+        logits = model(inputs)
+        probs = model.predict(logits)
+        for p in probs:
+            answer.append((Variable(p).data).cpu().numpy())
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
