@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 from tqdm import tqdm
 
-use_gpu = torch.cuda.is_available()
+import dataset as ds
 
 def test_model(model):
     testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length)
