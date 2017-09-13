@@ -19,19 +19,18 @@ from tqdm import tqdm
 use_gpu = torch.cuda.is_available()
 
 def test_model(model):
-    with open(args.testset, 'r') as f:
-        testset = f.read().split('\n')[:-1]
-    testset = [(t.split('\t')[0:10], t.split('\t')[10:]) for t in testset]
+    testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length)
     since = time.time()
     model.train(False)  # Set model to evaluate mode
     answer = []
     groundtruth = []
     # Iterate over data.
-    for step in tqdm(range(len(testset))):
-        # get the inputs
-        inputs = np.array([misc.imread(os.path.join(testset[step][0][i])) for i in range(len(testset[step][0]))])
-        inputs = np.transpose(inputs, (0, 3, 1, 2))
-        labels = np.array(testset[step][1], dtype=np.float)
+    dataloader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=4)
+    for i_batch, sample in enumerate(dataloader):
+        model.zero_grad()
+        model.hidden = model.init_hidden()
+        inputs = Variable(sample['images'].float().cuda())[0]
+        labels = Variable(sample['labels'].float().cuda())[0]
         for l in labels:
             groundtruth.append(l)
         labels = np.reshape(labels, (len(labels), 1))
@@ -43,7 +42,6 @@ def test_model(model):
         probs = model.predict(logits)
         for p in probs:
             answer.append((Variable(p).data).cpu().numpy())
-        #print('Processed {} images'.format(len(inputs)))
 
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
