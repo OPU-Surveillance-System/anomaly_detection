@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
+# from torch.autograd import Variable
+
 class MiniDroneVideoDataset(Dataset):
     """
     """
@@ -47,7 +49,6 @@ class MiniDroneVideoDataset(Dataset):
         sample = {'images': images, 'labels':labels}
         if self.transform:
             sample = self.transform(sample)
-        sample['images'] = np.transpose(sample['images'], (0, 3, 1, 2))
 
         return sample
 
@@ -187,22 +188,27 @@ class ToTensor(object):
         for i in image:
             transposed.append(i.transpose((2, 0, 1)))
 
-        return {'images': torch.from_numpy(transposed), 'labels': torch.from_numpy(sample['labels'])}
+        return {'images': torch.from_numpy(np.array(transposed)), 'labels': torch.from_numpy(sample['labels'])}
 
-ds = MiniDroneVideoDataset('data/trainset_labels',
-                                'data',
-                                    10,
-                                    transform=transforms.Compose([
-                                           RandomCrop((160, 160)),
-                                           RandomFlip(),
-                                           Dropout(0.2)
-                                       ]))
+# composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2), ToTensor(), Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+# ds = MiniDroneVideoDataset('data/trainset_labels',
+#                                 'data',
+#                                     10,
+#                                     transform=composed)
+# fig = plt.figure()
+# sample = ds[120]
+# print(Variable(sample['images'][0]).data.numpy().shape)
+# plt.imsave('{}.png'.format(120), Variable(sample['images'][0]).data.numpy().transpose(1, 2, 0))
+# for i, tsfrm in enumerate([composed]):
+#     transformed_sample = tsfrm(sample)
+#     for j in range(len(transformed_sample['images'])):
+#         plt.imsave('{}.png'.format(j), transformed_sample['images'][j])
 # ds[0]
 # scale = Rescale((512, 600))
 # crop = RandomCrop(128)
 # flip = RandomFlip()
 # composed = transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2)])
-
+#
 # Apply each of the above transforms on sample.
 # fig = plt.figure()
 # sample = ds[120]
