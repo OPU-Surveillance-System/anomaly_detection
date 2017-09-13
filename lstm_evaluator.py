@@ -59,6 +59,7 @@ def main(args):
     model = torch.load(args.model)
     model = model.cuda()
     answer, groundtruth = test_model(model)
+    print(answer.shape, groundtruth.shape)
     answer = np.array(answer).reshape(len(answer))
     groundtruth = np.array(groundtruth).reshape(len(groundtruth))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
