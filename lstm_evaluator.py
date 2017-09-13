@@ -18,6 +18,7 @@ from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 
 import dataset as ds
+import plot as plt
 
 def test_model(model):
     testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length)
@@ -58,7 +59,7 @@ def main(args):
     print(set(answer))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
-    plot.plot_auc(auc, fpr, tpr, args.directory, os.path.basename(args.model))
+    plt.plot_auc(auc, fpr, tpr, args.directory, os.path.basename(args.model))
 
 
 if __name__ == '__main__':
