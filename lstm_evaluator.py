@@ -19,6 +19,7 @@ def test_model(model):
     model.train(False)  # Set model to evaluate mode
     answer = []
     groundtruth = []
+    names = []
     # Iterate over data.
     dataloader = DataLoader(testset, batch_size=1, shuffle=True, num_workers=4)
     model.zero_grad()
@@ -36,11 +37,12 @@ def test_model(model):
         running_corrects += torch.sum(detection == labels.data.long())
         groundtruth.append(labels.data.cpu().numpy())
         answer.append(Variable(probs).data.cpu().numpy())
+        names.append(sample['names'])
     accuracy = running_corrects / (len(testset) * args.sequence_length)
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
-    return answer, groundtruth, accuracy
+    return answer, groundtruth, accuracy, names
 
 def main(args):
     #Create experiment directory
@@ -49,7 +51,8 @@ def main(args):
     #Load trained model
     model = torch.load(args.model)
     model = model.cuda()
-    answer, groundtruth, accuracy = test_model(model)
+    answer, groundtruth, accuracy, names = test_model(model)
+    print(names)
     answer, groundtruth = np.array(answer), np.array(groundtruth)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
