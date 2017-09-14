@@ -68,6 +68,8 @@ def train_model(model, loss_function, optimizer):
                 batch_corrects = torch.sum(probs == labels.data.long())
                 running_corrects += torch.sum(probs == labels.data.long())
                 print(running_corrects)
+                if i_batch % args.stop == 0:
+                    return 0
             epoch_loss = running_loss / dset_sizes[p]
             epoch_acc = running_corrects / dset_sizes[p]
             hist[p]['loss'].append(epoch_loss)
@@ -125,6 +127,7 @@ if __name__ == '__main__':
     parser.add_argument('--da', dest='augdata', type=int, default=1, help='')
     parser.add_argument('--plot', dest='plot', type=int, default=1, help='')
     parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
+    parser.add_argument('--stop', dest='stop', type=int, default=1, help='')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}
     print('arguments passed to the model: {}'.format(margs))
