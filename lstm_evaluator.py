@@ -23,6 +23,7 @@ def test_model(model):
     dataloader = DataLoader(testset, batch_size=1, shuffle=True, num_workers=4)
     model.zero_grad()
     model.hidden = model.init_hidden()
+    running_corrects = 0
     for i_batch, sample in enumerate(tqdm(dataloader)):
         model.zero_grad()
         model.hidden = model.init_hidden()
