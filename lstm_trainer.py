@@ -67,6 +67,7 @@ def train_model(model, loss_function, optimizer):
                 batch_loss = loss.data[0]
                 batch_corrects = torch.sum(probs == labels.data.long())
                 running_corrects += torch.sum(probs == labels.data.long())
+                print(running_corrects)
             epoch_loss = running_loss / dset_sizes[p]
             epoch_acc = running_corrects / dset_sizes[p]
             hist[p]['loss'].append(epoch_loss)
