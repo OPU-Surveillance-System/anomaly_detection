@@ -36,7 +36,7 @@ def test_model(model):
         running_corrects += torch.sum(detection == labels.data.long())
         groundtruth.append(labels.data.cpu().numpy())
         answer.append(Variable(probs).data.cpu().numpy())
-    accuracy = running_corrects / len(testset)
+    accuracy = running_corrects / (len(testset) * args.sequence_length)
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
