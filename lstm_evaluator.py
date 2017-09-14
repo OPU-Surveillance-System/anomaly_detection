@@ -52,9 +52,10 @@ def main(args):
     model = torch.load(args.model)
     model = model.cuda()
     answer, groundtruth, accuracy, names = test_model(model)
-    answer, groundtruth = np.array(answer), np.array(groundtruth)
+    answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
+    names = names.reshape(names.shape[0], names.shape[1])
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
     print(len(answer), len(groundtruth), len(names))
