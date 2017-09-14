@@ -58,7 +58,7 @@ def train_model(model, loss_function, optimizer):
                 labels = Variable(sample['labels'].float().cuda())[0]
                 #Forward
                 logits = model(inputs)
-                probs = model.predict(logits)
+                probs = model.threshold(logits)
                 loss = loss_function(logits, labels)
                 if p == 'training': #Backpropagation
                     loss.backward()

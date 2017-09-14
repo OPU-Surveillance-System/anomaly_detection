@@ -98,7 +98,13 @@ class VGG16LSTM(nn.Module):
 
         return logits
 
-    def predict(self, probs):
+    def predict(self, logits):
+        """
+        """
+
+        return torch.sigmoid(probs.data)
+
+    def threshold(self, probs):
         """
         """
 
