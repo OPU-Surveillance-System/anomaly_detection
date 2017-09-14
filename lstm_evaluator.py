@@ -58,7 +58,6 @@ def main(args):
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
     for i in range(len(answer)):
-        print(answer[i])
         if answer[i] >= 0.5 and groundtruth == 1:
             named['tp'].append(names[i])
         elif answer[i] < 0.5 and groundtruth == 0:
