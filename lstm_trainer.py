@@ -67,6 +67,7 @@ def train_model(model, loss_function, optimizer):
                 batch_loss = loss.data[0]
                 batch_corrects = torch.sum(probs == labels.data.long())
                 running_corrects += torch.sum(probs == labels.data.long())
+                print(probs)
                 print(running_corrects)
                 if i_batch > 0 and i_batch % args.stop == 0:
                     return 0
