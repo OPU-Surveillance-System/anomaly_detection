@@ -191,8 +191,8 @@ ds = MiniDroneVideoDataset('data/trainset_labels',
                                 'data',
                                     20,
                                     transform=transforms.Compose([Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), RandomCrop((160, 160)), RandomFlip(), Dropout(0.2)]))
-fig = plt.figure()
-sample = ds[0]
-print(max(set(sample['images'][0].flatten())))
-for i in range(len(sample['images'])):
-    plt.imsave('{}.png'.format(sample['names'][i]), Variable(sample['images'][i]).data.numpy())
+# fig = plt.figure()
+# sample = ds[0]
+# print(max(set(sample['images'][0].flatten())))
+# for i in range(len(sample['images'])):
+#     plt.imsave('{}.png'.format(sample['names'][i]), Variable(sample['images'][i]).data.numpy())
