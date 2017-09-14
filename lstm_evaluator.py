@@ -66,6 +66,7 @@ def main(args):
             named['fp'].append(names[i])
         elif answer[i] == 0 and groundtruth == 1:
             named['fn'].append(names[i])
+    print(named)
     for k in keys:
         with open(k, 'w') as f:
             for elt in named[k]:
