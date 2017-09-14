@@ -31,12 +31,15 @@ def test_model(model):
         # forward
         logits = model(inputs)
         probs = model.predict(logits)
+        detection = model.threshold(logits)
+        running_corrects += torch.sum(detection == labels.data.long())
         groundtruth.append(labels.data.cpu().numpy())
         answer.append(Variable(probs).data.cpu().numpy())
+    accuracy = running_corrects / len(testset)
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
-    return answer, groundtruth
+    return answer, groundtruth, accuracy
 
 def main(args):
     #Create experiment directory
@@ -45,11 +48,11 @@ def main(args):
     #Load trained model
     model = torch.load(args.model)
     model = model.cuda()
-    answer, groundtruth = test_model(model)
+    answer, groundtruth, accuracy = test_model(model)
     answer, groundtruth = np.array(answer), np.array(groundtruth)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
-    print(set(answer))
+    print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
     plt.plot_auc(auc, fpr, tpr, args.directory, os.path.basename(args.model))
