@@ -57,6 +57,7 @@ def main(args):
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
+    print(len(answer), len(groundtruth), len(names))
     for i in range(len(answer)):
         if answer[i] >= 0.5 and groundtruth[i] == 1:
             named['tp'].append(names[i])
