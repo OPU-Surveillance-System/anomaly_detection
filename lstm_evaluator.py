@@ -73,6 +73,9 @@ def main(args):
         with open(k, 'w') as f:
             for elt in named[k]:
                 f.write('{}\n'.format(elt))
+    with open('check', 'w') as f:
+        for i in range(len(names)):
+            f.write('{}\n'.format(names[i]))
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
