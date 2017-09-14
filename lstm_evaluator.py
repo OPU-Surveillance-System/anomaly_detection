@@ -52,10 +52,24 @@ def main(args):
     model = torch.load(args.model)
     model = model.cuda()
     answer, groundtruth, accuracy, names = test_model(model)
-    print(names)
     answer, groundtruth = np.array(answer), np.array(groundtruth)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
+    keys = ['tp', 'tn', 'fp', 'fn']
+    named = {k:[] for k in keys}
+    for i in range(len(answer)):
+        if answer[i] == 1 and groundtruth == 1:
+            named['tp'].append(names[i])
+        elif answer[i] == 0 and groundtruth == 0:
+            named['tn'].append(names[i])
+        elif answer[i] == 1 and groundtruth == 0:
+            named['fp'].append(names[i])
+        elif answer[i] == 0 and groundtruth == 1:
+            named['fn'].append(names[i])
+    for k in keys:
+        with open(k, 'w') as f:
+            for elt in named[k]:
+                f.write('{}\n'.format(elt))
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
