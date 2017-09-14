@@ -58,14 +58,13 @@ def main(args):
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
     for i in range(len(answer)):
-        print(answer[i], groundtruth[i])
-        if answer[i] >= 0.5 and groundtruth == 1:
+        if answer[i] >= 0.5 and groundtruth[i] == 1:
             named['tp'].append(names[i])
-        elif answer[i] < 0.5 and groundtruth == 0:
+        elif answer[i] < 0.5 and groundtruth[i] == 0:
             named['tn'].append(names[i])
-        elif answer[i] >= 0.5 and groundtruth == 0:
+        elif answer[i] >= 0.5 and groundtruth[i] == 0:
             named['fp'].append(names[i])
-        elif answer[i] < 0 and groundtruth == 1:
+        elif answer[i] < 0 and groundtruth[i] == 1:
             named['fn'].append(names[i])
     print(named)
     for k in keys:
