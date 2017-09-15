@@ -29,7 +29,8 @@ def main(args):
         "dropping_off": 1,
         "throwing_away": 1,
         "riding": 0,
-        "intimidating": 1
+        "intimidating": 1,
+        "reserving": 1
     }
 
     misc = {
@@ -47,6 +48,8 @@ def main(args):
     #Label sets
     for s in range(len(subsets)):
         setname = subsets[s]
+        with open('%sset_labels'%(setname), 'w') as f:
+            print('Cleaning previous {}set_labels'.format(setname))
         print('Labeling %sset...'%(setname))
         for l in tqdm(sets[s]):
             data_name = l.split('/')[2][:-5]
@@ -77,8 +80,10 @@ def main(args):
                         label = 1
                     if len(data[frame]) == 0:
                         data[frame] = ['nothing']
-                    f.write('%s/%sset/%s-%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
-
+                    if os.path.isfile('{}/{}set/{}-{}.png'.format(args.frames_path, setname, data_name, frame)):
+                        f.write('%s/%sset/%s-%d\t%d\t%s\n'%(args.frames_path, setname, data_name, frame, label, ','.join(data[frame])))
+                    # else:
+                    #     print('**{}/{}set/{}-{}.png not found**'.format(args.frames_path, setname, data_name, frame))
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the dataset labeler')
     parser.add_argument('--dataset', dest='dataset', default='MiniDrone', help='Path ground truth labels')
