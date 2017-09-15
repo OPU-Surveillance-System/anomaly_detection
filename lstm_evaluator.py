@@ -51,14 +51,16 @@ def main(args):
     #Load trained model
     model = torch.load(args.model)
     model = model.cuda()
+    #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
+    #Reshape returned array
     answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
     answer = answer.reshape(answer.shape[0] * answer.shape[1])
     groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
     names = names.reshape(names.shape[0] * names.shape[1])
+    #Check True/False Positives/Negatives
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
-    print(len(answer), len(groundtruth), len(names))
     for i in range(len(answer)):
         if answer[i] >= 0.5 and groundtruth[i] == 1:
             named['tp'].append(names[i])
@@ -68,14 +70,11 @@ def main(args):
             named['fp'].append(names[i])
         elif answer[i] < 0 and groundtruth[i] == 1:
             named['fn'].append(names[i])
-    print(named)
     for k in keys:
-        with open(k, 'w') as f:
+        with open(os.path.join(args.dir, k), 'w') as f:
             for elt in named[k]:
                 f.write('{}\n'.format(elt))
-    with open('check', 'w') as f:
-        for i in range(len(names)):
-            f.write('{}\n'.format(names[i]))
+    #Display results
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
