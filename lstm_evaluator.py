@@ -78,7 +78,7 @@ def main(args):
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     auc = metrics.auc(fpr, tpr)
-    plt.plot_auc(auc, fpr, tpr, args.directory, os.path.basename(args.model))
+    plt.plot_auc(auc, fpr, tpr, args.directory, 'trained_model')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
