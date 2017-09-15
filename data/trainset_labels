@@ -1806,7 +1806,7 @@ MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-677	1	stealing,par
 MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-678	1	stealing,parked
 MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-679	1	stealing,parked
 MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-680	1	stealing,parked
-MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-681	0	nothing
+MiniDrone_frames/trainset/StealingCar_CloseUp_Day_Empty_1_f_1-681	1	stealing
 MiniDrone_frames/trainset/StealingPedestrian_CloseUp_Day_Half_0_2_1-1	0	walking
 MiniDrone_frames/trainset/StealingPedestrian_CloseUp_Day_Half_0_2_1-2	0	walking
 MiniDrone_frames/trainset/StealingPedestrian_CloseUp_Day_Half_0_2_1-3	0	walking
