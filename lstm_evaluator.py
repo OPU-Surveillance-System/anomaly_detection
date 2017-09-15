@@ -49,7 +49,7 @@ def main(args):
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
     #Load trained model
-    model = torch.load(args.model)
+    model = torch.load(os.path.join(args.dir, 'trained_model'))
     model = model.cuda()
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
@@ -71,7 +71,7 @@ def main(args):
         elif answer[i] < 0 and groundtruth[i] == 1:
             named['fn'].append(names[i])
     for k in keys:
-        with open(os.path.join(args.dir, k), 'w') as f:
+        with open(os.path.join(args.directory, k), 'w') as f:
             for elt in named[k]:
                 f.write('{}\n'.format(elt))
     #Display results
@@ -85,7 +85,6 @@ if __name__ == '__main__':
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
     parser.add_argument('--te', dest='testset', type=str, default='data/testset_labels', help='Path to the testset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
-    parser.add_argument('--m', dest='model', type=str, default='modelsave', help='Path to the serialized model')
     parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
     args = parser.parse_args()
     main(args)
