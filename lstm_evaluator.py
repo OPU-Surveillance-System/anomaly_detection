@@ -49,7 +49,7 @@ def main(args):
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
     #Load trained model
-    model = torch.load(os.path.join(args.dir, 'trained_model'))
+    model = torch.load(os.path.join(args.directory, 'trained_model'))
     model = model.cuda()
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
