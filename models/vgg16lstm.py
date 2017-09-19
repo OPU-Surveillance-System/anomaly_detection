@@ -38,6 +38,8 @@ class VGG16LSTM(nn.Module):
         if 'hd' not in margs.keys(): #LSTM Hidden state's dimension
             print('**Missing hidden state dimension argument, setting to 100**')
             margs['hd'] = 100
+        else:
+            margs['hd'] = int(margs['hd'])
         if 'rl' not in margs.keys(): #LSTM's number of layers
             print('**Missing number of recurent layers argument, setting to 1**')
             margs['rl'] = 1
