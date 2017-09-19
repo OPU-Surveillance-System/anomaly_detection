@@ -23,6 +23,7 @@ def plot_auc(auc, fpr, tpr, thresholds, directory, name, plot_thresholds):
     plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
     if plot_thresholds:
-        for thr in range(0, len(fpr), 1000):
+        print(len(thresholds))
+        for thr in range(0, len(fpr), 10000):
             plt.text(fpr[thr], tpr[thr], thresholds[thr])
     plt.savefig(os.path.join(directory, name + '_roc.svg'), format='svg')
