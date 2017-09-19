@@ -25,8 +25,8 @@ def train_model(model, loss_function, optimizer):
     da = tsfm
     if args.augdata == 1:
         da = [da] + [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
-    trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, transform=transforms.Compose(da))
-    valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, transform=tsfm)
+    trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, args.stride, transform=transforms.Compose(da))
+    valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, args.stride, transform=tsfm)
     dsets = {'training': trainset, 'validation': valset}
     phase = list(dsets.keys())
     dset_sizes = {p: (len(dsets[p]) * args.sequence_length) for p in phase}
@@ -122,6 +122,7 @@ if __name__ == '__main__':
     parser.add_argument('--da', dest='augdata', type=int, default=1, help='')
     parser.add_argument('--plot', dest='plot', type=int, default=1, help='')
     parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
+    parser.add_argument('--str', dest='stride', type=int, default=10, help='Sliding window stride')
     parser.add_argument('--stop', dest='stop', type=int, default=1, help='')
     args, unknown = parser.parse_known_args()
     margs = {u.split('=')[0][2:]:u.split('=')[1] for u in unknown}

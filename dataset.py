@@ -13,13 +13,14 @@ class MiniDroneVideoDataset(Dataset):
     """
     """
 
-    def __init__(self, summary, root_dir, sequence_length, transform=None):
+    def __init__(self, summary, root_dir, sequence_length, stride, transform=None):
         """
         """
 
         self.root_dir = root_dir
         self.transform = transform
         self.sequence_length = sequence_length
+        self.stride = stride
         with open(summary, 'r') as f:
             content = f.read().split('\n')[:-1]
         self.content = [c.split('\t') for c in content]
@@ -36,8 +37,8 @@ class MiniDroneVideoDataset(Dataset):
                 tmp = [c]
         groups.append(tmp)
         #Build sequences from the same video of length sequence_length
-        self.frames = [(['data/' + f[0] + '.png' for f in g[i:i+self.sequence_length]], [int(f[1]) for f in g[i:i+self.sequence_length]])
-                       for g in groups for i in range(len(g) - (self.sequence_length - 1))]
+        self.frames = [(['data/' + f[0] + '.png' for f in g[i*self.stride:(i*self.stride)+self.sequence_length]], [int(f[1]) for f in g[i*self.stride:(i*self.stride)+self.sequence_length]])
+                       for g in groups for i in range(int(len(g) / self.stride))]
 
     def __len__(self):
         return len(self.frames)
