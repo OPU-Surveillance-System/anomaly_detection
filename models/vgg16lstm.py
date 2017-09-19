@@ -43,6 +43,8 @@ class VGG16LSTM(nn.Module):
         if 'rl' not in margs.keys(): #LSTM's number of layers
             print('**Missing number of recurent layers argument, setting to 1**')
             margs['rl'] = 1
+        else:
+            margs['rl'] = int(margs['rl'])
         if 'ft' not in margs.keys():
             print('**Missing fine tuning argument, setting to False**')
             margs['ft'] = False
