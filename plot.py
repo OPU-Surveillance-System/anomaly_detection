@@ -11,7 +11,7 @@ def plot_history(history, directory):
     axes[1].legend(loc='lower right')
     plt.savefig(os.path.join(directory, 'training.svg'), format='svg')
 
-def plot_auc(auc, fpr, tpr, directory, name):
+def plot_auc(auc, fpr, tpr, thresholds, directory, name, plot_thresholds):
     plt.figure()
     lw = 2
     plt.plot(fpr, tpr, color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % auc)
@@ -22,4 +22,7 @@ def plot_auc(auc, fpr, tpr, directory, name):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
+    if plot_thresholds:
+        for thr in range(0, len(fpr), 100):
+            plt.text(fpr[thr], tpr[thr], thresholds[thr])
     plt.savefig(os.path.join(directory, name + '_roc.svg'), format='svg')
