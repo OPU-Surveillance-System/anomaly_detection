@@ -35,9 +35,9 @@ def test_model(model):
         probs = model.predict(logits)
         detection = model.threshold(logits)
         running_corrects += torch.sum(detection == labels.data.long())
-        groundtruth += labels.data.cpu().numpy().flatten()
-        answer += Variable(probs).data.cpu().numpy().flatten()
-        names.append(sample['names'])
+        groundtruth += [elt for elt in labels.data.cpu().numpy().flatten()]
+        answer += [elt for elt in Variable(probs).data.cpu().numpy().flatten()]
+        names += [elt for elt in sample['names']]
     accuracy = running_corrects / (len(testset) * args.sequence_length)
     time_elapsed = time.time() - since
     print('Testing complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
