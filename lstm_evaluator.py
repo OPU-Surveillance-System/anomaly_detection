@@ -35,10 +35,8 @@ def test_model(model):
         probs = model.predict(logits)
         detection = model.threshold(logits)
         running_corrects += torch.sum(detection == labels.data.long())
-        labels = labels.data.cpu().numpy()
-        probs = Variable(probs).data.cpu().numpy()
-        groundtruth.append(labels.reshape(labels.shape[0]))
-        answer.append(probs.reshape(probs.shape[0]))
+        groundtruth.append(labels.data.cpu().numpy())
+        answer.append(Variable(probs).data.cpu().numpy())
         names.append(sample['names'])
     accuracy = running_corrects / (len(testset) * args.sequence_length)
     time_elapsed = time.time() - since
@@ -57,10 +55,9 @@ def main(args):
     answer, groundtruth, accuracy, names = test_model(model)
     #Reshape returned array
     answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
-    print(answer, answer.shape)
-    #answer = answer.reshape(answer.shape[0] * answer.shape[1])
-    #groundtruth = groundtruth.reshape(groundtruth.shape[0] * groundtruth.shape[1])
-    names = names.reshape(names.shape[0] * names.shape[1])
+    answer = answer.flatten()
+    groundtruth = groundtruth.flatten()
+    names = names.flatten()
     #Check True/False Positives/Negatives
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
