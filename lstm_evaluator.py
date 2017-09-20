@@ -58,13 +58,13 @@ def main(args):
     named = {k:[] for k in keys}
     for i in range(len(answer)):
         if answer[i] >= args.threshold and groundtruth[i] == 1:
-            named['tp'].append('\t'.join([names[i][0], answer[i]]))
+            named['tp'].append('\t'.join([names[i][0], str(answer[i])]))
         elif answer[i] < args.threshold and groundtruth[i] == 0:
-            named['tn'].append('\t'.join([names[i][0], answer[i]]))
+            named['tn'].append('\t'.join([names[i][0], str(answer[i])]))
         elif answer[i] >= args.threshold and groundtruth[i] == 0:
-            named['fp'].append('\t'.join([names[i][0], answer[i]]))
+            named['fp'].append('\t'.join([names[i][0], str(answer[i])]))
         elif answer[i] < args.threshold and groundtruth[i] == 1:
-            named['fn'].append('\t'.join([names[i][0], answer[i]]))
+            named['fn'].append('\t'.join([names[i][0], str(answer[i])]))
     for k in keys:
         with open(os.path.join(args.directory, k), 'w') as f:
             for elt in named[k]:
