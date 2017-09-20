@@ -58,6 +58,7 @@ def main(args):
     answer = answer.flatten()
     groundtruth = groundtruth.flatten()
     names = names.flatten()
+    print(answer.shape, groundtruth.shape)
     #Check True/False Positives/Negatives
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
