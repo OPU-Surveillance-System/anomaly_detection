@@ -62,13 +62,13 @@ def main(args):
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
     for i in range(len(answer)):
-        if answer[i] >= 0.5 and groundtruth[i] == 1:
+        if answer[i] >= args.threshold and groundtruth[i] == 1:
             named['tp'].append(names[i])
-        elif answer[i] < 0.5 and groundtruth[i] == 0:
+        elif answer[i] < args.threshold and groundtruth[i] == 0:
             named['tn'].append(names[i])
-        elif answer[i] >= 0.5 and groundtruth[i] == 0:
+        elif answer[i] >= args.threshold and groundtruth[i] == 0:
             named['fp'].append(names[i])
-        elif answer[i] < 0 and groundtruth[i] == 1:
+        elif answer[i] < args.threshold and groundtruth[i] == 1:
             named['fn'].append(names[i])
     for k in keys:
         with open(os.path.join(args.directory, k), 'w') as f:
@@ -88,5 +88,6 @@ if __name__ == '__main__':
     parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
     parser.add_argument('--str', dest='stride', type=int, default=10, help='Sliding window stride')
     parser.add_argument('--pthr', dest='plt_thr', type=bool, default=False, help='')
+    parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='')
     args = parser.parse_args()
     main(args)
