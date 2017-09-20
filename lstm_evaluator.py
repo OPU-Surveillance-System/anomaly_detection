@@ -53,23 +53,18 @@ def main(args):
     model = model.cuda()
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
-    #Reshape returned array
-    # answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
-    # answer = answer.flatten()
-    # groundtruth = groundtruth.flatten()
-    # names = names.flatten()
     #Check True/False Positives/Negatives
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
     for i in range(len(answer)):
         if answer[i] >= args.threshold and groundtruth[i] == 1:
-            named['tp'].append(names[i])
+            named['tp'].append('\t'.join([names[i], answer[i]]))
         elif answer[i] < args.threshold and groundtruth[i] == 0:
-            named['tn'].append(names[i])
+            named['tn'].append('\t'.join([names[i], answer[i]]))
         elif answer[i] >= args.threshold and groundtruth[i] == 0:
-            named['fp'].append(names[i])
+            named['fp'].append('\t'.join([names[i], answer[i]]))
         elif answer[i] < args.threshold and groundtruth[i] == 1:
-            named['fn'].append(names[i])
+            named['fn'].append('\t'.join([names[i], answer[i]]))
     for k in keys:
         with open(os.path.join(args.directory, k), 'w') as f:
             for elt in named[k]:
