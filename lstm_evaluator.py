@@ -54,12 +54,10 @@ def main(args):
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
     #Reshape returned array
-    answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
-    answer = answer.flatten()
-    groundtruth = groundtruth.flatten()
-    names = names.flatten()
-    print(answer[0])
-    print(answer.shape, groundtruth.shape)
+    # answer, groundtruth, names = np.array(answer), np.array(groundtruth), np.array(names)
+    # answer = answer.flatten()
+    # groundtruth = groundtruth.flatten()
+    # names = names.flatten()
     #Check True/False Positives/Negatives
     keys = ['tp', 'tn', 'fp', 'fn']
     named = {k:[] for k in keys}
