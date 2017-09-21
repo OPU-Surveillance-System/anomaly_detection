@@ -70,7 +70,7 @@ class VGG16LSTM(nn.Module):
                 p.requires_grad = True
             self.trainable_parameters += parameters
         if self.margs['bn']:
-            self.batchnorm = nn.BatchNorm1d(4096)
+            self.batchnorm = nn.BatchNorm1d(4096, affine=False)
             self.trainable_parameters += list(self.batchnorm.parameters())
         #LSTM part
         self.rnn = nn.LSTM(input_size=4096,
