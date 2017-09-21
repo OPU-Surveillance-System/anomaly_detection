@@ -69,6 +69,9 @@ class VGG16LSTM(nn.Module):
             for p in parameters:
                 p.requires_grad = True
             self.trainable_parameters += parameters
+        if self.margs['bn']:
+            self.batchnorm = nn.Batchnorm1d(4096)
+            self.trainable_parameters += list(self.batchnorm.parameters())
         #LSTM part
         self.rnn = nn.LSTM(input_size=4096,
                            hidden_size=self.margs['hd'],
@@ -95,6 +98,8 @@ class VGG16LSTM(nn.Module):
         """
 
         embeds = self.vgg(frames)
+        if self.margs['bn']:
+            embeds = self.batchnorm(embeds)
         lstm_out, hidden = self.rnn(embeds.view(len(frames), 1, -1), self.hidden)
         self.hidden = (Variable(hidden[0].data.clone()),
                        Variable(hidden[1].data.clone()))
