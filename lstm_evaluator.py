@@ -55,12 +55,15 @@ def main(args):
     answer, groundtruth, accuracy, names = test_model(model)
     #Check True/False Positives/Negatives
     res = [[names[i], answer[i], groundtruth[i]] for i in range(len(answer))]
-    with open(os.path.join(args.dir, 'res_summary'), 'w') as f:
+    with open(os.path.join(args.directory, 'res_summary'), 'w') as f:
         for elt in f:
             f.write('{}\t{}\t{}\n'.format(elt[0], elt[1], elt[2]))
     #Display results
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
+    with open(os.path.join(args.directory, 'thresholds'), 'w') as f:
+        for t in thresholds:
+            f.write('{}\t'.format(t))
     auc = metrics.auc(fpr, tpr)
     plt.plot_auc(auc, fpr, tpr, thresholds, args.directory, 'trained_model', args.plt_thr)
 
