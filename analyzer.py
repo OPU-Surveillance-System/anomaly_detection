@@ -44,6 +44,7 @@ def main(args):
             fp.append([names[i], res[i][0]])
         else:
             fn.append([names[i], res[i][0]])
+    print('{} true positives, {} true negatives, {} false positives, {} false negatives'.format(len(tp), len(tn), len(fp), len(fn)))
     with open(os.path.join(args.directory, 'tp'), 'w') as f:
         for elt in tp:
             f.write('{}\t{}\n'.format(elt[0], elt[1]))
@@ -56,7 +57,7 @@ def main(args):
     with open(os.path.join(args.directory, 'fn'), 'w') as f:
         for elt in fn:
             f.write('{}\t{}\n'.format(elt[0], elt[1]))
-            
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
