@@ -27,3 +27,13 @@ def plot_auc(auc, fpr, tpr, thresholds, directory, name, plot_thresholds):
         for thr in range(0, len(fpr), step):
             plt.text(fpr[thr], tpr[thr], thresholds[thr])
     plt.savefig(os.path.join(directory, name + '_roc.svg'), format='svg')
+
+def plot_accuracy_per_threshold(accuracies, directory, name):
+    plt.figure()
+    thresholds = sorted(list(accuracies.keys()))
+    acc = [accuracies[t] for t in thresholds]
+    plt.plot(thresholds, acc)
+    plt.xlabel('Threshold')
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy per threshold')
+    plt.savefig(os.path.join(directory, name + '_accuracies.svg'), format='svg')
