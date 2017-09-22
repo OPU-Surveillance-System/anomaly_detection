@@ -63,7 +63,7 @@ def main(args):
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     with open(os.path.join(args.directory, 'thresholds'), 'w') as f:
         for t in thresholds:
-            f.write('{}\t'.format(t))
+            f.write('{}\n'.format(t))
     auc = metrics.auc(fpr, tpr)
     plt.plot_auc(auc, fpr, tpr, thresholds, args.directory, 'trained_model', args.plt_thr)
 
