@@ -54,21 +54,10 @@ def main(args):
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
     #Check True/False Positives/Negatives
-    keys = ['tp', 'tn', 'fp', 'fn']
-    named = {k:[] for k in keys}
-    for i in range(len(answer)):
-        if answer[i] >= args.threshold and groundtruth[i] == 1:
-            named['tp'].append('\t'.join([names[i][0], str(answer[i])]))
-        elif answer[i] < args.threshold and groundtruth[i] == 0:
-            named['tn'].append('\t'.join([names[i][0], str(answer[i])]))
-        elif answer[i] >= args.threshold and groundtruth[i] == 0:
-            named['fp'].append('\t'.join([names[i][0], str(answer[i])]))
-        elif answer[i] < args.threshold and groundtruth[i] == 1:
-            named['fn'].append('\t'.join([names[i][0], str(answer[i])]))
-    for k in keys:
-        with open(os.path.join(args.directory, k), 'w') as f:
-            for elt in named[k]:
-                f.write('{}\n'.format(elt))
+    res = [[names[i], answer[i], groundtruth[i]] for i in range(len(answer))]
+    with open(os.path.join(args.dir, 'res_summary'), 'w') as f:
+        for elt in f:
+            f.write('{}\t{}\t{}\n'.format(elt[0], elt[1], elt[2]))
     #Display results
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
