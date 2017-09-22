@@ -44,6 +44,10 @@ def main(args):
             fp.append([names[i], res[i][0]])
         else:
             fn.append([names[i], res[i][0]])
+    tp.sort(key=lambda x: x[0])
+    tn.sort(key=lambda x: x[0])
+    fp.sort(key=lambda x: x[0])
+    fn.sort(key=lambda x: x[0])
     print('{} true positives, {} true negatives, {} false positives, {} false negatives'.format(len(tp), len(tn), len(fp), len(fn)))
     with open(os.path.join(args.directory, 'tp'), 'w') as f:
         for elt in tp:
