@@ -56,7 +56,7 @@ def main(args):
     #Check True/False Positives/Negatives
     res = [[names[i], answer[i], groundtruth[i]] for i in range(len(answer))]
     with open(os.path.join(args.directory, 'res_summary'), 'w') as f:
-        for elt in f:
+        for elt in res:
             f.write('{}\t{}\t{}\n'.format(elt[0], elt[1], elt[2]))
     #Display results
     print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
