@@ -44,13 +44,20 @@ class MiniDroneVideoDataset(Dataset):
         return len(self.frames)
 
     def __getitem__(self, idx):
-        images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]])
+        images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]], dtype=np.float)
         labels = np.array([f for f in self.frames[idx][1]], dtype=np.float)
         labels = labels.reshape(len(labels), 1)
         names = [os.path.basename(f) for f in self.frames[idx][0]]
         sample = {'images': images, 'labels':labels, 'names':names}
         if self.transform:
             sample = self.transform(sample)
+        normalized = []
+        for i in images:
+            x = sample['images']
+            x -= x.mean()
+            x /= x.std()
+            normalized.append(x)
+        sample['images'] = np.array(normalized)
         sample['images'] = sample['images'].transpose((0, 3, 1, 2))
 
         return sample
