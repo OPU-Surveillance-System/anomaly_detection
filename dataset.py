@@ -9,14 +9,47 @@ from torchvision import transforms, utils
 
 from torch.autograd import Variable
 
+def minidronevideo(frames):
+    video = frames[0][0].split('/')[-1].split('-')[0]
+    groups = []
+    tmp = [frames[0]]
+    for c in frames[1:]:
+        if c[0].split('/')[-1].split('-')[0] == video:
+            tmp.append(c)
+        else:
+            groups.append(tmp)
+            video = c[0].split('/')[-1].split('-')[0]
+            tmp = [c]
+    groups.append(tmp)
+
+    return groups
+
+def umn(frames):
+    pattern = frames[0][0].split('_')[1]
+    video = frames[0][0].split('_')[2]
+    groups = []
+    tmp = [frames[0]]
+    for c in frames[1:]:
+        if c[0].split('_')[1] == pattern and c[0].split('_')[2] == video:
+            tmp.append(c)
+        else:
+            groups.append(tmp)
+            pattern = c[0].split('_')[1]
+            video = c[0].split('_')[2]
+            tmp = [c]
+    groups.append(tmp)
+
+    return groups
+
 class MiniDroneVideoDataset(Dataset):
     """
     """
 
-    def __init__(self, summary, root_dir, sequence_length, stride, transform=None):
+    def __init__(self, dataset, summary, root_dir, sequence_length, stride, transform=None):
         """
         """
 
+        self.dataset = dataset
         self.root_dir = root_dir
         self.transform = transform
         self.sequence_length = sequence_length
@@ -25,17 +58,10 @@ class MiniDroneVideoDataset(Dataset):
             content = f.read().split('\n')[:-1]
         self.content = [c.split('\t') for c in content]
         #Group frames from the same video
-        video = self.content[0][0].split('/')[-1].split('-')[0]
-        groups = []
-        tmp = [self.content[0]]
-        for c in self.content[1:]:
-            if c[0].split('/')[-1].split('-')[0] == video:
-                tmp.append(c)
-            else:
-                groups.append(tmp)
-                video = c[0].split('/')[-1].split('-')[0]
-                tmp = [c]
-        groups.append(tmp)
+        if self.dataset == 'minidrone':
+            groups = minidronevideo(self.content)
+        elif self.dataset == 'umn':
+            groups = umn(self.content)
         #Build sequences from the same video of length sequence_length
         self.frames = [(['data/' + f[0] + '.png' for f in g[i*self.stride:(i*self.stride)+self.sequence_length]], [int(f[1]) for f in g[i*self.stride:(i*self.stride)+self.sequence_length]])
                        for g in groups for i in range(int(len(g) / self.stride))]
@@ -52,7 +78,7 @@ class MiniDroneVideoDataset(Dataset):
         if self.transform:
             sample = self.transform(sample)
         normalized = []
-        for i in images:
+        for i in sample['images']:
             x = i
             x -= x.mean()
             x /= x.std()
@@ -195,12 +221,12 @@ class ToTensor(object):
     def __call__(self, sample):
         return {'images': torch.from_numpy(sample['images']), 'labels': torch.from_numpy(sample['labels']), 'names':sample['names']}
 
-ds = MiniDroneVideoDataset('data/trainset_labels',
-                                'data',
-                                    20, 20,
-                                    transform=transforms.Compose([Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), RandomCrop((160, 160)), RandomFlip(), Dropout(0.2)]))
+# ds = MiniDroneVideoDataset('umn', 'data/umn_trainset_labels',
+#                                 'data',
+#                                     20, 20,
+#                                     transform=transforms.Compose([RandomCrop((160, 160)), RandomFlip(), Dropout(0.2)]))
 # fig = plt.figure()
-# sample = ds[0]
+# sample = ds[50]
 # #print(max(set(sample['images'][0].flatten())))
 # for i in range(len(sample['images'])):
 #     plt.imsave('{}.png'.format(sample['names'][i]), sample['images'][i].transpose(1, 2, 0))
