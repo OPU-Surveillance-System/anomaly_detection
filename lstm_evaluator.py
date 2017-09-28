@@ -15,7 +15,7 @@ import plot as plt
 def test_model(model):
     #tsfm = ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     # testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length, args.stride, transform=tsfm)
-    testset = ds.MiniDroneVideoDataset(args.testset, 'data', args.sequence_length, args.stride)
+    testset = ds.MiniDroneVideoDataset(args.dataset, args.testset, 'data', args.sequence_length, args.stride)
     since = time.time()
     model.train(False)  # Set model to evaluate mode
     answer = []
@@ -71,6 +71,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments for the model\'s trainer')
     parser.add_argument('--bs', dest='batch_size', type=int, default=40, help='Batch size')
+    parser.add_argument('--ds', dest='dataset', type=str, default='minidrone', help='')
     parser.add_argument('--te', dest='testset', type=str, default='data/testset_labels', help='Path to the testset summary')
     parser.add_argument('--dir', dest='directory', type=str, default='experiment', help='Path to a directory for saving results')
     parser.add_argument('--sl', dest='sequence_length', type=int, default=10, help='Sequence length')
