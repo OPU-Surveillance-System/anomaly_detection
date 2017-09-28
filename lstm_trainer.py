@@ -27,7 +27,7 @@ def train_model(model, loss_function, optimizer):
     if args.augdata == 1:
         # da = [da] + [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
         da = [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
-    trainset = ds.MiniDroneVideoDataset(args.trainset, 'data', args.sequence_length, args.stride, transform=transforms.Compose(da))
+    trainset = ds.MiniDroneVideoDataset(args.dataset, args.trainset, 'data', args.sequence_length, args.stride, transform=transforms.Compose(da))
     # valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, args.stride, transform=tsfm)
     valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, args.stride)
     dsets = {'training': trainset, 'validation': valset}
@@ -116,6 +116,7 @@ def main(args, margs):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--m', dest='model', type=str, default='models.vgg16lstm.VGG16LSTM', help='')
+    parser.add_argument('--ds', dest='dataset', type=str, default='minidrone', help='')
     parser.add_argument('--bs', dest='batch_size', type=int, default=1, help='')
     parser.add_argument('--lr', dest='learning_rate', type=float, default=0.001, help='')
     parser.add_argument('--p', dest='max_patience', type=int, default=10, help='')
