@@ -31,7 +31,7 @@ def train_model(model, loss_function, optimizer):
     # valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, args.stride, transform=tsfm)
     valset = ds.MiniDroneVideoDataset(args.dataset, args.valset, 'data', args.sequence_length, args.stride)
     dsets = {'training': trainset, 'validation': valset}
-    phase = list(dsets.keys())
+    phase = ('validation', 'training')
     dset_sizes = {p: (len(dsets[p]) * args.sequence_length) for p in phase}
     trainepoch = 0
     accumulated_patience = 0
