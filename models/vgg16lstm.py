@@ -83,7 +83,11 @@ class VGG16LSTM(nn.Module):
             self.trainable_parameters += list(self.batchnorm.parameters())
         self._initialize_weights()
         #LSTM part
-        self.rnn = nn.LSTM(input_size=4096,
+        if self.margs['fcs']:
+            input_size = int(self.margs['fcs'])
+        else:
+            input_size = 4096
+        self.rnn = nn.LSTM(input_size=input_size,
                            hidden_size=self.margs['hd'],
                            num_layers=self.margs['rl'],
                            dropout=self.margs['do'])
