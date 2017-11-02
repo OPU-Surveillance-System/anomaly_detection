@@ -73,7 +73,7 @@ class VGG16LSTM(nn.Module):
                 mod.append(torch.nn.Linear(int(self.margs['fcs']), int(self.margs['fcs'])))
             new_classifier = torch.nn.Sequential(*mod)
             #Replace the classifier part
-            model.classifier = new_classifier
+            self.vgg.classifier = new_classifier
             parameters = list(self.vgg.classifier.parameters())
             for p in parameters:
                 p.requires_grad = True
