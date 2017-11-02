@@ -68,9 +68,9 @@ class VGG16LSTM(nn.Module):
             mod = list(self.vgg.classifier.children())
             mod.pop()
             mod.pop()
-            mod.append(torch.nn.Linear(512 * 7 * 7, self.margs['fcs']))
-            for i in range(self.margs['nbfc'] - 1):
-                mod.append(torch.nn.Linear(self.margs['fcs'], self.margs['fcs']))
+            mod.append(torch.nn.Linear(512 * 7 * 7, int(self.margs['fcs'])))
+            for i in range(int(self.margs['nbfc']) - 1):
+                mod.append(torch.nn.Linear(int(self.margs['fcs']), int(self.margs['fcs'])))
             new_classifier = torch.nn.Sequential(*mod)
             #Replace the classifier part
             model.classifier = new_classifier
