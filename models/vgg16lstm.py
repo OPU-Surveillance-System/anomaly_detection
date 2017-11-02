@@ -65,6 +65,15 @@ class VGG16LSTM(nn.Module):
         for param in self.vgg.parameters(): #Freeze convolutional layers
             param.requires_grad = False
         if self.margs['ft']: #Enable fine tuning of FC layers
+            mod = list(self.vgg.classifier.children())
+            mod.pop()
+            mod.pop()
+            mod.append(torch.nn.Linear(512 * 7 * 7, self.margs['fcs']))
+            for i in range(self.margs['nbfc'] - 1):
+                mod.append(torch.nn.Linear(self.margs['fcs'], self.margs['fcs']))
+            new_classifier = torch.nn.Sequential(*mod)
+            #Replace the classifier part
+            model.classifier = new_classifier
             parameters = list(self.vgg.classifier.parameters())
             for p in parameters:
                 p.requires_grad = True
@@ -72,6 +81,7 @@ class VGG16LSTM(nn.Module):
         if self.margs['bn']:
             self.batchnorm = nn.BatchNorm1d(4096, affine=False)
             self.trainable_parameters += list(self.batchnorm.parameters())
+        self._initialize_weights()
         #LSTM part
         self.rnn = nn.LSTM(input_size=4096,
                            hidden_size=self.margs['hd'],
@@ -81,6 +91,15 @@ class VGG16LSTM(nn.Module):
         self.trainable_parameters += list(self.rnn.parameters())
         self.out_layer = nn.Linear(self.margs['hd'], 1)
         self.trainable_parameters += list(self.out_layer.parameters())
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.weight.data.normal_(0, 0.01)
+                m.bias.data.zero_()
 
     def init_hidden(self):
         """
