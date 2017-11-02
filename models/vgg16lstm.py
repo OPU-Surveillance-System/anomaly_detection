@@ -65,9 +65,7 @@ class VGG16LSTM(nn.Module):
         for param in self.vgg.parameters(): #Freeze convolutional layers
             param.requires_grad = False
         if self.margs['ft']: #Enable fine tuning of FC layers
-            mod = list(self.vgg.classifier.children())
-            mod.pop()
-            mod.pop()
+            mod = []
             mod.append(torch.nn.Linear(512 * 7 * 7, int(self.margs['fcs'])))
             mod.append(torch.nn.ReLU())
             for i in range(int(self.margs['nbfc']) - 1):
