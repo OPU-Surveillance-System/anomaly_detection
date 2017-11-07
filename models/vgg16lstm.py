@@ -67,6 +67,7 @@ class VGG16LSTM(nn.Module):
         if self.margs['ft']: #Enable fine tuning of FC layers
             mod = []
             mod.append(torch.nn.Linear(512 * 7 * 7, int(self.margs['fcs'])))
+            mod.append(torch.nn.Dropout(p=self.margs['do']))
             mod.append(torch.nn.ReLU())
             for i in range(int(self.margs['nbfc']) - 1):
                 mod.append(torch.nn.Linear(int(self.margs['fcs']), int(self.margs['fcs'])))
