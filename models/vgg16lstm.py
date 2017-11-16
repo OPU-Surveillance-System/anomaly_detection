@@ -65,6 +65,9 @@ class VGG16LSTM(nn.Module):
         for param in self.vgg.parameters(): #Freeze convolutional layers
             param.requires_grad = False
         if self.margs['ft']: #Enable fine tuning of FC layers
+            for param in self.vgg.parameters(): #Freeze convolutional layers
+                param.requires_grad = True
+                self.trainable_parameters.append(param)
             mod = []
             mod.append(torch.nn.Linear(512 * 7 * 7, int(self.margs['fcs'])))
             mod.append(torch.nn.Dropout(p=self.margs['do']))
