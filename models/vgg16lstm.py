@@ -85,7 +85,7 @@ class VGG16LSTM(nn.Module):
             self.trainable_parameters += list(self.batchnorm.parameters())
         self._initialize_weights()
         #LSTM part
-        if self.margs['fcs']:
+        if 'fcs' in list(self.margs.keys()):
             input_size = int(self.margs['fcs'])
         else:
             input_size = 4096
