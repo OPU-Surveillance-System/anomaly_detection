@@ -40,4 +40,4 @@ for k in sets.keys():
                 label = 0
                 if i in scenes[s]:
                     label = 1
-                f.write('UMN_frames/frame_{}_{}\t{}\n'.format(s, i, label))
+                f.write('UMN_frames/frame_{}-{}\t{}\n'.format(s, i, label))
