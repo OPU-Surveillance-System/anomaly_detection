@@ -34,4 +34,4 @@ for f in tqdm(range(nb_frames)):
 for k in tqdm(list(names.keys())):
     for i in range(names[k][0], names[k][1] + 1):
         os.rename('UMN_frames/frame_{}.png'.format(i),
-                  'UMN_frames/frame_{}_{}.png'.format(k, i))
+                  'UMN_frames/frame_{}-{}.png'.format(k, i))
