@@ -8,3 +8,4 @@ data/MiniDrone*
 *vgg16_weights.npz
 *.tfrecords
 exp/
+data/UMN*
