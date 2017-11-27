@@ -21,14 +21,10 @@ def train_model(model, loss_function, optimizer):
     """
     """
 
-    # tsfm = ds.Normalization([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    # da = tsfm
     da = None
     if args.augdata == 1:
-        # da = [da] + [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
         da = [ds.RandomCrop((160, 160)), ds.RandomFlip(), ds.Dropout(0.2)]
     trainset = ds.MiniDroneVideoDataset(args.dataset, args.trainset, 'data', args.sequence_length, args.stride, transform=transforms.Compose(da))
-    # valset = ds.MiniDroneVideoDataset(args.valset, 'data', args.sequence_length, args.stride, transform=tsfm)
     valset = ds.MiniDroneVideoDataset(args.dataset, args.valset, 'data', args.sequence_length, args.stride)
     dsets = {'training': trainset, 'validation': valset}
     phase = ('validation', 'training')
@@ -80,6 +76,8 @@ def train_model(model, loss_function, optimizer):
                     best_trainepoch = trainepoch
                     best_loss = epoch_loss
                     best_loss_acc = epoch_acc
+                    if trainepoch % 5 == 0:
+                        torch.save(best_model, os.path.join(args.directory, 'trained_model_{}'.format(trainepoch)))
                 else:
                     accumulated_patience += 1
                 if args.plot == 1:
