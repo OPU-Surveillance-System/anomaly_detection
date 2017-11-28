@@ -50,7 +50,7 @@ def main(args):
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
     #Load trained model
-    model = torch.load(os.path.join(args.directory, 'trained_model'))
+    model = torch.load(os.path.join(args.directory, args.model))
     model = model.cuda()
     #Test trained model
     answer, groundtruth, accuracy, names = test_model(model)
@@ -78,5 +78,6 @@ if __name__ == '__main__':
     parser.add_argument('--str', dest='stride', type=int, default=10, help='Sliding window stride')
     parser.add_argument('--pthr', dest='plt_thr', type=bool, default=False, help='')
     parser.add_argument('--thr', dest='threshold', type=float, default=0.5, help='')
+    parser.add_argument('--mo', dest='model', type=str, default='trained_model', help='serialized model')
     args = parser.parse_args()
     main(args)
