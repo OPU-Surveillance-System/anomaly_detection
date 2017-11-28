@@ -17,7 +17,7 @@ def main(args):
         "talking": 0,
         "stealing": 1,
         "cycling": 1,
-        "loitering": 1,
+        "loitering": 0,
         "running": 1,
         "driving": 0,
         "parking": 0,
@@ -30,7 +30,7 @@ def main(args):
         "throwing_away": 1,
         "riding": 0,
         "intimidating": 1,
-        "reserving": 1
+        "reserving": 0
     }
 
     misc = {
@@ -89,6 +89,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', dest='dataset', default='MiniDrone', help='Path ground truth labels')
     parser.add_argument('--format', dest='format', default='xgtf', help='Labels format')
     parser.add_argument('--frames', dest='frames_path', default='MiniDrone_frames', help='Path to the frames to label')
-    parser.add_argument('--subset', dest='subset', default='train,val,test', help='Subsets in which the dataset is divided in (format: subset1,subset2,...,subsetn)')
+    parser.add_argument('--subset', dest='subset', default='train,test', help='Subsets in which the dataset is divided in (format: subset1,subset2,...,subsetn)')
     args = parser.parse_args()
     main(args)
