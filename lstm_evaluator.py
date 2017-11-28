@@ -60,12 +60,13 @@ def main(args):
         for elt in res:
             f.write('{}\t{}\t{}\n'.format(elt[0], elt[1], elt[2]))
     #Display results
-    print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
     fpr, tpr, thresholds = metrics.roc_curve(groundtruth, answer)
     with open(os.path.join(args.directory, 'thresholds'), 'w') as f:
         for t in thresholds:
             f.write('{}\n'.format(t))
     auc = metrics.auc(fpr, tpr)
+    print('Accuracy @{}: {}'.format(model.margs['thr'], accuracy))
+    print('AUC: {}'.format(auc))
     plt.plot_auc(auc, fpr, tpr, thresholds, args.directory, 'trained_model', args.plt_thr)
 
 if __name__ == '__main__':
