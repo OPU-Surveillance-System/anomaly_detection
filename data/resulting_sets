@@ -1,0 +1,86 @@
+###EMD: 6539.974848###
+
+###Training set###
+Normal_Circle_Day_Half_0_7_1
+BadParking_CloseUp_Day_Empty_1_0_1
+StealingCar_CloseUp_Day_Empty_1_f_1
+StealingPedestrian_CloseUp_Day_Half_0_2_1
+StealingPedestrian_CloseUp_Day_Half_0_2_2
+Reserving_Static_Day_Half_0_1_2
+Reserving_Static_Day_Half_0_1_1
+Fighting_Static_Day_Half_0_2_1
+Falling_Static_Day_Half_0_1_1
+BadParking_Static_Day_Full_1_0_1
+Suspicious_Static_Day_Half_0_2_2
+Normal_Follow_Day_Half_1_1_2
+Normal_Circle_Day_Half_0_7_3
+Suspicious_Static_Day_Half_0_2_1
+Normal_Circle_Day_Half_0_7_2
+BadParking_Static_Day_Full_1_1_1
+StealingInside_Follow_Day_Half_1_1_1
+Normal_Static_Day_Half_1_1_1
+Normal_Follow_Day_Half_1_1_1
+StealingPedestrian_Follow_Day_Half_0_3_Rucksack_1
+
+###Test set###
+Broken_CloseUp_Day_Half_1_1_1
+Suspicious_CloseUp_Night_Empty_1_3_1
+Normal_Static_Day_Half_0_2_1
+Normal_Static_Day_Half_0_1_1
+Normal_Follow_Day_Half_0_1_1
+Suspicious_Follow_Day_Half_0_m_1
+StealingCar_CloseUp_Day_Half_1_3_1
+Normal_Static_Night_Empty_1_3_1
+StealingPedestrian_Static_Day_Half_0_3_1
+StealingPedestrian_Static_Day_Half_0_3_2
+Suspicious_Follow_Day_Half_0_f_1
+BadParking_Static_Day_Half_1_1_1
+Crash_Follow_Day_Half_0_2_2
+Attack_CloseUp_Day_Empty_1_2_1
+Broken_CloseUp_Day_Half_1_1_2
+Suspicious_Static_Day_Half_0_1_1
+Crash_Follow_Day_Half_0_2_1
+StealingCar_CloseUp_Day_Empty_1_m_1
+
+###Train distribution###
+attacking	235
+cycling	0
+falling	612
+fighting	1236
+loitering	3186
+moving	598
+nothing	463
+parked	3013
+parking	514
+picking_up	12
+repairing	0
+reserving	593
+running	375
+standing	448
+stealing	1666
+stopping	0
+talking	1831
+walking	7202
+
+###Test distribution###
+attacking	475
+cycling	817
+falling	0
+fighting	0
+loitering	3271
+moving	639
+nothing	134
+parked	3338
+parking	474
+picking_up	160
+repairing	1160
+reserving	0
+running	351
+standing	0
+stealing	1371
+stopping	469
+talking	4879
+walking	4239
+
+Trainset: 20 videos (12632 frames)
+Testset: 18 videos (10663 frames)
