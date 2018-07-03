@@ -102,6 +102,7 @@ dist = torch.nn.PairwiseDistance(p=2, eps=1e-06, keepdim=True)
 phase = ('train', 'test')
 sets = {'train':trainset, 'test':testset}
 modes = {0:'Positive', 1:'Negative'}
+classes = {0:'normal', 1:'abnormal'}
 
 writer = SummaryWriter(os.path.join(args.directory, 'logs'))
 
@@ -160,7 +161,7 @@ for e in range(args.epoch):
                 if i_batch == 0:
                     image = image.view(image.size(0), 224, 224, 3)
                     reconstruction = reconstruction.view(reconstruction.size(0), 224, 224, 3)
-                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), modes[m], 'epoch_{}.svg'.format(e)))
+                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), classes[m], 'epoch_{}.svg'.format(e)))
 
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item, e)
 
