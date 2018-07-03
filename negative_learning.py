@@ -104,18 +104,19 @@ classes = {0:'normal', 1:'abnormal'}
 writer = SummaryWriter(os.path.join(args.directory, 'logs'))
 
 #Warm up training (1 epoch of Positive learning)
-# print('Warm up training')
-# trainset.active = 0
-# dataloader = DataLoader(trainset, batch_size=args.batch_size, shuffle=True, num_workers=4)
-# for i_batch, sample in enumerate(tqdm(dataloader)):
-#     image = sample['image'].cuda()
-#
-#     reconstruction = ae(image)
-#
-#     loss = torch.nn.functional.mse_loss(reconstruction, image)
-#
-#     loss.backward()
-#     optimizer.step()
+print('Warm up training')
+trainset.active = 0
+dataloader = DataLoader(trainset, batch_size=args.batch_size, shuffle=True, num_workers=4)
+for i_batch, sample in enumerate(tqdm(dataloader)):
+    image = sample['image'].cuda()
+
+    reconstruction = ae(image)
+
+    loss = torch.nn.functional.mse_loss(reconstruction, image)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
 #Alternate between Negative and Positive training
 for e in range(args.epoch):
@@ -144,10 +145,11 @@ for e in range(args.epoch):
 
                 loss = torch.nn.functional.mse_loss(reconstruction, image)
 
-                # if m == 1:
-                #     loss *= -1 #Negative learning
+                if m == 1:
+                    loss *= -1 #Negative learning
 
                 if p == 'train':
+                    optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
 
