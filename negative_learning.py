@@ -139,7 +139,7 @@ for e in range(args.epoch):
 
             dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=False, num_workers=4)
             for i_batch, sample in enumerate(tqdm(dataloader)):
-                image = sample['image'].cuda()
+                image = sample['image'].float().cuda()
                 print(image.shape)
                 reconstruction = ae(image)
 
