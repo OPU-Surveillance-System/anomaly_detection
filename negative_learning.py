@@ -153,12 +153,12 @@ for e in range(args.epoch):
                     optimizer.step()
 
                 #Get reconstruction error
-                reconstruction_errors += dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).cpu().numpy().tolist()
+                reconstruction_errors += dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).detach().cpu().numpy().tolist()
                 labels += sample['label'].numpy().tolist()
 
                 #Plot reconstructed images
                 if i_batch == 0:
-                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), modes[m], 'epoch_{}.svg'.format(e)))
+                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), modes[m], 'epoch_{}.svg'.format(e)))
 
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item, e)
 
