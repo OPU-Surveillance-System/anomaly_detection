@@ -20,7 +20,7 @@ class Autoencoder(torch.nn.Module):
             return layers
 
         def upsampling_block(in_dim, nb_f, nb_l):
-            layers = [torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)]
+            layers = [torch.nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)]
             layers.append(torch.nn.ReLU())
             for n in range(nb_l):
                 layers.append(torch.nn.Conv2d(in_dim, nb_f, (3, 3), padding=1))
