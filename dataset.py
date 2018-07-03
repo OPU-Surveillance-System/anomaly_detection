@@ -54,6 +54,7 @@ class MiniDroneVideoDataset(Dataset):
         self.transform = transform
         self.sequence_length = sequence_length
         self.stride = stride
+        self.root_dir = root_dir
         with open(summary, 'r') as f:
             content = f.read().split('\n')[:-1]
         self.content = [c.split('\t') for c in content]
@@ -85,6 +86,47 @@ class MiniDroneVideoDataset(Dataset):
             normalized.append(x)
         sample['images'] = np.array(normalized)
         sample['images'] = sample['images'].transpose((0, 3, 1, 2))
+
+        return sample
+
+class NegativeDataset(Dataset):
+    """
+    """
+
+    def __init__(self, summary, root_dir):
+        """
+        """
+
+        self.root_dir = root_dir
+        with open(summary, 'r') as f:
+            content = f.read().split('\n')[:-1]
+        self.content = [c.split('\t') for c in content]
+        self.normal = ['data/{}.png'.format(c[0]) for c in self.content if c[1] == '0']
+        self.abnormal = ['data/{}.png'.format(c[0]) for c in self.content if c[1] == '1']
+        self.active = 0
+
+    def __len__(self):
+        if self.active == 0:
+            return len(self.normal)
+        else:
+            return len(self.abnormal)
+
+    def __getitem__(self, idx):
+        if self.active == 0:
+            dataset = self.normal
+            label = 0
+        else:
+            dataset = self.abnormal
+            label = 1
+        x = io.imread(dataset[idx], dtype=np.float32)
+        name = dataset[idx]
+
+        x -= x.mean()
+        x /= x.std()
+
+        x = x.transpose((2, 0, 1))
+
+        sample = {'image': x, 'label':label, 'name': name}
 
         return sample
 
