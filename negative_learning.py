@@ -136,6 +136,8 @@ for e in range(args.epoch):
         total_loss = 0
 
         for m in reversed(sorted(modes.keys())):
+            running_loss = 0
+
             sets[p].active = m
 
             dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=True, num_workers=4)
@@ -162,7 +164,11 @@ for e in range(args.epoch):
                     reconstruction = reconstruction.permute(0, 2, 3, 1)
                     plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), classes[m], 'epoch_{}.svg'.format(e)))
 
-            print('Epoch {}, Phase: {}, Mode: {}, loss: {}'.format(e, p, modes[m], loss.item()))
+                running_loss += loss.item()
+
+            running_loss /= (i_batch + 1)
+
+            print('Epoch {}, Phase: {}, Mode: {}, loss: {}'.format(e, p, modes[m], running_loss))
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item(), e)
 
             total_loss += loss.item()
