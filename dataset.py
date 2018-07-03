@@ -68,7 +68,7 @@ class MiniDroneVideoDataset(Dataset):
                        for g in groups for i in range(int(len(g) / self.stride))]
 
     def __len__(self):
-        return len(self.frames)
+        return len(self.frames) // 100
 
     def __getitem__(self, idx):
         images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]], dtype=np.float)

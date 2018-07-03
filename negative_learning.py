@@ -32,7 +32,6 @@ def plot_reconstruction_images(inputs, pred, name):
     #pred
     for i in range(nb_plots):
         ax = plt.subplot2grid((2, nb_plots), (1, i), rowspan=1, colspan=1)
-        #ax.imshow(np.clip(pred[i], 0.0, 1.0))
         ax.imshow(pred[i])
         ax.axis('off')
 
@@ -138,7 +137,7 @@ for e in range(args.epoch):
 
             sets[p].active = m
 
-            dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=True, num_workers=4)
+            dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=False, num_workers=4)
             for i_batch, sample in enumerate(tqdm(dataloader)):
                 image = sample['image'].cuda()
                 reconstruction = ae(image)
