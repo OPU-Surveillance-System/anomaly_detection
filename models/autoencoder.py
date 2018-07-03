@@ -62,7 +62,7 @@ class Autoencoder(torch.nn.Module):
         if self.fc:
             x = x.view(x.size(0), -1)
             x = self.bottleneck(x)
-            reshape = 28//(2**self.nb_b)
+            reshape = 224//(2**self.nb_b)
             x = x.view(x.size(0), -1, reshape, reshape)
         logits = self.decoder(x)
 
