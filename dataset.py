@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
+from scipy import misc
 
 from torch.autograd import Variable
 
@@ -118,7 +119,7 @@ class NegativeDataset(Dataset):
         else:
             dataset = self.abnormal
             label = 1
-        x = io.imread(dataset[idx], as_gray=True, dtype=np.float32)
+        x = misc.imread(dataset[idx], mode='L')
         x = (x - x.min()) / (x.max() - x.min())
         name = dataset[idx]
 
