@@ -119,10 +119,11 @@ class NegativeDataset(Dataset):
             dataset = self.abnormal
             label = 1
         x = io.imread(dataset[idx], dtype=np.float32)
+        x = (x - 127.5) / 127.5
         name = dataset[idx]
 
-        x -= x.mean()
-        x /= x.std()
+        # x -= x.mean()
+        # x /= x.std()
 
         x = x.transpose((2, 0, 1))
 
