@@ -68,7 +68,7 @@ class MiniDroneVideoDataset(Dataset):
                        for g in groups for i in range(int(len(g) / self.stride))]
 
     def __len__(self):
-        return len(self.frames) // 100
+        return len(self.frames)
 
     def __getitem__(self, idx):
         images = np.array([io.imread(f)*1/255 for f in self.frames[idx][0]], dtype=np.float)
@@ -107,9 +107,9 @@ class NegativeDataset(Dataset):
 
     def __len__(self):
         if self.active == 0:
-            return len(self.normal)
+            return len(self.normal)  // 100
         else:
-            return len(self.abnormal)
+            return len(self.abnormal)  // 100
 
     def __getitem__(self, idx):
         if self.active == 0:
