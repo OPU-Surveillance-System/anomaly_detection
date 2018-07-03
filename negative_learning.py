@@ -159,8 +159,8 @@ for e in range(args.epoch):
 
                 #Plot reconstructed images
                 if i_batch == 0:
-                    image = image.view(image.size(0), 224, 224, 3)
-                    reconstruction = reconstruction.view(reconstruction.size(0), 224, 224, 3)
+                    image = image.permute(0, 2, 3, 1)
+                    reconstruction = reconstruction.permute(0, 2, 3, 1)
                     plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), classes[m], 'epoch_{}.svg'.format(e)))
 
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item(), e)
