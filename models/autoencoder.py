@@ -41,7 +41,7 @@ class Autoencoder(torch.nn.Module):
 
         #Bottleneck
         if self.fc:
-            in_dim = ((28//(2**self.nb_b))**2)*(prev_f//2) #last_feature_map.h * last_feature_map.w * last_feature_map.c
+            in_dim = ((224//(2**self.nb_b))**2)*(prev_f//2) #last_feature_map.h * last_feature_map.w * last_feature_map.c
             layers = [torch.nn.Linear(in_dim, self.fc), torch.nn.Linear(self.fc, in_dim)]
             self.bottleneck = torch.nn.Sequential(*layers)
 
