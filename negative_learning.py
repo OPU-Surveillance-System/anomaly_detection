@@ -137,10 +137,9 @@ for e in range(args.epoch):
 
             sets[p].active = m
 
-            dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=False, num_workers=4)
+            dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=True, num_workers=4)
             for i_batch, sample in enumerate(tqdm(dataloader)):
                 image = sample['image'].float().cuda()
-                print(image.shape)
                 reconstruction = ae(image)
 
                 loss = torch.nn.functional.mse_loss(reconstruction, image)

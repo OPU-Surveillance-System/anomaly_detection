@@ -108,9 +108,9 @@ class NegativeDataset(Dataset):
 
     def __len__(self):
         if self.active == 0:
-            return len(self.normal)  // 100
+            return len(self.normal)
         else:
-            return len(self.abnormal)  // 100
+            return len(self.abnormal)
 
     def __getitem__(self, idx):
         if self.active == 0:
