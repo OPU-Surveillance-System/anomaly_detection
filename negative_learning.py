@@ -145,8 +145,8 @@ for e in range(args.epoch):
 
                 loss = torch.nn.functional.mse_loss(reconstruction, image)
 
-                if m == 1:
-                    loss *= -1 #Negative learning
+                # if m == 1:
+                #     loss *= -1 #Negative learning
 
                 if p == 'train':
                     loss.backward()
