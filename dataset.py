@@ -119,7 +119,7 @@ class NegativeDataset(Dataset):
         else:
             dataset = self.abnormal
             label = 1
-        x = misc.imread(dataset[idx], mode='L')
+        x = misc.imread(dataset[idx], mode='L').reshape(224, 224, 1)
         x = (x - x.min()) / (x.max() - x.min())
         name = dataset[idx]
 
