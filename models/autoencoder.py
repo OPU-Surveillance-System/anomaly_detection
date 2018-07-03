@@ -55,7 +55,7 @@ class Autoencoder(torch.nn.Module):
 
         for m in self.modules():
             if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
-                torch.nn.init.kaiming_normal(m.weight)
+                torch.nn.init.kaiming_normal_(m.weight)
 
     def forward(self, x):
         x = self.encoder(x)
