@@ -24,9 +24,6 @@ def plot_reconstruction_images(inputs, pred, name):
 
     plt.clf()
     nb_plots = min(inputs.shape[0], 4)
-    if inputs.shape[3] == 1:
-        inputs = inputs.reshape((-1, inputs.shape[1], inputs.shape[2]))
-        pred = pred.reshape((-1, inputs.shape[1], inputs.shape[2]))
     #inputs
     for i in range(nb_plots):
         ax = plt.subplot2grid((2, nb_plots), (0, i), rowspan=1, colspan=1)
@@ -35,7 +32,8 @@ def plot_reconstruction_images(inputs, pred, name):
     #pred
     for i in range(nb_plots):
         ax = plt.subplot2grid((2, nb_plots), (1, i), rowspan=1, colspan=1)
-        ax.imshow(np.clip(pred[i], 0.0, 1.0))
+        #ax.imshow(np.clip(pred[i], 0.0, 1.0))
+        ax.imshow(pred[i])
         ax.axis('off')
 
     if name != None:
