@@ -143,7 +143,7 @@ for e in range(args.epoch):
                 image = sample['image'].cuda()
                 reconstruction = ae(image)
 
-                loss = torch.nn.functional.mse_loss(reconstruction, inputs)
+                loss = torch.nn.functional.mse_loss(reconstruction, image)
 
                 if m == 1:
                     loss *= -1 #Negative learning
