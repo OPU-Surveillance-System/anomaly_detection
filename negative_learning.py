@@ -113,7 +113,7 @@ for i_batch, sample in enumerate(tqdm(dataloader)):
 
     reconstruction = ae(image)
 
-    loss = torch.nn.functional.mse_loss(reconstruction, inputs)
+    loss = torch.nn.functional.mse_loss(reconstruction, image)
 
     loss.backward()
     optimizer.step()
@@ -169,7 +169,6 @@ for e in range(args.epoch):
         fpr, tpr, thresholds = metrics.roc_curve(labels, reconstruction_errors)
         auc = metrics.auc(fpr, tpr)
         writer.add_scalar('{}/auc'.format(p), auc, e)
-
 
 writer.export_scalars_to_json(os.path.join(args.directory, 'logs', 'scalars.json'))
 writer.close()
