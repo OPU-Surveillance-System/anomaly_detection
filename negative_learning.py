@@ -92,7 +92,7 @@ if args.z == 0:
 else:
     z = args.z
 ae = autoencoder.Autoencoder(args.f, args.l, args.b, z)
-#ae = ae.cuda()
+ae = ae.cuda()
 print(ae)
 
 optimizer = torch.optim.Adam(ae.parameters(), args.learning_rate)
@@ -140,7 +140,7 @@ for e in range(args.epoch):
 
             dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=True, num_workers=4)
             for i_batch, sample in enumerate(tqdm(dataloader)):
-                image = sample['image']
+                image = sample['image'].cuda()
                 reconstruction = ae(image)
 
                 loss = torch.nn.functional.mse_loss(reconstruction, inputs)
@@ -153,8 +153,7 @@ for e in range(args.epoch):
                     optimizer.step()
 
                 #Get reconstruction error
-                reconstruction_error = dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).numpy().tolist()
-                reconstruction_errors += dist(image.view(image.size(0), -1), image.view(image.size(0), -1)).view(image.size(0)).numpy().tolist()
+                reconstruction_errors += dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).cpu().numpy().tolist()
                 labels += sample['label'].numpy().tolist()
 
                 #Plot reconstructed images
