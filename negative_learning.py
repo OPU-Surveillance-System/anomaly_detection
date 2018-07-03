@@ -157,7 +157,8 @@ for e in range(args.epoch):
                 labels += sample['label'].numpy().tolist()
 
                 #Plot reconstructed images
-                plot_reconstruction_images(image.cpu().numpy(), reconstruction.cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), modes[m], 'epoch_{}.svg'.format(e)))
+                if i_batch == 0:
+                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), modes[m], 'epoch_{}.svg'.format(e)))
 
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item, e)
 
