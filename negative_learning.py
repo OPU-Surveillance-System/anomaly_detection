@@ -169,7 +169,7 @@ for e in range(args.epoch):
             running_loss /= (i_batch + 1)
 
             print('Epoch {}, Phase: {}, Mode: {}, loss: {}'.format(e, p, modes[m], running_loss))
-            writer.add_scalar('{}/{}_loss'.format(p, modes[m]), loss.item(), e)
+            writer.add_scalar('{}/{}_loss'.format(p, modes[m]), running_loss, e)
 
             total_loss += loss.item()
 
