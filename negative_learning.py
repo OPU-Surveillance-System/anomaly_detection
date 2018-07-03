@@ -110,7 +110,7 @@ print('Warm up training')
 trainset.active = 0
 dataloader = DataLoader(trainset, batch_size=args.batch_size, shuffle=True, num_workers=4)
 for i_batch, sample in enumerate(tqdm(dataloader)):
-    image = sample['image']
+    image = sample['image'].cuda()
 
     reconstruction = ae(image)
 
