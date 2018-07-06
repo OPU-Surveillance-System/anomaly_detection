@@ -91,7 +91,8 @@ if args.z == 0:
     z = None
 else:
     z = args.z
-ae = autoencoder.VGGAutoencoder(args.f, args.l, args.b, z)
+#ae = autoencoder.Autoencoder(args.f, args.l, args.b, z)
+ae = autoencoder.VGGAutoencoder()
 ae = ae.cuda()
 print(ae)
 
