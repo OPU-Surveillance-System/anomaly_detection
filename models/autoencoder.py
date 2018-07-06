@@ -92,22 +92,12 @@ class VGGAutoencoder(torch.nn.Module):
             return layers
 
         #Encoder
-        layers =
-        downsampling_block(3, 64, 2) +
-        downsampling_block(64, 128, 2) +
-        downsampling_block(128, 256, 3) +
-        downsampling_block(256, 512, 3) +
-        downsampling_block(512, 512, 3)
-
+        layers = downsampling_block(3, 64, 2) + downsampling_block(64, 128, 2) + downsampling_block(128, 256, 3) + downsampling_block(256, 512, 3) + downsampling_block(512, 512, 3)
         self.encoder = torch.nn.Sequential(*layers)
 
         #Decoder
-        layers =
-            upsampling_block(512, 512, 3) +
-            upsampling_block(512, 256, 3) +
-            upsampling_block(256, 128, 3) +
-            upsampling_block(128, 64, 2) +
-            upsampling_block(64, 3, 2) +
+        layers = upsampling_block(512, 512, 3) + upsampling_block(512, 256, 3) + upsampling_block(256, 128, 3) + upsampling_block(128, 64, 2) + upsampling_block(64, 3, 2)
+        self.decoder = torch.nn.Sequential(*layers)
 
         for m in self.modules():
             if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
