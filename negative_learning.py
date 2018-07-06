@@ -46,6 +46,7 @@ parser.add_argument('--bs', dest='batch_size', type=int, default=16, help='Mini 
 parser.add_argument('--lr', dest='learning_rate', type=float, default=0.001, help='Learning rate')
 parser.add_argument('--ep', dest='epoch', type=int, default=100, help='Number of training epochs')
 parser.add_argument('--dir', dest='directory', type=str, default='negative_learning', help='Directory to store results')
+parser.add_argument('-q', dest='q', type=int, default=1, help='Number of negative learning step')
 #Model arguments
 parser.add_argument('-f', dest='f', type=int, default=8, help='Number of hidden features')
 parser.add_argument('-b', dest='b', type=int, default=2, help='Number of blocks')
@@ -139,33 +140,39 @@ for e in range(args.epoch):
             sets[p].active = m
 
             dataloader = DataLoader(sets[p], batch_size=args.batch_size, shuffle=True, num_workers=4)
-            for i_batch, sample in enumerate(tqdm(dataloader)):
-                image = sample['image'].float().cuda()
-                reconstruction = ae(image)
+            if m == 1 and p == 'train':
+                q = args.q
+            else:
+                q = 1
+            for step in range(q):
+                for i_batch, sample in enumerate(tqdm(dataloader)):
+                    image = sample['image'].float().cuda()
+                    reconstruction = ae(image)
 
-                loss = torch.nn.functional.mse_loss(reconstruction, image)
+                    loss = torch.nn.functional.mse_loss(reconstruction, image)
 
-                # if m == 1:
-                #     loss *= -1 #Negative learning
+                    if m == 1:
+                        loss *= -1 #Negative learning
 
-                if p == 'train':
-                    optimizer.zero_grad()
-                    loss.backward()
-                    optimizer.step()
+                    if p == 'train':
+                        optimizer.zero_grad()
+                        loss.backward()
+                        optimizer.step()
 
-                #Get reconstruction error
-                reconstruction_errors += dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).detach().cpu().numpy().tolist()
-                labels += sample['label'].numpy().tolist()
+                    #Get reconstruction error
+                    if step == 0:
+                        reconstruction_errors += dist(image.view(image.size(0), -1), reconstruction.view(reconstruction.size(0), -1)).view(image.size(0)).detach().cpu().numpy().tolist()
+                        labels += sample['label'].numpy().tolist()
 
-                #Plot reconstructed images
-                if i_batch == 0:
-                    image = image.permute(0, 2, 3, 1).view(image.size(0), 224, 224)
-                    reconstruction = reconstruction.permute(0, 2, 3, 1).view(reconstruction.size(0), 224, 224)
-                    plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), classes[m], 'epoch_{}.svg'.format(e)))
+                    #Plot reconstructed images
+                    if i_batch == 0 and step == 0:
+                        image = image.permute(0, 2, 3, 1).view(image.size(0), 224, 224)
+                        reconstruction = reconstruction.permute(0, 2, 3, 1).view(reconstruction.size(0), 224, 224)
+                        plot_reconstruction_images(image.cpu().numpy(), reconstruction.detach().cpu().numpy(), os.path.join(args.directory, 'reconstruction_{}'.format(p), classes[m], 'epoch_{}.svg'.format(e)))
 
-                running_loss += loss.item()
+                    running_loss += loss.item()
 
-            running_loss /= (i_batch + 1)
+            running_loss /= q * (i_batch + 1)
 
             print('Epoch {}, Phase: {}, Mode: {}, loss: {}'.format(e, p, modes[m], running_loss))
             writer.add_scalar('{}/{}_loss'.format(p, modes[m]), running_loss, e)
