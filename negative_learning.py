@@ -47,6 +47,8 @@ parser.add_argument('--lr', dest='learning_rate', type=float, default=0.001, hel
 parser.add_argument('--ep', dest='epoch', type=int, default=100, help='Number of training epochs')
 parser.add_argument('--dir', dest='directory', type=str, default='negative_learning', help='Directory to store results')
 parser.add_argument('-q', dest='q', type=int, default=1, help='Number of negative learning step')
+parser.add_argument('--tr', dest='trainset', type=str, default='data/trainset_labels', help='Trainset summary')
+parser.add_argument('--te', dest='testset', type=str, default='data/testset_labels', help='Testset summary')
 #Model arguments
 parser.add_argument('-f', dest='f', type=int, default=8, help='Number of hidden features')
 parser.add_argument('-b', dest='b', type=int, default=2, help='Number of blocks')
@@ -75,8 +77,8 @@ if not os.path.exists(os.path.join(args.directory, 'reconstruction_test', 'abnor
 if not os.path.exists(os.path.join(args.directory, 'logs')):
     os.makedirs(os.path.join(args.directory, 'logs'))
 
-trainset = dataset.NegativeDataset('data/trainset_labels', '/home/scom/opu_surveillance_system/anomaly_detection')
-testset = dataset.NegativeDataset('data/testset_labels', '/home/scom/opu_surveillance_system/anomaly_detection')
+trainset = dataset.NegativeDataset(args.trainset, '/home/scom/opu_surveillance_system/anomaly_detection')
+testset = dataset.NegativeDataset(args.testset, '/home/scom/opu_surveillance_system/anomaly_detection')
 
 #Write arguments in a file
 d = vars(args)
@@ -89,7 +91,7 @@ if args.z == 0:
     z = None
 else:
     z = args.z
-ae = autoencoder.Autoencoder(args.f, args.l, args.b, z)
+ae = autoencoder.VGGAutoencoder(args.f, args.l, args.b, z)
 ae = ae.cuda()
 print(ae)
 
