@@ -69,7 +69,7 @@ class Autoencoder(torch.nn.Module):
 
 class VGGAutoencoder(torch.nn.Module):
     def __init__(self):
-        super(Autoencoder, self).__init__()
+        super(VGGAutoencoder, self).__init__()
 
         def downsampling_block(in_dim, nb_f, nb_l):
             layers = []
