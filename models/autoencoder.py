@@ -92,7 +92,7 @@ class VGGAutoencoder(torch.nn.Module):
             return layers
 
         #Encoder
-        layers +=
+        layers =
         downsampling_block(3, 64, 2) +
         downsampling_block(64, 128, 2) +
         downsampling_block(128, 256, 3) +
@@ -102,7 +102,7 @@ class VGGAutoencoder(torch.nn.Module):
         self.encoder = torch.nn.Sequential(*layers)
 
         #Decoder
-        layers += 
+        layers =
             upsampling_block(512, 512, 3) +
             upsampling_block(512, 256, 3) +
             upsampling_block(256, 128, 3) +
